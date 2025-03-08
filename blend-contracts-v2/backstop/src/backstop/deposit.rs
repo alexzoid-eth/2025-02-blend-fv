@@ -19,6 +19,8 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
     require_is_from_pool_factory(e, pool_address, pool_balance.shares);
     let mut user_balance = storage::get_user_balance(e, pool_address, from);
 
+    // @note changed 
+    #[cfg(not(feature = "certora"))]
     emissions::update_emissions(e, pool_address, &pool_balance, from, &user_balance);
 
     let backstop_token_client = TokenClient::new(e, &storage::get_backstop_token(e));

@@ -1,8 +1,8 @@
 pub(crate) mod summaries;
 pub(crate) mod mocks;
+pub(crate) mod callable;
+pub(crate) mod parametric_rules;
 
-pub(crate) mod pool_rules;
-pub(crate) mod withdraw_rules;
-pub(crate) mod fund_management_rules;
-pub(crate) mod deposit_rules;
-pub(crate) mod user_rules;
+pub(crate) mod sanity;
+pub(crate) mod valid_state;
+pub(crate) mod state_transition;

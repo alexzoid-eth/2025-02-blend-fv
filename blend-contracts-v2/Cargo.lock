@@ -173,6 +173,7 @@ dependencies = [
  "cvlr-soroban-derive",
  "cvlr-soroban-macros",
  "mock-pool-factory",
+ "paste",
  "sep-41-token",
  "soroban-fixed-point-math",
  "soroban-sdk",
