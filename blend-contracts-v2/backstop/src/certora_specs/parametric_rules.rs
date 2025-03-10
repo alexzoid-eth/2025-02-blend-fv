@@ -1,12 +1,12 @@
 use soroban_sdk::Env;
 use crate::backstop::{self, PoolBackstopData};
 use soroban_sdk::Address;
-use crate::{pass_arg, make_callable};
+use crate::{pass_arg, make_callable, parametric_rule};
 use crate::certora_specs::callable::Call;
-use crate::parametric_rule;
 use cvlr_soroban_derive::rule;
 
 use crate::certora_specs::valid_state::{
+    valid_state_sanity,
     valid_state_q4w_expiration,
     valid_state_q4w_sum,
     valid_state_user_share_leq_total_pool_shares,
@@ -27,6 +27,7 @@ make_callable!(backstop, require_is_from_pool_factory, address: Address, balance
 make_callable!(backstop, require_pool_above_threshold, no_env, pool_backstop_data: PoolBackstopData);
 
 // valid state
+parametric_rule!(valid_state_sanity, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
 parametric_rule!(valid_state_q4w_expiration, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
 parametric_rule!(valid_state_q4w_sum, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
 parametric_rule!(valid_state_user_share_leq_total_pool_shares, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
