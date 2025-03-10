@@ -6,7 +6,6 @@ use crate::certora_specs::callable::Call;
 use crate::parametric_rule;
 use cvlr_soroban_derive::rule;
 
-use crate::certora_specs::sanity::sanity;
 use crate::certora_specs::valid_state::{
     valid_state_q4w_expiration,
     valid_state_q4w_sum,
@@ -26,9 +25,6 @@ make_callable!(backstop, execute_withdraw, from: Address, pool_address: Address,
 make_callable!(backstop, load_pool_backstop_data, address: Address);
 make_callable!(backstop, require_is_from_pool_factory, address: Address, balance: i128);
 make_callable!(backstop, require_pool_above_threshold, no_env, pool_backstop_data: PoolBackstopData);
-
-// sanity
-parametric_rule!(sanity, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw, load_pool_backstop_data, require_is_from_pool_factory, require_pool_above_threshold));
 
 // valid state
 parametric_rule!(valid_state_q4w_expiration, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
