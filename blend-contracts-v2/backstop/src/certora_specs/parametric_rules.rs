@@ -7,8 +7,15 @@ use crate::parametric_rule;
 use cvlr_soroban_derive::rule;
 
 use crate::certora_specs::sanity::sanity;
-use crate::certora_specs::valid_state::inv_pool_shares_backed;
-use crate::certora_specs::state_transition::shares_tokens_sync;
+use crate::certora_specs::valid_state::{
+    valid_state_q4w_expiration,
+    valid_state_q4w_sum,
+    valid_state_user_share_leq_total_pool_shares,
+    valid_state_pool_q4w_leq_total_shares,
+    valid_state_nonnegative,
+    valid_state_user_pool_contract_always_zero
+};
+use crate::certora_specs::state_trans::state_trans_pool_shares_tokens_change_together;
 
 make_callable!(backstop, execute_deposit, from: Address, pool_address: Address, amount: i128);
 make_callable!(backstop, execute_donate, from: Address, pool_address: Address, amount: i128);
@@ -24,7 +31,12 @@ make_callable!(backstop, require_pool_above_threshold, no_env, pool_backstop_dat
 parametric_rule!(sanity, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw, load_pool_backstop_data, require_is_from_pool_factory, require_pool_above_threshold));
 
 // valid state
-parametric_rule!(inv_pool_shares_backed, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw, load_pool_backstop_data, require_is_from_pool_factory, require_pool_above_threshold));
+parametric_rule!(valid_state_q4w_expiration, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
+parametric_rule!(valid_state_q4w_sum, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
+parametric_rule!(valid_state_user_share_leq_total_pool_shares, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
+parametric_rule!(valid_state_pool_q4w_leq_total_shares, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
+parametric_rule!(valid_state_nonnegative, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
+parametric_rule!(valid_state_user_pool_contract_always_zero, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
 
 // state transition
-parametric_rule!(shares_tokens_sync, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw, load_pool_backstop_data, require_is_from_pool_factory, require_pool_above_threshold));
+parametric_rule!(state_trans_pool_shares_tokens_change_together, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));

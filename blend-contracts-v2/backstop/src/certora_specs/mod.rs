@@ -5,4 +5,4 @@ pub(crate) mod parametric_rules;
 
 pub(crate) mod sanity;
 pub(crate) mod valid_state;
-pub(crate) mod state_transition;
+pub(crate) mod state_trans;
