@@ -50,56 +50,28 @@ macro_rules! parametric_rule {
     };
 }
 
-/*
 #[macro_export]
 macro_rules! invariant_rule {
-    ($invariant:ident, ($($call:ident),+)) => {
-        $(paste::paste!(
-            #[rule]
-            pub fn [< inv_ $invariant _ $call >](e: Env, c: [< call_ $call >]) {
+    ($inv:ident, ($($call:ident),+)) => {
+        paste::paste! {
+            // Define the generic rule function
+            pub fn [< inv_ $inv >]<C: AddressCall>(e: Env, c: C) {
                 let pool = c.get_pool_address();
                 let user = c.get_user_address();
-                
-                // Set up environment
-                cvlr_assume!(valid_state_pool(&e, &pool));
-                if user != &e.current_contract_address() {
-                    cvlr_assume!(valid_state_pool_user(&e, &pool, &user));
+                cvlr_assume!(valid_state_pool_user(&e, pool, user));
+                cvlr_assume!(bound_amount(c.get_amount()));
+                cvlr_assume!($inv(&e, pool, user));
+                c.call(&e);
+                cvlr_assert!($inv(&e, pool, user));
+            }
+            
+            // Then generate the specific rule functions for each call type
+            $(
+                #[rule]
+                pub fn [< $inv _ $call >](e: Env, c: [< call_ $call >]) {
+                    [< inv_ $inv >]::<[< call_ $call >]>(e, c);
                 }
-                cvlr_assume!(bound_amount(c.get_amount()));
-                
-                // Check that invariant holds before call
-                cvlr_assume!($invariant(&e, &pool, &user));
-                
-                // Make the call
-                c.call(&e);
-                
-                // Assert that invariant still holds after call
-                cvlr_assert!($invariant(&e, &pool, &user));
-            }
-        );)+
-    };
-    
-    // Variant for invariants that only need pool address
-    ($invariant:ident, pool_only, ($($call:ident),+)) => {
-        $(paste::paste!(
-            #[rule]
-            pub fn [< inv_ $invariant _ $call >](e: Env, c: [< call_ $call >]) {
-                let pool = c.get_pool_address();
-                
-                // Set up environment
-                cvlr_assume!(valid_state_pool(&e, &pool));
-                cvlr_assume!(bound_amount(c.get_amount()));
-                
-                // Check that invariant holds before call
-                cvlr_assume!($invariant(&e, &pool));
-                
-                // Make the call
-                c.call(&e);
-                
-                // Assert that invariant still holds after call
-                cvlr_assert!($invariant(&e, &pool));
-            }
-        );)+
+            )+
+        }
     };
 }
-*/
