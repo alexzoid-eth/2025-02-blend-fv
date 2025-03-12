@@ -1,6 +1,10 @@
+// @note changed
+#[cfg(feature = "certora")]
+use crate::{contract::require_nonnegative, certora_specs::mocks::storage_ghost as storage, BackstopError};
+#[cfg(not(feature = "certora"))]
 use crate::{contract::require_nonnegative, storage, BackstopError};
-use soroban_sdk::{panic_with_error, Address, Env};
 
+use soroban_sdk::{panic_with_error, Address, Env};
 
 #[cfg(feature = "certora")]
 use crate::certora_specs::mocks::token::TokenClient;
@@ -33,7 +37,7 @@ pub fn execute_donate(e: &Env, from: &Address, pool_address: &Address, amount: i
 
     let mut pool_balance = storage::get_pool_balance(e, pool_address);
     require_is_from_pool_factory(e, pool_address, pool_balance.shares);
-
+    
     let backstop_token = TokenClient::new(e, &storage::get_backstop_token(e));
     backstop_token.transfer_from(
         &e.current_contract_address(),
@@ -41,7 +45,7 @@ pub fn execute_donate(e: &Env, from: &Address, pool_address: &Address, amount: i
         &e.current_contract_address(),
         &amount,
     );
-
+    
     pool_balance.deposit(amount, 0);
     storage::set_pool_balance(e, pool_address, &pool_balance);
 }

@@ -1,3 +1,7 @@
+// @note changed
+#[cfg(feature = "certora")]
+use crate::{contract::require_nonnegative, emissions, certora_specs::mocks::storage_ghost as storage, BackstopError};
+#[cfg(not(feature = "certora"))]
 use crate::{contract::require_nonnegative, emissions, storage, BackstopError};
 
 #[cfg(feature = "certora")]
@@ -30,7 +34,7 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
     if to_mint <= 0 {
         panic_with_error!(e, &BackstopError::InvalidShareMintAmount);
     }
-    pool_balance.deposit(amount, to_mint);
+    pool_balance.deposit(amount, to_mint); 
     user_balance.add_shares(to_mint);
 
     storage::set_pool_balance(e, pool_address, &pool_balance);

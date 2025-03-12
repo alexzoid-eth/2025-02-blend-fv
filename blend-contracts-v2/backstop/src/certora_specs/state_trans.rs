@@ -1,9 +1,9 @@
 use soroban_sdk::Env;
 use cvlr::{cvlr_assert, clog};
 use crate::backstop::PoolBalance;
-use crate::storage;
+use crate::certora_specs::mocks::storage_ghost as storage;
 use crate::certora_specs::valid_state::valid_state_pool_user;
-use crate::certora_specs::parametric_rules::AddressCall;
+use crate::certora_specs::declarations::AddressCall;
 
 // If shares in the pool balance changed, tokens must change too
 pub fn state_trans_pool_shares_tokens_change_together<C: AddressCall>(e: Env, c: C) {
