@@ -294,52 +294,40 @@ pub fn set_pool_balance(e: &Env, pool: &Address, balance: &PoolBalance) {
 use crate::certora_specs::GhostMap;
 use cvlr::nondet::*;
 
-pub(crate) static mut GHOST_POOL_BALANCE: GhostMap<Address, PoolBalance> = GhostMap::UnInit;
-pub(crate) static mut GHOST_USER_BALANCE: GhostMap<Address, UserBalance> = GhostMap::UnInit;
+pub(crate) static mut GHOST_POOL_BALANCE: GhostMap<PoolBalance> = GhostMap::UnInit;
+pub(crate) static mut GHOST_USER_BALANCE: GhostMap<UserBalance> = GhostMap::UnInit;
 
-pub fn get_user_balance(_e: &Env, _pool: &Address, user: &Address) -> UserBalance {
+pub fn get_user_balance(_e: &Env, _pool: &Address, _user: &Address) -> UserBalance {
     unsafe {
-        GHOST_USER_BALANCE.get(user)
+        GHOST_USER_BALANCE.get()
     }
 }
 
-pub fn set_user_balance(_e: &Env, _pool: &Address, user: &Address, balance: &UserBalance) {
+pub fn set_user_balance(_e: &Env, _pool: &Address, _user: &Address, balance: &UserBalance) {
     unsafe {
-        GHOST_USER_BALANCE.set(user, balance.clone());
+        GHOST_USER_BALANCE.set(balance.clone());
     }
 }
 
-pub fn get_pool_balance(_e: &Env, pool: &Address) -> PoolBalance {
+pub fn get_pool_balance(_e: &Env, _pool: &Address) -> PoolBalance {
     unsafe {
-        GHOST_POOL_BALANCE.get(pool)
+        GHOST_POOL_BALANCE.get()
     }
 }
 
-pub fn set_pool_balance(_e: &Env, pool: &Address, balance: &PoolBalance) {
+pub fn set_pool_balance(_e: &Env, _pool: &Address, balance: &PoolBalance) {
     unsafe {
-        GHOST_POOL_BALANCE.set(pool, balance.clone());
+        GHOST_POOL_BALANCE.set(balance.clone());
     }
 }
 
 pub fn initialize_ghost_maps(
-    pool: &Address, 
-    user: &Address, 
     pool_balance: PoolBalance, 
     user_balance: UserBalance
 ) {
     unsafe {
-        GHOST_POOL_BALANCE.init(pool, pool_balance);
-        GHOST_USER_BALANCE.init(user, user_balance);
-    }
-}
-
-pub fn initialize_ghost_maps_nondet(pool: &Address, user: &Address) {
-    unsafe {
-        let nondet_pool_balance: PoolBalance = Nondet::nondet();
-        let nondet_user_balance: UserBalance = Nondet::nondet();
-        
-        GHOST_POOL_BALANCE.init(pool, nondet_pool_balance);
-        GHOST_USER_BALANCE.init(user, nondet_user_balance);
+        GHOST_POOL_BALANCE.init(pool_balance);
+        GHOST_USER_BALANCE.init(user_balance);
     }
 }
 

@@ -7,7 +7,7 @@ use crate::certora_specs::declarations::AddressCall;
 
 // If shares in the pool balance changed, tokens must change too
 pub fn state_trans_pool_shares_tokens_change_together<C: AddressCall>(e: Env, c: C) {
-    let pool = c.get_pool_address();
+    let pool: soroban_sdk::Address = c.get_pool_address();
     let user = c.get_user_address();
     valid_state_pool_user(&e, &pool, &user);
     let before: PoolBalance = storage::get_pool_balance(&e, &pool);

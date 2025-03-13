@@ -9,42 +9,35 @@ pub(crate) mod state_trans;
 
 // https://github.com/Certora/reflector-subscription-contract/blob/51944577dc4536e9cf9711db6e125fe1e2254054/src/certora_specs/mod.rs
 use cvlr::nondet::*;
-pub enum GhostMap<K, V> {
+
+pub enum GhostMap<V> {
     UnInit,
-    Init { k: K, v: V }
+    Init { v: V }
 }
 
-impl<K: Clone + Eq, V: Nondet + Clone> GhostMap<K, V> {
+impl<V: Nondet + Clone> GhostMap<V> {
     #[inline(never)]
-    pub fn init(&mut self, k: &K, v: V) {
-        *self = Self::Init { k: k.clone(), v };
+    pub fn init(&mut self, v: V) {
+        *self = Self::Init { v };
     }
 
     #[inline(never)]
-    pub fn set(&mut self, k: &K, v: V) {
+    pub fn set(&mut self, v: V) {
         match self {
-            Self::Init { k: my_k, v: my_v } => {
-                if k == my_k {
-                    *my_v = v;
-                }
+            Self::Init { v: my_v } => {
+                *my_v = v;
             },
             Self::UnInit => {
-                *self = Self::Init { k: k.clone(), v };
+                *self = Self::Init { v };
             }
         }
     }
 
     #[inline(never)]
-    pub fn get(&self, k: &K) -> V {
+    pub fn get(&self) -> V {
         match self {
             Self::UnInit => V::nondet(),
-            Self::Init { k: my_k, v: my_v } => {
-                if k == my_k {
-                    my_v.clone()
-                } else {
-                    V::nondet()
-                }
-            }
+            Self::Init { v: my_v } => my_v.clone()
         }
     }
 }
