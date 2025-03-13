@@ -72,9 +72,9 @@ macro_rules! invariant_rule {
                 cvlr_assume!($inv(&e, pool, user));
                 
                 // Execute the call
-                log_state_details(&e, pool, user, concat!("Before call for invariant: ", stringify!($inv)));
+                log_state_details(&e, pool, user);
                 c.call(&e);
-                log_state_details(&e, pool, user, concat!("After call for invariant: ", stringify!($inv)));
+                log_state_details(&e, pool, user);
 
                 // Assert invariant after call
                 cvlr_assert!($inv(&e, pool, user));

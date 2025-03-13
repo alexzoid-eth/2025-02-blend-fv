@@ -137,36 +137,32 @@ pub fn setup_verification_context<C: AddressCall>(
 pub fn log_state_details(
     e: &Env,
     pool: &Address,
-    user: &Address,
-    message: &str
+    user: &Address
 ) {
     let pb = storage::get_pool_balance(e, pool);
     let ub = storage::get_user_balance(e, pool, user);
     
-    clog!(message);
-
     let pool_addr = get_static_pool_address(e);
     let user1_addr = get_static_user_address(e, 1);
     let user2_addr = get_static_user_address(e, 2);
     
-    clog!("Pool is static_pool: ", pool == &pool_addr);
-    clog!("User is user1: ", user == &user1_addr);
-    clog!("User is user2: ", user == &user2_addr);
-    clog!("User is same as pool: ", user == pool);
-    clog!("User is contract: ", user == &e.current_contract_address());
+    clog!(pool == &pool_addr);
+    clog!(user == &user1_addr);
+    clog!(user == &user2_addr);
+    clog!(user == pool);
+    clog!(user == &e.current_contract_address());
 
-    clog!("PoolBalance.shares: ", pb.shares as i64);
-    clog!("PoolBalance.tokens: ", pb.tokens as i64);
-    clog!("PoolBalance.q4w: ", pb.q4w as i64);
+    clog!(pb.shares as i64);
+    clog!(pb.tokens as i64);
+    clog!(pb.q4w as i64);
     
-    clog!("UserBalance.shares: ", ub.shares as i64);
-    clog!("UserBalance.q4w.len(): ", ub.q4w.len());
+    clog!(ub.shares as i64);
+    clog!(ub.q4w.len());
     
-    // Log q4w[0] if it exists
     if ub.q4w.len() == 1 {
         let q4w_entry0 = ub.q4w.get(0).unwrap_optimized();
-        clog!("UserBalance.q4w[0].amount: ", q4w_entry0.amount as i64);
-        clog!("UserBalance.q4w[0].exp: ", q4w_entry0.exp);
+        clog!(q4w_entry0.amount as i64);
+        clog!(q4w_entry0.exp);
     }
 }
 
