@@ -15,11 +15,10 @@ use super::require_is_from_pool_factory;
 
 /// Perform a deposit into the backstop module
 pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: i128) -> i128 {
-    /*
     require_nonnegative(e, amount);
-    if from == pool_address || from == &e.current_contract_address() {
-        panic_with_error!(e, &BackstopError::BadRequest)
-    }
+    //if from == pool_address || from == &e.current_contract_address() {
+    //    panic_with_error!(e, &BackstopError::BadRequest)
+    //}
     let mut pool_balance = storage::get_pool_balance(e, pool_address);
     require_is_from_pool_factory(e, pool_address, pool_balance.shares);
     let mut user_balance = storage::get_user_balance(e, pool_address, from);
@@ -42,12 +41,6 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
     storage::set_user_balance(e, pool_address, from, &user_balance);
 
     to_mint
-    */
-    //require_nonnegative(e, amount);
-    let mut pool_balance = storage::get_pool_balance(e, pool_address);
-    pool_balance.deposit(amount, amount); 
-    storage::set_pool_balance(e, pool_address, &pool_balance);
-    0
 }
 
 #[cfg(test)]

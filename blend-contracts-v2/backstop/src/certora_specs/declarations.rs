@@ -1,4 +1,4 @@
-use soroban_sdk::{Env, Address, unwrap::UnwrapOptimized};
+use soroban_sdk::{Env, Address, String, unwrap::UnwrapOptimized};
 use crate::{pass_arg, make_callable, parametric_rule, invariant_rule};
 use crate::certora_specs::callable::Call;
 use cvlr_soroban_derive::rule;
@@ -16,23 +16,22 @@ use crate::certora_specs::valid_state::{
     valid_state_pool_q4w_leq_total_shares,
     valid_state_nonnegative_pb_shares_tokens,
     valid_state_nonnegative_ub_shares,
-    valid_state_user_pool_contract_always_zero,
-    valid_state_test
+    valid_state_user_pool_contract_always_zero
 };
 
 pub trait AddressCall: Call {
-    fn get_pool_address(&self) -> Address;
-    fn get_user_address(&self) -> Address;
+    fn get_pool_address(&self) -> &Address;
+    fn get_user_address(&self) -> &Address;
     fn get_amount(&self) -> i128;
 }
 
 impl AddressCall for call_execute_deposit {
-    fn get_pool_address(&self) -> Address {
-        self.pool_address.clone()
+    fn get_pool_address(&self) -> &Address {
+        &self.pool_address
     }
     
-    fn get_user_address(&self) -> Address {
-        self.from.clone()
+    fn get_user_address(&self) -> &Address {
+        &self.from
     }
 
     fn get_amount(&self) -> i128 {
@@ -41,12 +40,12 @@ impl AddressCall for call_execute_deposit {
 }
 
 impl AddressCall for call_execute_donate {
-    fn get_pool_address(&self) -> Address {
-        self.pool_address.clone()
+    fn get_pool_address(&self) -> &Address {
+        &self.pool_address
     }
     
-    fn get_user_address(&self) -> Address {
-        self.from.clone()
+    fn get_user_address(&self) -> &Address {
+        &self.from
     }
 
     fn get_amount(&self) -> i128 {
@@ -55,12 +54,12 @@ impl AddressCall for call_execute_donate {
 }
 
 impl AddressCall for call_execute_draw {
-    fn get_pool_address(&self) -> Address {
-        self.pool_address.clone()
+    fn get_pool_address(&self) -> &Address {
+        &self.pool_address
     }
     
-    fn get_user_address(&self) -> Address {
-        self.to.clone()
+    fn get_user_address(&self) -> &Address {
+        &self.to
     }
 
     fn get_amount(&self) -> i128 {
@@ -69,12 +68,12 @@ impl AddressCall for call_execute_draw {
 }
 
 impl AddressCall for call_execute_dequeue_withdrawal {
-    fn get_pool_address(&self) -> Address {
-        self.pool_address.clone()
+    fn get_pool_address(&self) -> &Address {
+        &self.pool_address
     }
     
-    fn get_user_address(&self) -> Address {
-        self.from.clone()
+    fn get_user_address(&self) -> &Address {
+        &self.from
     }
 
     fn get_amount(&self) -> i128 {
@@ -83,12 +82,12 @@ impl AddressCall for call_execute_dequeue_withdrawal {
 }
 
 impl AddressCall for call_execute_queue_withdrawal {
-    fn get_pool_address(&self) -> Address {
-        self.pool_address.clone()
+    fn get_pool_address(&self) -> &Address {
+        &self.pool_address
     }
     
-    fn get_user_address(&self) -> Address {
-        self.from.clone()
+    fn get_user_address(&self) -> &Address {
+        &self.from
     }
 
     fn get_amount(&self) -> i128 {
@@ -97,12 +96,12 @@ impl AddressCall for call_execute_queue_withdrawal {
 }
 
 impl AddressCall for call_execute_withdraw {
-    fn get_pool_address(&self) -> Address {
-        self.pool_address.clone()
+    fn get_pool_address(&self) -> &Address {
+        &self.pool_address
     }
     
-    fn get_user_address(&self) -> Address {
-        self.from.clone()
+    fn get_user_address(&self) -> &Address {
+        &self.from
     }
 
     fn get_amount(&self) -> i128 {
@@ -111,17 +110,17 @@ impl AddressCall for call_execute_withdraw {
 }
 
 pub fn log_state_details(
-    e: &Env,
-    pool: &Address,
-    user: &Address,
+    e: Env,
+    pool: Address,
+    user: Address,
     amount: i128
 ) {
-    let pb = storage::get_pool_balance(e, pool);
-    let ub = storage::get_user_balance(e, pool, user);
+    let pb = storage::get_pool_balance(&e, &pool);
+    let ub = storage::get_user_balance(&e, &pool, &user);
         
     clog!(amount as i64);
     clog!(user == pool);
-    clog!(user == &e.current_contract_address());
+    clog!(user == e.current_contract_address());
 
     clog!(pb.shares as i64);
     clog!(pb.tokens as i64);
@@ -148,14 +147,13 @@ make_callable!(backstop, require_is_from_pool_factory, address: Address, balance
 make_callable!(backstop, require_pool_above_threshold, no_env, pool_backstop_data: PoolBackstopData);
 
 // Valid state invariants
-invariant_rule!(valid_state_q4w_expiration, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
-invariant_rule!(valid_state_q4w_sum, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
-invariant_rule!(valid_state_user_share_leq_total_pool_shares, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
-invariant_rule!(valid_state_pool_q4w_leq_total_shares, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
-invariant_rule!(valid_state_nonnegative_pb_shares_tokens, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
-invariant_rule!(valid_state_nonnegative_ub_shares, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
-invariant_rule!(valid_state_user_pool_contract_always_zero, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
-invariant_rule!(valid_state_test, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));
+invariant_rule!(valid_state_q4w_expiration);
+invariant_rule!(valid_state_q4w_sum);
+invariant_rule!(valid_state_user_share_leq_total_pool_shares);
+invariant_rule!(valid_state_pool_q4w_leq_total_shares);
+invariant_rule!(valid_state_nonnegative_pb_shares_tokens);
+invariant_rule!(valid_state_nonnegative_ub_shares);
+invariant_rule!(valid_state_user_pool_contract_always_zero);
 
 // Sanity parametric rule with valid state assumed
 parametric_rule!(valid_state_sanity, (execute_deposit, execute_donate, execute_draw, execute_dequeue_withdrawal, execute_queue_withdrawal, execute_withdraw));

@@ -292,7 +292,6 @@ pub fn set_pool_balance(e: &Env, pool: &Address, balance: &PoolBalance) {
 */
 
 use crate::certora_specs::GhostMap;
-use cvlr::nondet::*;
 
 pub(crate) static mut GHOST_POOL_BALANCE: GhostMap<PoolBalance> = GhostMap::UnInit;
 pub(crate) static mut GHOST_USER_BALANCE: GhostMap<UserBalance> = GhostMap::UnInit;
