@@ -1,10 +1,7 @@
-use soroban_sdk::{Env, Address, String};
-use soroban_sdk::unwrap::UnwrapOptimized;
 use crate::backstop::{PoolBalance, UserBalance};
-use crate::constants::Q4W_LOCK_TIME;
 use crate::certora_specs::mocks::storage_ghost as storage;
-use cvlr_soroban_derive::rule;
-use cvlr::{cvlr_assume, cvlr_assert, clog};
+use crate::constants::Q4W_LOCK_TIME;
+use soroban_sdk::{unwrap::UnwrapOptimized, Address, Env};
 
 // All valid state functions in one place
 pub fn valid_state_pool_user(
@@ -20,8 +17,6 @@ pub fn valid_state_pool_user(
         && valid_state_nonnegative_ub_shares(e.clone(), pool.clone(), user.clone())
         && valid_state_user_pool_contract_always_zero(e.clone(), pool.clone(), user.clone())
 }
-
-// These are bodies of invariants declared in `declarations.rs`
 
 // UserBalance shares are non-negative
 pub fn valid_state_nonnegative_ub_shares(
@@ -42,15 +37,10 @@ pub fn valid_state_nonnegative_pb_shares_tokens(
     user: Address
 ) -> bool {
     let pb: PoolBalance = storage::get_pool_balance(&e, &pool);
-    clog!(pb.shares as i64);
-    clog!(pb.tokens  as i64);
-    clog!(pb.q4w  as i64);
     if pb.shares.is_negative() || pb.tokens.is_negative() || pb.q4w.is_negative() { return false; }
 
     true
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////
 
 // The expiration time (exp) in any Q4W entry must not exceed timestamp + Q4W_LOCK_TIME
 pub fn valid_state_q4w_expiration(
@@ -125,22 +115,4 @@ pub fn valid_state_user_pool_contract_always_zero(
     } else {
         true
     }
-}
-
-use crate::backstop::execute_deposit;
-
-#[rule]
-pub fn valid_state_user_pool_contract_always_zero_2(
-    e: Env, 
-    pool: Address, 
-    user: Address,
-    amount: i128
-) {
-    let user_bal: UserBalance = storage::get_user_balance(&e, &pool, &user);
-
-    cvlr_assume!(user == pool || user == e.current_contract_address());
-
-    execute_deposit(&e, &user, &pool, amount);
-
-    cvlr_assert!(user_bal.shares as i64 == 0);
 }

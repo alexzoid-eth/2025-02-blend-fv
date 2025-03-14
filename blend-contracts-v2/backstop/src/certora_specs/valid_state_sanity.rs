@@ -1,8 +1,13 @@
-use soroban_sdk::Env;
+use soroban_sdk::{Env, Address};
 use cvlr::cvlr_satisfy;
-use crate::certora_specs::declarations::AddressCall;
 
-pub fn valid_state_sanity<C: AddressCall>(e: Env, c: C) {        
-    c.call(&e);
+pub fn valid_state_sanity(
+    e: &Env, 
+    pool: &Address, 
+    user: &Address, 
+    amount: i128,
+    call_fn: impl FnOnce()
+) {        
+    call_fn();
     cvlr_satisfy!(true);
 }
