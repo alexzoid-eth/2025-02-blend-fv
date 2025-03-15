@@ -23,7 +23,7 @@ use crate::certora_specs::valid_state_nonnegative::{
     valid_state_nonnegative_ub_q4w_amount,
 };
 use crate::certora_specs::valid_state_sanity::valid_state_sanity;
-use crate::certora_specs::{Call, log_state_details};
+use crate::certora_specs::base::{Call, log_state::log_state_details};
 use crate::{init_verification, invariant_rule, make_callable, parametric_rule, pass_arg};
 use cvlr::{cvlr_assert, cvlr_assume};
 use cvlr_soroban_derive::rule;

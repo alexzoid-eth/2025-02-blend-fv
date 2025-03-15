@@ -6,6 +6,9 @@ use crate::{
     errors::BackstopError,
 };
 
+#[cfg(feature = "certora")] // @note changed
+use crate::certora_specs::base::vec_one_q4w::{VecOneQ4W, vec_one_empty};
+
 /// A deposit that is queued for withdrawal
 #[derive(Clone)]
 #[contracttype]
@@ -23,6 +26,7 @@ impl cvlr::nondet::Nondet for Q4W {
     }
 }
 
+#[cfg(not(feature = "certora"))]
 /// A deposit that is queued for withdrawal
 #[derive(Clone)]
 #[contracttype]
@@ -31,10 +35,21 @@ pub struct UserBalance {
     pub q4w: Vec<Q4W>, // a list of queued withdrawals
 }
 
+#[cfg(feature = "certora")]
+#[derive(Clone)]
+#[contracttype]
+pub struct UserBalance {
+    pub shares: i128,  // the balance of shares the user owns
+    pub q4w: VecOneQ4W, // a simplified list for verification
+}
+
 impl cvlr::nondet::Nondet for UserBalance {
     fn nondet() -> Self {
         Self {
             shares: cvlr::nondet(),
+            #[cfg(feature = "certora")] // @note changed
+            q4w: cvlr::nondet(),
+            #[cfg(not(feature = "certora"))]
             q4w: nondet_vec()
         }
     }
@@ -44,6 +59,9 @@ impl UserBalance {
     pub fn env_default(e: &Env) -> UserBalance {
         UserBalance {
             shares: 0,
+            #[cfg(feature = "certora")] // @note changed
+            q4w: vec_one_empty(e),
+            #[cfg(not(feature = "certora"))]
             q4w: vec![e],
         }
     }
