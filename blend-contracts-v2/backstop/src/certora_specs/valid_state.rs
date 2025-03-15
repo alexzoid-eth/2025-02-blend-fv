@@ -1,7 +1,21 @@
 use crate::backstop::{PoolBalance, UserBalance};
+use crate::certora_specs::mocks;
 use crate::certora_specs::mocks::storage_ghost as storage;
-use crate::constants::Q4W_LOCK_TIME;
-use soroban_sdk::{unwrap::UnwrapOptimized, Address, Env};
+use crate::certora_specs::valid_state_nonnegative::{
+    valid_state_nonnegative_pb_shares,
+    valid_state_nonnegative_pb_tokens,
+    valid_state_nonnegative_pb_q4w,
+    valid_state_nonnegative_ub_shares,
+    valid_state_nonnegative_ub_q4w_amount,
+};
+use crate::certora_specs::valid_state_pb::valid_state_pb_q4w_leq_shares;
+use crate::certora_specs::valid_state_ub::{
+    valid_state_ub_shares_plus_q4w_sum_eq_pb_shares,
+    valid_state_ub_q4w_sum_leq_pb_q4w,
+    valid_state_ub_q4w_expiration,
+    valid_state_ub_q4w_exp_implies_amount,
+};
+use soroban_sdk::{Address, Env};
 
 // All valid state functions in one place
 pub fn valid_state_pool_user(
@@ -9,109 +23,53 @@ pub fn valid_state_pool_user(
     pool: Address,
     user: Address
 ) -> bool {
-    valid_state_pool_q4w_leq_total_shares(e.clone(), pool.clone(), user.clone())
-        && valid_state_user_share_leq_total_pool_shares(e.clone(), pool.clone(), user.clone())
-        && valid_state_q4w_sum(e.clone(), pool.clone(), user.clone())
-        && valid_state_q4w_expiration(e.clone(), pool.clone(), user.clone())
-        && valid_state_nonnegative_pb_shares_tokens(e.clone(), pool.clone(), user.clone())
-        && valid_state_nonnegative_ub_shares(e.clone(), pool.clone(), user.clone())
-        && valid_state_user_pool_contract_always_zero(e.clone(), pool.clone(), user.clone())
-}
+    // valid_state_nonnegative
+    valid_state_nonnegative_pb_shares(e.clone(), pool.clone(), user.clone())
+    && valid_state_nonnegative_pb_tokens(e.clone(), pool.clone(), user.clone())
+    && valid_state_nonnegative_pb_q4w(e.clone(), pool.clone(), user.clone())
+    && valid_state_nonnegative_ub_shares(e.clone(), pool.clone(), user.clone())
+    && valid_state_nonnegative_ub_q4w_amount(e.clone(), pool.clone(), user.clone())
 
-// UserBalance shares are non-negative
-pub fn valid_state_nonnegative_ub_shares(
-    e: Env,
-    pool: Address,
-    user: Address
-) -> bool {
-    let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
-    if ub.shares.is_negative() { return false; }
+    // valid_state_pb
+    && valid_state_pb_q4w_leq_shares(e.clone(), pool.clone(), user.clone())
 
-    true
-}
+    // valid_state_ub
+    && valid_state_ub_shares_plus_q4w_sum_eq_pb_shares(e.clone(), pool.clone(), user.clone())
+    && valid_state_ub_q4w_sum_leq_pb_q4w(e.clone(), pool.clone(), user.clone())
+    && valid_state_ub_q4w_expiration(e.clone(), pool.clone(), user.clone())
+    && valid_state_ub_q4w_exp_implies_amount(e.clone(), pool.clone(), user.clone())
 
-// PoolBalance shares and tokens are non-negative
-pub fn valid_state_nonnegative_pb_shares_tokens(
-    e: Env,
-    pool: Address,
-    user: Address
-) -> bool {
-    let pb: PoolBalance = storage::get_pool_balance(&e, &pool);
-    if pb.shares.is_negative() || pb.tokens.is_negative() || pb.q4w.is_negative() { return false; }
-
-    true
-}
-
-// The expiration time (exp) in any Q4W entry must not exceed timestamp + Q4W_LOCK_TIME
-pub fn valid_state_q4w_expiration(
-    e: Env,
-    pool: Address,
-    user: Address
-) -> bool {
-    let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
-    let max_timestamp = e.ledger().timestamp() + Q4W_LOCK_TIME;
-
-    if ub.q4w.len() == 1 {
-        let q4w_entry0 = ub.q4w.get(0).unwrap_optimized();
-        if q4w_entry0.exp > max_timestamp {
-            return false;
-        }
-    }  
-    
-    true
-}
-
-// The sum of all amounts in the q4w vector must be less than or equal to the user's shares
-pub fn valid_state_q4w_sum(
-    e: Env,
-    pool: Address,
-    user: Address
-) -> bool {
-    let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
-    
-    // Support zero to two elements in the list for simplicity    
-    let mut q4w_sum: i128 = 0;
-    if ub.q4w.len() == 1 {
-        q4w_sum = ub.q4w.get(0).unwrap_optimized().amount;
-    } 
-    
-    q4w_sum <= ub.shares
-}
-
-// q4w (shares queued for withdrawal) should never exceed total shares
-pub fn valid_state_pool_q4w_leq_total_shares (
-    e: Env,
-    pool: Address,
-    user: Address
-) -> bool {
-    let pb: PoolBalance = storage::get_pool_balance(&e, &pool);
-    if pb.q4w > pb.shares { return false; }
-    true
-}
-
-// A user's shares cannot exceed the total pool shares
-pub fn valid_state_user_share_leq_total_pool_shares(
-    e: Env,
-    pool: Address,
-    user: Address
-) -> bool {
-    let pb: PoolBalance = storage::get_pool_balance(&e, &pool);
-    let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
-    
-    if ub.shares > pb.shares { return false; }
-    true
+    // valid_state
+    && valid_state_user_not_pool(e.clone(), pool.clone(), user.clone())
+    && valid_state_pool_from_factory(e.clone(), pool.clone(), user.clone())
 }
 
 // User who equals the pool address or the contract address always has a zero balance in that pool
-pub fn valid_state_user_pool_contract_always_zero(
+pub fn valid_state_user_not_pool(
     e: Env, 
     pool: Address, 
     user: Address
 ) -> bool {
-    let user_bal: UserBalance = storage::get_user_balance(&e, &pool, &user);
+    let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
 
     if user == pool || user == e.current_contract_address() {
-        user_bal.shares == 0
+        ub.shares == 0
+    } else {
+        true
+    }
+}
+
+// Only deployed by the Pool Factory pool could have shares 
+pub fn valid_state_pool_from_factory(
+    e: Env, 
+    pool: Address, 
+    _user: Address
+) -> bool {
+    let pb: PoolBalance = storage::get_pool_balance(&e, &pool);
+    let pool_factory_client = mocks::pool_factory::PoolFactoryClient::new(&e, &pool);
+    
+    if pool_factory_client.is_pool(&pool) == false {
+        pb.shares == 0
     } else {
         true
     }

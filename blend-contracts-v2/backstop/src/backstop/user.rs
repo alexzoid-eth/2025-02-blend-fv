@@ -31,7 +31,6 @@ pub struct UserBalance {
     pub q4w: Vec<Q4W>, // a list of queued withdrawals
 }
 
-
 impl cvlr::nondet::Nondet for UserBalance {
     fn nondet() -> Self {
         Self {

@@ -1,5 +1,4 @@
-// @note changed
-#[cfg(feature = "certora")]
+#[cfg(feature = "certora")] // @note changed
 use crate::{contract::require_nonnegative, emissions, certora_specs::mocks::storage_ghost as storage, BackstopError};
 #[cfg(not(feature = "certora"))]
 use crate::{contract::require_nonnegative, emissions, storage, BackstopError};
@@ -46,8 +45,7 @@ pub fn execute_dequeue_withdrawal(e: &Env, from: &Address, pool_address: &Addres
     let mut user_balance = storage::get_user_balance(e, pool_address, from);
 
     // update emissions
-    // @note changed 
-    #[cfg(not(feature = "certora"))]
+    #[cfg(not(feature = "certora"))] // @note changed 
     emissions::update_emissions(e, pool_address, &pool_balance, from, &user_balance);
 
     user_balance.dequeue_shares(e, amount);

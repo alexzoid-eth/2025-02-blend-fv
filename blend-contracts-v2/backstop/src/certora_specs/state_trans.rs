@@ -1,14 +1,14 @@
 use soroban_sdk::{Env, Address};
-use cvlr::{cvlr_assert, clog};
+use cvlr::cvlr_assert;
 use crate::backstop::PoolBalance;
 use crate::certora_specs::mocks::storage_ghost as storage;
 
 // If shares in the pool balance changed, tokens must change too
-pub fn state_trans_pool_shares_tokens_change_together(
+pub fn state_trans_pb_shares_tokens_change_together(
     e: &Env, 
     pool: &Address, 
-    user: &Address, 
-    amount: i128,
+    _user: &Address, 
+    _amount: i128,
     call_fn: impl FnOnce()
 ) {
     let before: PoolBalance = storage::get_pool_balance(&e, pool);

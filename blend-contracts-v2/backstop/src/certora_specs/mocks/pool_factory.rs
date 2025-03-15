@@ -45,6 +45,6 @@ impl<'a> PoolFactoryClient<'a> {
     }
 
     pub fn is_pool(&self, _pool_id: &Address) -> bool {
-        return cvlr::nondet()
+        _pool_id == &self.address // @note changed
     }
 }

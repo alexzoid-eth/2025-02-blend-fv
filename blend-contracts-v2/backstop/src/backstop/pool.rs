@@ -1,8 +1,7 @@
 use soroban_fixed_point_math::FixedPoint;
 use soroban_sdk::{contracttype, panic_with_error, unwrap::UnwrapOptimized, Address, Env};
 
-// @note changed
-#[cfg(feature = "certora")]
+#[cfg(feature = "certora")] // @note changed
 use crate::{
     constants::SCALAR_7,
     dependencies::{CometClient, PoolFactoryClient},
