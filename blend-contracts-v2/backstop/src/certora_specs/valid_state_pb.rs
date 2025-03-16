@@ -2,8 +2,9 @@ use crate::backstop::PoolBalance;
 use crate::certora_specs::mocks::storage_ghost as storage;
 use soroban_sdk::{Address, Env};
 
-// @todo violated 
 // q4w (shares queued for withdrawal) should never exceed total shares
+// @todo violated in `execute_queue_withdrawal` and `execute_deposit` due to weird 
+//  behavior (temporary excluded)
 pub fn valid_state_pb_q4w_leq_shares (
     e: Env,
     pool: Address,

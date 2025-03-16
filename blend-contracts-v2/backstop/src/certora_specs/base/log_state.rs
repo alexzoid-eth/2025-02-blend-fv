@@ -64,14 +64,14 @@ pub fn log_ub_shares(value: i128) {
     clog!(ub_shares_neg);
 }
 
-pub fn log_pb_q4w_amount(value: i128) {
-    let pb_q4w_amount_lower = (value.abs() & 0x7FFF_FFFF_FFFF_FFFF) as i64;
-    let pb_q4w_amount_upper = (value.abs() >> 63) as i64;
-    let pb_q4w_amount_neg = value.is_negative();
+pub fn log_ub_q4w_amount(value: i128) {
+    let ub_q4w_amount_lower = (value.abs() & 0x7FFF_FFFF_FFFF_FFFF) as i64;
+    let ub_q4w_amount_upper = (value.abs() >> 63) as i64;
+    let ub_q4w_amount_neg = value.is_negative();
     
-    clog!(pb_q4w_amount_lower);
-    clog!(pb_q4w_amount_upper);
-    clog!(pb_q4w_amount_neg);
+    clog!(ub_q4w_amount_lower);
+    clog!(ub_q4w_amount_upper);
+    clog!(ub_q4w_amount_neg);
 }
 
 pub fn log_state_details(
@@ -96,10 +96,7 @@ pub fn log_state_details(
     
     if ub.q4w.len() == 1 {
         let entry0: crate::Q4W = ub.q4w.get(0).unwrap_optimized();
-        log_pb_q4w_amount(entry0.amount);
+        log_ub_q4w_amount(entry0.amount);
         clog!(entry0.exp);
-    } else if ub.q4w.len() == 2 {
-        let entry0: crate::Q4W = ub.q4w.get(1).unwrap_optimized();
-        log_pb_q4w_amount(entry0.amount);
     }
 }

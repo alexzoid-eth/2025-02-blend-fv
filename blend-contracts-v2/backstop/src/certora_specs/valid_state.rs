@@ -11,7 +11,7 @@ use crate::certora_specs::valid_state_nonnegative::{
 use crate::certora_specs::valid_state_pb::valid_state_pb_q4w_leq_shares;
 use crate::certora_specs::valid_state_ub::{
     valid_state_ub_shares_plus_q4w_sum_eq_pb_shares,
-    valid_state_ub_q4w_sum_leq_pb_q4w,
+    valid_state_ub_q4w_sum_eq_pb_q4w,
     valid_state_ub_q4w_expiration,
     valid_state_ub_q4w_exp_implies_amount,
 };
@@ -35,7 +35,7 @@ pub fn valid_state_pool_user(
 
     // valid_state_ub
     && valid_state_ub_shares_plus_q4w_sum_eq_pb_shares(e.clone(), pool.clone(), user.clone())
-    && valid_state_ub_q4w_sum_leq_pb_q4w(e.clone(), pool.clone(), user.clone())
+    && valid_state_ub_q4w_sum_eq_pb_q4w(e.clone(), pool.clone(), user.clone())
     && valid_state_ub_q4w_expiration(e.clone(), pool.clone(), user.clone())
     && valid_state_ub_q4w_exp_implies_amount(e.clone(), pool.clone(), user.clone())
 
@@ -45,6 +45,7 @@ pub fn valid_state_pool_user(
 }
 
 // User who equals the pool address or the contract address always has a zero balance in that pool
+// @note Violated in `execute_dequeue_withdrawal` due weird behavior (temporary excluded)
 pub fn valid_state_user_not_pool(
     e: Env, 
     pool: Address, 

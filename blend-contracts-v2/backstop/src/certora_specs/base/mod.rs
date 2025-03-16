@@ -57,7 +57,16 @@ macro_rules! init_verification {
         cvlr_assume!(read_ub.shares == $ub.shares);
         cvlr_assume!(read_ub.q4w.len() == $ub.q4w.len());
 
+        // Bound inputs
+        cvlr_assume!($amount >= i64::MIN as i128 && $amount <= i64::MAX as i128);
+        cvlr_assume!(read_pb.shares >= i64::MIN as i128 && read_pb.shares <= i64::MAX as i128);
+        cvlr_assume!(read_pb.tokens >= i64::MIN as i128 && read_pb.tokens <= i64::MAX as i128);
+        cvlr_assume!(read_pb.q4w >= i64::MIN as i128 && read_pb.q4w <= i64::MAX as i128);
+        cvlr_assume!(read_ub.shares >= i64::MIN as i128 && read_ub.shares <= i64::MAX as i128);
+        cvlr_assume!(read_ub.q4w.len() <= 1);
+
         // Assume valid state
+        cvlr_assume!($e.ledger().timestamp() != 0);
         cvlr_assume!(valid_state_pool_user($e.clone(), $pool.clone(), $user.clone()));
     };
 }

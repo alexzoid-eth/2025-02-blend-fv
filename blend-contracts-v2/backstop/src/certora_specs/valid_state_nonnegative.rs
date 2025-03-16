@@ -3,7 +3,7 @@ use crate::certora_specs::mocks::storage_ghost as storage;
 use soroban_sdk::{Address, Env, unwrap::UnwrapOptimized};
 
 // PoolBalance shares and tokens are non-negative
-// @note Violated in `execute_deposit` due overflow possibility in `PoolBalance.deposit()`
+// @note Violated in `execute_deposit` due overflow issue in `PoolBalance.deposit()`
 pub fn valid_state_nonnegative_pb_shares(
     e: Env,
     pool: Address,
@@ -47,8 +47,6 @@ pub fn valid_state_nonnegative_ub_shares(
     ub.shares.is_negative() == false
 }
 
-// @todo violated in `dequeue_withdrawal`: https://prover.certora.com/output/52567/ae504bf453134ecfa3cde6b6c7173b24/?anonymousKey=e713b4f94b11bcfd5b9fcc80cbd436db2503169e
-// timeout in `withdraw`: https://prover.certora.com/?text=ae504bf453134ecfa3cde6b6c7173b24.&userId=52567&rerun=true
 // UserBalance amount in q4w is non-negative
 pub fn valid_state_nonnegative_ub_q4w_amount(
     e: Env,

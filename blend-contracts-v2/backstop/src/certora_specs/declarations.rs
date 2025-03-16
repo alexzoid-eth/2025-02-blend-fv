@@ -12,7 +12,7 @@ use crate::certora_specs::valid_state_pb::{
 use crate::certora_specs::valid_state_ub::{
     valid_state_ub_shares_plus_q4w_sum_eq_pb_shares,
     valid_state_ub_q4w_expiration,
-    valid_state_ub_q4w_sum_leq_pb_q4w,
+    valid_state_ub_q4w_sum_eq_pb_q4w,
     valid_state_ub_q4w_exp_implies_amount
 };
 use crate::certora_specs::valid_state_nonnegative::{
@@ -53,7 +53,7 @@ invariant_rule!(valid_state_nonnegative_ub_q4w_amount);
 
 invariant_rule!(valid_state_ub_shares_plus_q4w_sum_eq_pb_shares);
 invariant_rule!(valid_state_ub_q4w_expiration);
-invariant_rule!(valid_state_ub_q4w_sum_leq_pb_q4w);
+invariant_rule!(valid_state_ub_q4w_sum_eq_pb_q4w);
 invariant_rule!(valid_state_ub_q4w_exp_implies_amount);
 
 invariant_rule!(valid_state_pb_q4w_leq_shares);
