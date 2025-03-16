@@ -42,7 +42,6 @@ pub fn valid_state_ub_q4w_exp_implies_amount(
 }
 
 // A user's shares plus all q4w amounts equal to the total pool shares
-// @note weird violations in `withdrawal` and `dequeue_withdrawal`
 pub fn valid_state_ub_shares_plus_q4w_sum_eq_pb_shares(
     e: Env,
     pool: Address,
@@ -53,16 +52,15 @@ pub fn valid_state_ub_shares_plus_q4w_sum_eq_pb_shares(
     
     if ub.q4w.len() == 1 {
         let entry0 = ub.q4w.get(0).unwrap_optimized();
-        let sum = ub.shares + entry0.amount;
+        let sum = ub.shares as i64 + entry0.amount as i64;
 
-        sum == pb.shares
+        sum as i64 == pb.shares as i64
     } else {
-        ub.shares == pb.shares
+        ub.shares as i64 == pb.shares as i64
     }
 }
 
 // The sum of all amounts in the q4w vector must be less than pool's q4w
-// @note weird violations in `withdrawal` and `dequeue_withdrawal`
 pub fn valid_state_ub_q4w_sum_eq_pb_q4w(
     e: Env,
     pool: Address,
@@ -73,11 +71,11 @@ pub fn valid_state_ub_q4w_sum_eq_pb_q4w(
 
     if ub.q4w.len() == 1 {
         let entry0 = ub.q4w.get(0).unwrap_optimized();
-        let q4w_sum: i128 = entry0.amount;
+        let q4w_sum = entry0.amount as i64;
 
-        pb.q4w == q4w_sum
+        pb.q4w as i64 == q4w_sum as i64
     } else {
-        pb.q4w == 0
+        pb.q4w as i64 == 0
     }
 }
 

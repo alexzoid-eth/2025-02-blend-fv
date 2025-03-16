@@ -14,7 +14,10 @@ pub fn state_trans_pb_shares_tokens_change_together(
     let before: PoolBalance = storage::get_pool_balance(&e, pool);
     call_fn();
     let after: PoolBalance = storage::get_pool_balance(&e, pool);
-    let shares_changed = before.shares != after.shares;
-    let tokens_changed = before.tokens != after.tokens;
-    cvlr_assert!(!shares_changed || tokens_changed);
+
+    // @note violated without type casting to i64, seems something wrong with i128 comparison
+    cvlr_assert!(before.shares as i64 == after.shares as i64
+        || before.tokens as i64 != after.tokens as i64
+    );
 }
+

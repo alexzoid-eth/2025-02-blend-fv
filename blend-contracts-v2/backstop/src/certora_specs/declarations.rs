@@ -6,9 +6,7 @@ use crate::certora_specs::valid_state::{
     valid_state_user_not_pool,
     valid_state_pool_from_factory,
 };
-use crate::certora_specs::valid_state_pb::{
-    valid_state_pb_q4w_leq_shares
-};
+use crate::certora_specs::valid_state_pb::valid_state_pb_q4w_leq_shares;
 use crate::certora_specs::valid_state_ub::{
     valid_state_ub_shares_plus_q4w_sum_eq_pb_shares,
     valid_state_ub_q4w_expiration,
@@ -23,11 +21,11 @@ use crate::certora_specs::valid_state_nonnegative::{
     valid_state_nonnegative_ub_q4w_amount,
 };
 use crate::certora_specs::valid_state_sanity::valid_state_sanity;
-use crate::certora_specs::base::{Call, log_state::log_state_details};
+use crate::certora_specs::base::{Call, log_state::log_state_details, clear_upper_bits};
 use crate::{init_verification, invariant_rule, make_callable, parametric_rule, pass_arg};
 use cvlr::{cvlr_assert, cvlr_assume};
 use cvlr_soroban_derive::rule;
-use soroban_sdk::{unwrap::UnwrapOptimized, Address, Env};
+use soroban_sdk::{Address, Env, unwrap::UnwrapOptimized};
 
 // Helpers for external functions
 make_callable!(backstop, execute_deposit, from: Address, pool_address: Address, amount: i128);

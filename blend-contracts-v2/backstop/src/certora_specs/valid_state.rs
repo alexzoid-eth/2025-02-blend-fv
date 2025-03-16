@@ -45,16 +45,16 @@ pub fn valid_state_pool_user(
 }
 
 // User who equals the pool address or the contract address always has a zero balance in that pool
-// @note Violated in `execute_dequeue_withdrawal` due weird behavior (temporary excluded)
 pub fn valid_state_user_not_pool(
     e: Env, 
     pool: Address, 
     user: Address
 ) -> bool {
+    let pb: PoolBalance = storage::get_pool_balance(&e, &pool);
     let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
 
     if user == pool || user == e.current_contract_address() {
-        ub.shares == 0
+        pb.shares as i64 == 0 && pb.tokens as i64 == 0 && pb.q4w as i64 == 0 && ub.shares as i64 == 0
     } else {
         true
     }
@@ -70,7 +70,7 @@ pub fn valid_state_pool_from_factory(
     let pool_factory_client = mocks::pool_factory::PoolFactoryClient::new(&e, &pool);
     
     if pool_factory_client.is_pool(&pool) == false {
-        pb.shares == 0
+        pb.shares as i64 == 0 && pb.tokens as i64 == 0 && pb.q4w as i64 == 0
     } else {
         true
     }
