@@ -217,7 +217,7 @@ pub fn set_backstop_token(e: &Env, backstop_token_id: &Address) {
 /********** User Shares **********/
 
 #[cfg(feature = "certora")]
-use crate::certora_specs::base::vec_one_q4w::vec_one_empty;
+use crate::certora_specs::mocks::vec_one_q4w::vec_one_empty;
 
 /// Fetch the balance's for a given user
 ///

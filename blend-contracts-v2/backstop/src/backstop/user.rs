@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[cfg(feature = "certora")] // @note changed
-use crate::certora_specs::base::vec_one_q4w::{VecOneQ4W, vec_one_empty};
+use crate::certora_specs::mocks::vec_one_q4w::{VecOneQ4W, vec_one_empty};
 
 /// A deposit that is queued for withdrawal
 #[derive(Clone)]

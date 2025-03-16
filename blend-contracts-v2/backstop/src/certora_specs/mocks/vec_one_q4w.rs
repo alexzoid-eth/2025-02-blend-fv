@@ -88,11 +88,11 @@ impl cvlr::nondet::Nondet for VecOneQ4W {
 #[macro_export]
 macro_rules! vec_one {
     ($env:expr $(,)?) => {
-        $crate::certora_specs::base::vec_one_q4w::VecOneQ4W::new($env)
+        $crate::certora_specs::mocks::vec_one_q4w::VecOneQ4W::new($env)
     };
     ($env:expr, $x:expr $(,)?) => {
         {
-            let mut vec = $crate::certora_specs::base::vec_one_q4w::VecOneQ4W::new($env);
+            let mut vec = $crate::certora_specs::mocks::vec_one_q4w::VecOneQ4W::new($env);
             vec.push_back($x);
             vec
         }

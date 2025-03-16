@@ -1,5 +1,4 @@
 pub(crate) mod log_state;
-pub(crate) mod vec_one_q4w;
 
 use soroban_sdk::Env;
 use cvlr::cvlr_assume;

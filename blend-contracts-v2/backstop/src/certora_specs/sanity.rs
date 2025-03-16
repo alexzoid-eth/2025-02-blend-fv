@@ -1,7 +1,7 @@
 use soroban_sdk::{Env, Address};
 use cvlr::cvlr_satisfy;
 
-pub fn valid_state_sanity(
+pub fn sanity(
     _e: &Env, 
     _pool: &Address, 
     _user: &Address, 
