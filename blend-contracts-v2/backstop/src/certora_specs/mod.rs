@@ -6,9 +6,14 @@ pub(crate) mod state_trans;
 
 use crate::backstop::{self, PoolBackstopData, PoolBalance, UserBalance};
 use crate::certora_specs::mocks::storage_ghost as storage;
-use crate::certora_specs::state_trans::state_trans_pb_shares_tokens_change_together;
-use crate::certora_specs::valid_state::valid_state_pool_user;
+use crate::certora_specs::base::{Call, log_state::log_state_details, clear_upper_bits};
+use crate::{init_verification, invariant_rule, make_callable, parametric_rule, pass_arg};
+use cvlr::{cvlr_assert, cvlr_assume};
+use cvlr_soroban_derive::rule;
+use soroban_sdk::{Address, Env, unwrap::UnwrapOptimized};
+use crate::certora_specs::sanity::sanity;
 use crate::certora_specs::valid_state::{
+    valid_state_pool_user,
     valid_state_nonnegative_pb_shares,
     valid_state_nonnegative_pb_tokens,
     valid_state_nonnegative_pb_q4w,
@@ -22,12 +27,11 @@ use crate::certora_specs::valid_state::{
     valid_state_user_not_pool,
     valid_state_pool_from_factory,
 };
-use crate::certora_specs::sanity::sanity;
-use crate::certora_specs::base::{Call, log_state::log_state_details, clear_upper_bits};
-use crate::{init_verification, invariant_rule, make_callable, parametric_rule, pass_arg};
-use cvlr::{cvlr_assert, cvlr_assume};
-use cvlr_soroban_derive::rule;
-use soroban_sdk::{Address, Env, unwrap::UnwrapOptimized};
+use crate::certora_specs::state_trans::{
+    state_trans_pb_shares_tokens_change_together,
+    state_trans_pb_shares_tokens_directional_change,
+    state_trans_q4w_balance_consistency,
+};
 
 // Helpers for external functions
 make_callable!(backstop, execute_deposit, from: Address, pool_address: Address, amount: i128);
@@ -59,3 +63,5 @@ invariant_rule!(valid_state_pool_from_factory);
 
 // State transition parametric rules
 parametric_rule!(state_trans_pb_shares_tokens_change_together);
+parametric_rule!(state_trans_pb_shares_tokens_directional_change);
+parametric_rule!(state_trans_q4w_balance_consistency);
