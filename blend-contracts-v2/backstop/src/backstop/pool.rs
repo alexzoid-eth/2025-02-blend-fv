@@ -4,7 +4,7 @@ use soroban_sdk::{contracttype, panic_with_error, unwrap::UnwrapOptimized, Addre
 #[cfg(feature = "certora")] // @note changed
 use crate::{
     constants::SCALAR_7,
-    dependencies::{CometClient, PoolFactoryClient},
+    dependencies::CometClient,
     errors::BackstopError,
     certora_specs::mocks::storage_ghost as storage,
 };
@@ -17,7 +17,7 @@ use crate::{
 };
 
 #[cfg(feature = "certora")]
-use crate::certora_specs::{self, mocks::{self, pool_factory::*}};
+use crate::certora_specs::mocks::{self, pool_factory::*};
 
 /// The pool's backstop data
 #[derive(Clone)]

@@ -91,11 +91,6 @@ pub fn get_usdc_token(_e: &Env) -> Address {
 }
 
 #[allow(dead_code)]
-pub fn get_pool_factory(_e: &Env) -> Address {
-    nondet_address()
-}
-
-#[allow(dead_code)]
 pub fn get_emitter(_e: &Env) -> Address {
     nondet_address()
 }

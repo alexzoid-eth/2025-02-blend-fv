@@ -1,3 +1,4 @@
+#[cfg(not(feature = "certora"))] // @note changed
 use cvlr_soroban::nondet_vec;
 use soroban_sdk::{contracttype, panic_with_error, vec, Env, Vec};
 

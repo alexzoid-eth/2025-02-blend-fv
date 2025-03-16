@@ -10,7 +10,7 @@ pub enum VecOneQ4W {
 }
 
 impl VecOneQ4W {
-    pub fn new(e: &Env) -> Self {
+    pub fn new(_e: &Env) -> Self {
         VecOneQ4W::Empty
     }
 
@@ -99,6 +99,6 @@ macro_rules! vec_one {
     };
 }
 
-pub fn vec_one_empty(e: &Env) -> VecOneQ4W {
+pub fn vec_one_empty(_e: &Env) -> VecOneQ4W {
     VecOneQ4W::Empty
 }

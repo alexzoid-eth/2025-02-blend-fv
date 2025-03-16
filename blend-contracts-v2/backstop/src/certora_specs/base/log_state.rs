@@ -4,16 +4,6 @@ use crate::certora_specs::mocks::storage_ghost as storage;
 
 // Log an i128 value by splitting it into parts that fit within i64 range
 
-pub fn log_i128(value: i128) {
-    let i128_lower_bits = (value.abs() & 0x7FFF_FFFF_FFFF_FFFF) as i64;
-    let i128_upper_bits = (value.abs() >> 63) as i64;
-    let i128_is_negative = value.is_negative();
-    
-    clog!(i128_lower_bits);
-    clog!(i128_upper_bits);
-    clog!(i128_is_negative);
-}
-
 pub fn log_input_amount(value: i128) {
     let input_amount_lower = (value.abs() & 0x7FFF_FFFF_FFFF_FFFF) as i64;
     let input_amount_upper = (value.abs() >> 63) as i64;
