@@ -28,9 +28,11 @@ use crate::certora_specs::valid_state::{
     valid_state_pool_from_factory,
 };
 use crate::certora_specs::state_trans::{
-    state_trans_pb_shares_tokens_change_together,
     state_trans_pb_shares_tokens_directional_change,
     state_trans_q4w_balance_consistency,
+    state_trans_user_shares_increase_consistency,
+    state_trans_user_shares_decrease_consistency,
+    state_trans_user_q4w_change_consistency,
 };
 
 // Helpers for external functions
@@ -62,6 +64,8 @@ invariant_rule!(valid_state_user_not_pool);
 invariant_rule!(valid_state_pool_from_factory);
 
 // State transition parametric rules
-parametric_rule!(state_trans_pb_shares_tokens_change_together);
 parametric_rule!(state_trans_pb_shares_tokens_directional_change);
 parametric_rule!(state_trans_q4w_balance_consistency);
+parametric_rule!(state_trans_user_shares_increase_consistency);
+parametric_rule!(state_trans_user_shares_decrease_consistency);
+parametric_rule!(state_trans_user_q4w_change_consistency);
