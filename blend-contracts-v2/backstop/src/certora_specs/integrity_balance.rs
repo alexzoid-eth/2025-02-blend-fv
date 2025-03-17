@@ -12,10 +12,9 @@ use crate::backstop::{PoolBalance, UserBalance,
 use cvlr_soroban_derive::rule;
 use crate::init_verification;
 use crate::certora_specs::valid_state::valid_state_pool_user;
-use crate::certora_specs::summaries::emissions::GHOST_EMISSION_POOL_BALANCE;
-use crate::certora_specs::summaries::emissions::GHOST_EMISSION_USER_BALANCE;
 use crate::certora_specs::base::clear_upper_bits;
 use crate::certora_specs::FV_MAX_Q4W_VEC_LEN;
+use crate::certora_specs::mocks::token_ghost;
 
 #[cfg(feature = "certora_storage_ghost")] 
 use crate::certora_specs::mocks::storage_ghost as storage;
@@ -23,7 +22,7 @@ use crate::certora_specs::mocks::storage_ghost as storage;
 use crate::storage;
 
 #[rule]
-pub fn integrity_execute_deposit(
+pub fn integrity_balance_deposit(
     e: &Env, 
     from: &Address, 
     pool_address: &Address, 
@@ -32,6 +31,10 @@ pub fn integrity_execute_deposit(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
+
+    // Initialize token operations ghost state
+    token_ghost::initialize_ghost_token_ops();
+    cvlr_assume!(token_ghost::get_last_token_op().is_none());
 
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
@@ -53,10 +56,6 @@ pub fn integrity_execute_deposit(
         0
     };
 
-    // Get emission state after execution
-    let emission_pb_after = unsafe { GHOST_EMISSION_POOL_BALANCE.get() };
-    let emission_ub_after = unsafe { GHOST_EMISSION_USER_BALANCE.get() };
-
     let ub_shares_change = after_ub.shares - before_ub.shares;
     let pb_shares_change = after_pb.shares - before_pb.shares;
     let pb_tokens_change = after_pb.tokens - before_pb.tokens;
@@ -69,15 +68,18 @@ pub fn integrity_execute_deposit(
     cvlr_assert!(pb_q4w_change == 0);                   // Pool Q4W should remain unchanged
     cvlr_assert!(ub_q4w_amount_change == 0);            // User's queued withdrawal amount should remain unchanged
     
-    // Check that emission state is updated correctly - compare each field individually
-    cvlr_assert!(emission_pb_after.shares == before_pb.shares); 
-    cvlr_assert!(emission_pb_after.tokens == before_pb.tokens);
-    cvlr_assert!(emission_pb_after.q4w == before_pb.q4w);     
-    cvlr_assert!(emission_ub_after.shares == before_ub.shares); 
+    // Check token transfer operation
+    let last_op = token_ghost::get_last_token_op();
+    cvlr_assert!(last_op.is_some());
+    let op = last_op.unwrap();
+    cvlr_assert!(op.op_type == token_ghost::TokenOpType::Transfer);
+    cvlr_assert!(op.from == *from);
+    cvlr_assert!(op.to == e.current_contract_address());
+    cvlr_assert!(op.amount == amount);
 }
 
 #[rule]
-pub fn integrity_execute_withdraw(
+pub fn integrity_balance_withdraw(
     e: &Env, 
     from: &Address, 
     pool_address: &Address, 
@@ -87,6 +89,10 @@ pub fn integrity_execute_withdraw(
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
 
+    // Initialize token operations ghost state
+    token_ghost::initialize_ghost_token_ops();
+    cvlr_assume!(token_ghost::get_last_token_op().is_none());
+
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
     let before_ub_q4w_amount = if before_ub.q4w.len() == 1 {
@@ -95,10 +101,6 @@ pub fn integrity_execute_withdraw(
     } else {
         0
     };
-
-    // Assume emission state is uninitialized before execution
-    cvlr_assume!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
-    cvlr_assume!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     let ret = execute_withdraw(e, from, pool_address, amount);
 
@@ -123,13 +125,18 @@ pub fn integrity_execute_withdraw(
     cvlr_assert!(pb_tokens_change == -ret);         // Pool tokens should decrease by returned amount
     cvlr_assert!(ub_shares_change == 0);            // User shares should not change
     
-    // Check emission state is still uninitialized after execution
-    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
-    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
+    // Check token transfer operation
+    let last_op = token_ghost::get_last_token_op();
+    cvlr_assert!(last_op.is_some());
+    let op = last_op.unwrap();
+    cvlr_assert!(op.op_type == token_ghost::TokenOpType::Transfer);
+    cvlr_assert!(op.from == e.current_contract_address());
+    cvlr_assert!(op.to == *from);
+    cvlr_assert!(op.amount == ret);
 }
 
 #[rule]
-pub fn integrity_execute_queue_withdrawal(
+pub fn integrity_balance_queue_withdrawal(
     e: &Env, 
     from: &Address, 
     pool_address: &Address, 
@@ -138,6 +145,10 @@ pub fn integrity_execute_queue_withdrawal(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
+
+    // Initialize token operations ghost state
+    token_ghost::initialize_ghost_token_ops();
+    cvlr_assume!(token_ghost::get_last_token_op().is_none());
 
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
@@ -159,10 +170,6 @@ pub fn integrity_execute_queue_withdrawal(
         0
     };
 
-    // Get emission state after execution
-    let emission_pb_after = unsafe { GHOST_EMISSION_POOL_BALANCE.get() };
-    let emission_ub_after = unsafe { GHOST_EMISSION_USER_BALANCE.get() };
-
     let ub_shares_change = after_ub.shares - before_ub.shares;
     let pb_shares_change = after_pb.shares - before_pb.shares;
     let pb_tokens_change = after_pb.tokens - before_pb.tokens;
@@ -177,15 +184,12 @@ pub fn integrity_execute_queue_withdrawal(
     cvlr_assert!(ret.amount == amount);             // Returned Q4W should have correct amount
     cvlr_assert!(ret.exp > e.ledger().timestamp()); // Expiration should be in the future
     
-    // Check that emission state is updated correctly - compare each field individually
-    cvlr_assert!(emission_pb_after.shares == before_pb.shares);  
-    cvlr_assert!(emission_pb_after.tokens == before_pb.tokens); 
-    cvlr_assert!(emission_pb_after.q4w == before_pb.q4w);  
-    cvlr_assert!(emission_ub_after.shares == before_ub.shares); 
+    // Verify no token transfer occurred
+    cvlr_assert!(token_ghost::get_last_token_op().is_none());
 }
 
 #[rule]
-pub fn integrity_execute_dequeue_withdrawal(
+pub fn integrity_balance_dequeue_withdrawal(
     e: &Env, 
     from: &Address, 
     pool_address: &Address, 
@@ -194,6 +198,10 @@ pub fn integrity_execute_dequeue_withdrawal(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
+
+    // Initialize token operations ghost state
+    token_ghost::initialize_ghost_token_ops();
+    cvlr_assume!(token_ghost::get_last_token_op().is_none());
 
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
@@ -215,10 +223,6 @@ pub fn integrity_execute_dequeue_withdrawal(
         0
     };
 
-    // Get emission state after execution
-    let emission_pb_after = unsafe { GHOST_EMISSION_POOL_BALANCE.get() };
-    let emission_ub_after = unsafe { GHOST_EMISSION_USER_BALANCE.get() };
-
     let ub_shares_change = after_ub.shares - before_ub.shares;
     let pb_shares_change = after_pb.shares - before_pb.shares;
     let pb_tokens_change = after_pb.tokens - before_pb.tokens;
@@ -231,15 +235,12 @@ pub fn integrity_execute_dequeue_withdrawal(
     cvlr_assert!(pb_shares_change == 0);            // Pool shares should not change
     cvlr_assert!(pb_tokens_change == 0);            // Pool tokens should not change
     
-    // Check that emission state is updated correctly
-    cvlr_assert!(emission_pb_after.shares == before_pb.shares);  
-    cvlr_assert!(emission_pb_after.tokens == before_pb.tokens); 
-    cvlr_assert!(emission_pb_after.q4w == before_pb.q4w);  
-    cvlr_assert!(emission_ub_after.shares == before_ub.shares); 
+    // Verify no token transfer occurred
+    cvlr_assert!(token_ghost::get_last_token_op().is_none());
 }
 
 #[rule]
-pub fn integrity_execute_donate(
+pub fn integrity_balance_donate(
     e: &Env, 
     from: &Address, 
     pool_address: &Address, 
@@ -249,6 +250,10 @@ pub fn integrity_execute_donate(
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
 
+    // Initialize token operations ghost state
+    token_ghost::initialize_ghost_token_ops();
+    cvlr_assume!(token_ghost::get_last_token_op().is_none());
+
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
     let before_ub_q4w_amount = if before_ub.q4w.len() == 1 {
@@ -257,10 +262,6 @@ pub fn integrity_execute_donate(
     } else {
         0
     };
-
-    // Assume emission state is uninitialized before execution
-    cvlr_assume!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
-    cvlr_assume!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     execute_donate(e, from, pool_address, amount);
 
@@ -285,13 +286,18 @@ pub fn integrity_execute_donate(
     cvlr_assert!(ub_shares_change == 0);        // User shares should not change
     cvlr_assert!(ub_q4w_amount_change == 0);    // User Q4W should not change
     
-    // Check emission state is still uninitialized after execution
-    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
-    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
+    // Check token transfer operation
+    let last_op = token_ghost::get_last_token_op();
+    cvlr_assert!(last_op.is_some());
+    let op = last_op.unwrap();
+    cvlr_assert!(op.op_type == token_ghost::TokenOpType::TransferFrom);
+    cvlr_assert!(op.from == *from);
+    cvlr_assert!(op.to == e.current_contract_address());
+    cvlr_assert!(op.amount == amount);
 }
 
 #[rule]
-pub fn integrity_execute_draw(
+pub fn integrity_balance_draw(
     e: &Env, 
     pool_address: &Address, 
     amount: i128,
@@ -301,6 +307,10 @@ pub fn integrity_execute_draw(
 ) {
     init_verification!(e, pb, ub, pool_address, to, amount, FV_MAX_Q4W_VEC_LEN);
 
+    // Initialize token operations ghost state
+    token_ghost::initialize_ghost_token_ops();
+    cvlr_assume!(token_ghost::get_last_token_op().is_none());
+
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, to);
     let before_ub_q4w_amount = if before_ub.q4w.len() == 1 {
@@ -309,10 +319,6 @@ pub fn integrity_execute_draw(
     } else {
         0
     };
-
-    // Assume emission state is uninitialized before execution
-    cvlr_assume!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
-    cvlr_assume!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     execute_draw(e, pool_address, amount, to);
 
@@ -337,19 +343,28 @@ pub fn integrity_execute_draw(
     cvlr_assert!(ub_shares_change == 0);        // User shares should not change
     cvlr_assert!(ub_q4w_amount_change == 0);    // User Q4W should not change
     
-    // Check emission state is still uninitialized after execution
-    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
-    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
+    // Check token transfer operation
+    let last_op = token_ghost::get_last_token_op();
+    cvlr_assert!(last_op.is_some());
+    let op = last_op.unwrap();
+    cvlr_assert!(op.op_type == token_ghost::TokenOpType::Transfer);
+    cvlr_assert!(op.from == e.current_contract_address());
+    cvlr_assert!(op.to == *to);
+    cvlr_assert!(op.amount == amount);
 }
 
 #[rule]
-pub fn integrity_load_pool_backstop_data(
+pub fn integrity_balance_load_pool_backstop_data(
     e: &Env, 
     address: &Address,
     pb: PoolBalance,
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, address, address, 0, FV_MAX_Q4W_VEC_LEN);
+    
+    // Initialize token operations ghost state
+    token_ghost::initialize_ghost_token_ops();
+    cvlr_assume!(token_ghost::get_last_token_op().is_none());
     
     let before_pb: PoolBalance = storage::get_pool_balance(&e, address);
     let before_ub: UserBalance = storage::get_user_balance(&e, address, address);
@@ -365,11 +380,14 @@ pub fn integrity_load_pool_backstop_data(
     cvlr_assert!(before_pb.q4w == after_pb.q4w);
     cvlr_assert!(before_ub.shares == after_ub.shares);
         
-    // Verify return values
+    // Partially verify return values
     cvlr_assert!(before_pb.tokens == pool_backstop_data.tokens);
     if before_pb.shares > 0 {
         cvlr_assert!(pool_backstop_data.q4w_pct != 0);
     } else {
         cvlr_assert!(pool_backstop_data.q4w_pct == 0);
     }
+    
+    // Verify no token transfer occurred
+    cvlr_assert!(token_ghost::get_last_token_op().is_none());
 }

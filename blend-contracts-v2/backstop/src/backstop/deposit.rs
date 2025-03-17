@@ -29,8 +29,17 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
 
     emissions::update_emissions(e, pool_address, &pool_balance, from, &user_balance);
 
-    let backstop_token_client = TokenClient::new(e, &storage::get_backstop_token(e));
-    backstop_token_client.transfer(from, &e.current_contract_address(), &amount);
+    #[cfg(feature = "certora_token_mock")] // @note changed
+    {
+        let backstop_token_addr = storage::get_backstop_token(e);
+        let backstop_token_client = TokenClient::new(e, &backstop_token_addr);
+        backstop_token_client.transfer(from, &e.current_contract_address(), &amount);        
+    }
+    #[cfg(not(feature = "certora_token_mock"))]
+    {
+        let backstop_token_client = TokenClient::new(e, &storage::get_backstop_token(e));
+        backstop_token_client.transfer(from, &e.current_contract_address(), &amount);        
+    }
 
     let to_mint = pool_balance.convert_to_shares(amount);
     if to_mint <= 0 {

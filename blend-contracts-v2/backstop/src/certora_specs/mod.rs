@@ -5,7 +5,9 @@ pub(crate) mod sanity;
 pub(crate) mod valid_state;
 pub(crate) mod state_trans;
 pub(crate) mod high_level;
-pub(crate) mod integrity;
+pub(crate) mod integrity_balance;
+pub(crate) mod integrity_emission;
+pub(crate) mod integrity_token;
 pub(crate) mod isolation;
 
 use crate::backstop::{self, PoolBackstopData, PoolBalance, UserBalance};

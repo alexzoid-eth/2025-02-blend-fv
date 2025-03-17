@@ -77,8 +77,17 @@ pub fn execute_withdraw(e: &Env, from: &Address, pool_address: &Address, amount:
     storage::set_user_balance(e, pool_address, from, &user_balance);
     storage::set_pool_balance(e, pool_address, &pool_balance);
 
-    let backstop_token_client = TokenClient::new(e, &storage::get_backstop_token(e));
-    backstop_token_client.transfer(&e.current_contract_address(), from, &to_return);
+    #[cfg(feature = "certora_token_mock")] // @note changed
+    {
+        let backstop_token_addr = storage::get_backstop_token(e);
+        let backstop_token_client = TokenClient::new(e, &backstop_token_addr);
+        backstop_token_client.transfer(&e.current_contract_address(), from, &to_return);    
+    }
+    #[cfg(not(feature = "certora_token_mock"))]
+    {
+        let backstop_token_client = TokenClient::new(e, &storage::get_backstop_token(e));
+        backstop_token_client.transfer(&e.current_contract_address(), from, &to_return);    
+    }
 
     to_return
 }
