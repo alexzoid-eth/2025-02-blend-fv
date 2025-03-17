@@ -50,54 +50,56 @@ pub fn clear_upper_bits(value: i128) {
 macro_rules! init_verification {
     ($e:expr, $pb:expr, $ub:expr, $pool:expr, $user:expr, $amount:expr, $q4w_len:expr) => {
         
-        // Initialize ghost storage from rule parameters
         #[cfg(feature = "certora_storage_ghost")] 
-        storage::initialize_ghost_maps($pb.clone(), $ub.clone());
+        {
+            // Initialize ghost storage from rule parameters
+            storage::initialize_ghost_maps($pb.clone(), $ub.clone());
 
-        // Explicitly assume that reading from the ghost maps returns the expected values
-        let read_pb = storage::get_pool_balance(&$e, &$pool);
-        let read_ub = storage::get_user_balance(&$e, &$pool, &$user);
-        cvlr_assume!(read_pb.shares == $pb.shares);
-        cvlr_assume!(read_pb.tokens == $pb.tokens);
-        cvlr_assume!(read_pb.q4w == $pb.q4w);
-        cvlr_assume!(read_ub.shares == $ub.shares);
-        cvlr_assume!(read_ub.q4w.len() == $ub.q4w.len());
-        cvlr_assume!(read_ub.q4w.len() <= $q4w_len);
+            // Explicitly assume that reading from the ghost maps returns the expected values
+            let read_pb = storage::get_pool_balance(&$e, &$pool);
+            let read_ub = storage::get_user_balance(&$e, &$pool, &$user);
+            cvlr_assume!(read_pb.shares == $pb.shares);
+            cvlr_assume!(read_pb.tokens == $pb.tokens);
+            cvlr_assume!(read_pb.q4w == $pb.q4w);
+            cvlr_assume!(read_ub.shares == $ub.shares);
+            cvlr_assume!(read_ub.q4w.len() == $ub.q4w.len());
+            cvlr_assume!(read_ub.q4w.len() <= $q4w_len);
 
-        // Bound inputs as i32
-        cvlr_assume!($amount as i64 >= i32::MIN as i64 
-            && $amount as i64 <= i32::MAX as i64);
-        cvlr_assume!(read_pb.shares as i64 >= i32::MIN as i64 
-            && read_pb.shares as i64 <= i32::MAX as i64);
-        cvlr_assume!(read_pb.tokens as i64 >= i32::MIN as i64 
-            && read_pb.tokens as i64 <= i32::MAX as i64);
-        cvlr_assume!(read_pb.q4w as i64 >= i32::MIN as i64 
-            && read_pb.q4w as i64 <= i32::MAX as i64);
-        cvlr_assume!(read_ub.shares as i64 >= i32::MIN as i64 
-            && read_ub.shares as i64 <= i32::MAX as i64);
-        if read_ub.q4w.len() != 0 {
-            let entry0 = read_ub.q4w.get(0).unwrap_optimized();
-            cvlr_assume!(entry0.amount as i64 >= i32::MIN as i64 
-                && entry0.amount as i64 <= i32::MAX as i64);
-            if read_ub.q4w.len() == 2 {
-                let entry1 = read_ub.q4w.get(1).unwrap_optimized();
-                cvlr_assume!(entry1.amount as i64 >= i32::MIN as i64 
-                    && entry1.amount as i64 <= i32::MAX as i64);    
+            // Bound inputs as i32
+            cvlr_assume!($amount as i64 >= i32::MIN as i64 
+                && $amount as i64 <= i32::MAX as i64);
+            cvlr_assume!(read_pb.shares as i64 >= i32::MIN as i64 
+                && read_pb.shares as i64 <= i32::MAX as i64);
+            cvlr_assume!(read_pb.tokens as i64 >= i32::MIN as i64 
+                && read_pb.tokens as i64 <= i32::MAX as i64);
+            cvlr_assume!(read_pb.q4w as i64 >= i32::MIN as i64 
+                && read_pb.q4w as i64 <= i32::MAX as i64);
+            cvlr_assume!(read_ub.shares as i64 >= i32::MIN as i64 
+                && read_ub.shares as i64 <= i32::MAX as i64);
+            if read_ub.q4w.len() != 0 {
+                let entry0 = read_ub.q4w.get(0).unwrap_optimized();
+                cvlr_assume!(entry0.amount as i64 >= i32::MIN as i64 
+                    && entry0.amount as i64 <= i32::MAX as i64);
+                if read_ub.q4w.len() == 2 {
+                    let entry1 = read_ub.q4w.get(1).unwrap_optimized();
+                    cvlr_assume!(entry1.amount as i64 >= i32::MIN as i64 
+                        && entry1.amount as i64 <= i32::MAX as i64);    
+                }
             }
-        }
 
-        // @note helps in i128 comparison problem
-        clear_upper_bits($amount);
-        clear_upper_bits(read_pb.shares);
-        clear_upper_bits(read_pb.tokens);
-        clear_upper_bits(read_pb.q4w);
-        clear_upper_bits(read_ub.shares);    
-        if read_ub.q4w.len() != 0 {
-            let entry0 = read_ub.q4w.get(0).unwrap_optimized();
-            clear_upper_bits(entry0.amount);
-            if read_ub.q4w.len() == 2 {
-                let entry1 = read_ub.q4w.get(1).unwrap_optimized();
-                clear_upper_bits(entry1.amount);    
+            // @note helps in i128 comparison problem
+            clear_upper_bits($amount);
+            clear_upper_bits(read_pb.shares);
+            clear_upper_bits(read_pb.tokens);
+            clear_upper_bits(read_pb.q4w);
+            clear_upper_bits(read_ub.shares);    
+            if read_ub.q4w.len() != 0 {
+                let entry0 = read_ub.q4w.get(0).unwrap_optimized();
+                clear_upper_bits(entry0.amount);
+                if read_ub.q4w.len() == 2 {
+                    let entry1 = read_ub.q4w.get(1).unwrap_optimized();
+                    clear_upper_bits(entry1.amount);    
+                }
             }
         }
 

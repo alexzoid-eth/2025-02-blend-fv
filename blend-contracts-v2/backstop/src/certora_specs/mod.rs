@@ -5,6 +5,7 @@ pub(crate) mod valid_state;
 pub(crate) mod state_trans;
 pub(crate) mod high_level;
 pub(crate) mod integrity;
+pub(crate) mod isolation;
 
 use crate::backstop::{self, PoolBackstopData, PoolBalance, UserBalance};
 use crate::certora_specs::base::{Call, log_state::log_state_details, clear_upper_bits};
@@ -34,6 +35,10 @@ use crate::certora_specs::state_trans::{
     state_trans_ub_shares_increase_consistency,
     state_trans_ub_shares_decrease_consistency,
     state_trans_ub_q4w_amount_consistency,
+};
+use crate::certora_specs::isolation::{
+    isolation_pool,
+    isolation_user,
 };
 #[cfg(feature = "certora_storage_ghost")] 
 use crate::certora_specs::mocks::storage_ghost as storage;
@@ -76,3 +81,7 @@ parametric_rule!(state_trans_pb_q4w_consistency);
 parametric_rule!(state_trans_ub_shares_increase_consistency);
 parametric_rule!(state_trans_ub_shares_decrease_consistency);
 parametric_rule!(state_trans_ub_q4w_amount_consistency);
+
+// Parametric rules for isolation test
+parametric_rule!(isolation_pool);
+parametric_rule!(isolation_user);
