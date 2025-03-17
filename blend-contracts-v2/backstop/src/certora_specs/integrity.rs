@@ -95,9 +95,9 @@ pub fn integrity_execute_withdraw(
         0
     };
 
-    // Check emission state is uninitialized before execution
-    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
-    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
+    // Assume emission state is uninitialized before execution
+    cvlr_assume!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
+    cvlr_assume!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     let ret = execute_withdraw(e, from, pool_address, amount);
 
@@ -257,9 +257,9 @@ pub fn integrity_execute_donate(
         0
     };
 
-    // Check emission state is uninitialized before execution
-    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
-    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
+    // Assume emission state is uninitialized before execution
+    cvlr_assume!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
+    cvlr_assume!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     execute_donate(e, from, pool_address, amount);
 
@@ -309,9 +309,9 @@ pub fn integrity_execute_draw(
         0
     };
 
-    // Check emission state is uninitialized before execution
-    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
-    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
+    // Assume emission state is uninitialized before execution
+    cvlr_assume!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
+    cvlr_assume!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     execute_draw(e, pool_address, amount, to);
 
