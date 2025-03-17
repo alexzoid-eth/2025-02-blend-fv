@@ -17,11 +17,10 @@ use crate::certora_specs::mocks::token_ghost;
 use crate::certora_specs::mocks::token_ghost::TokenOpType;
 
 #[cfg(feature = "certora_storage_ghost")] 
-use crate::certora_specs::mocks::storage_ghost as storage;
+use crate::certora_specs::summaries::storage;
 #[cfg(not(feature = "certora_storage_ghost"))]
 use crate::storage;
 
-// Verify that execute_deposit transfers the correct amount of tokens
 #[rule]
 pub fn integrity_token_deposit(
     e: &Env, 
@@ -38,7 +37,6 @@ pub fn integrity_token_deposit(
     
     execute_deposit(e, from, pool_address, amount);
     
-    // Get the last token operation after execution
     let last_op = token_ghost::get_last_token_op();
     cvlr_assert!(last_op.is_some());
     
@@ -50,7 +48,6 @@ pub fn integrity_token_deposit(
     cvlr_assert!(op.amount == amount);
 }
 
-// Verify that execute_withdraw transfers the correct amount of tokens
 #[rule]
 pub fn integrity_token_withdraw(
     e: &Env, 
@@ -79,7 +76,6 @@ pub fn integrity_token_withdraw(
     cvlr_assert!(op.amount == to_return);
 }
 
-// Verify that execute_donate uses transfer_from with correct parameters
 #[rule]
 pub fn integrity_token_donate(
     e: &Env, 
@@ -108,7 +104,6 @@ pub fn integrity_token_donate(
     cvlr_assert!(op.amount == amount);
 }
 
-// Verify that execute_draw transfers the correct amount of tokens
 #[rule]
 pub fn integrity_token_draw(
     e: &Env, 
@@ -138,9 +133,8 @@ pub fn integrity_token_draw(
     cvlr_assert!(op.amount == amount);
 }
 
-// Verify that queue_withdrawal does not transfer any tokens
 #[rule]
-pub fn integrity_no_token_queue_withdrawal(
+pub fn integrity_token_queue_withdrawal(
     e: &Env, 
     from: &Address, 
     pool_address: &Address, 
@@ -150,7 +144,6 @@ pub fn integrity_no_token_queue_withdrawal(
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
     
-    // Initialize token operations ghost state
     token_ghost::initialize_ghost_token_ops();
     cvlr_assume!(token_ghost::get_last_token_op().is_none());
     
@@ -162,7 +155,7 @@ pub fn integrity_no_token_queue_withdrawal(
 
 // Verify that dequeue_withdrawal does not transfer any tokens
 #[rule]
-pub fn integrity_no_token_dequeue_withdrawal(
+pub fn integrity_token_dequeue_withdrawal(
     e: &Env, 
     from: &Address, 
     pool_address: &Address, 
@@ -172,7 +165,6 @@ pub fn integrity_no_token_dequeue_withdrawal(
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
     
-    // Initialize token operations ghost state
     token_ghost::initialize_ghost_token_ops();
     cvlr_assume!(token_ghost::get_last_token_op().is_none());
     

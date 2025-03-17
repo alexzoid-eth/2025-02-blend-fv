@@ -1,6 +1,6 @@
 use soroban_sdk::{Env, Address, unwrap::UnwrapOptimized};
 use cvlr::clog;
-use crate::certora_specs::mocks::storage_ghost as storage;
+use crate::certora_specs::summaries::storage;
 
 // Log an i128 value by splitting it into parts that fit within i64 range
 

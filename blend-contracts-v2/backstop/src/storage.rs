@@ -216,8 +216,8 @@ pub fn set_backstop_token(e: &Env, backstop_token_id: &Address) {
 
 /********** User Shares **********/
 
-#[cfg(feature = "certora_vec_one_q4w")]
-use crate::certora_specs::mocks::vec_one_q4w::vec_one_empty;
+#[cfg(feature = "certora_vec_q4w")]
+use crate::certora_specs::summaries::vec_q4w::vec_q4w_empty;
 
 /// Fetch the balance's for a given user
 ///
@@ -229,7 +229,7 @@ pub fn get_user_balance(e: &Env, pool: &Address, user: &Address) -> UserBalance 
         pool: pool.clone(),
         user: user.clone(),
     });
-    #[cfg(not(feature = "certora_vec_one_q4w"))] // @note changed
+    #[cfg(not(feature = "certora_vec_q4w"))] // @note changed
     {
         get_persistent_default(
             e,
@@ -243,14 +243,14 @@ pub fn get_user_balance(e: &Env, pool: &Address, user: &Address) -> UserBalance 
         )
     }
     
-    #[cfg(feature = "certora_vec_one_q4w")]
+    #[cfg(feature = "certora_vec_q4w")]
     {
         get_persistent_default(
             e,
             &key,
             || UserBalance {
                 shares: 0,
-                q4w: vec_one_empty(e),
+                q4w: vec_q4w_empty(e),
             },
             LEDGER_THRESHOLD_USER,
             LEDGER_BUMP_USER,

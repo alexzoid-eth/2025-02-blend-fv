@@ -6,7 +6,7 @@ use crate::{
     constants::SCALAR_7,
     dependencies::CometClient,
     errors::BackstopError,
-    certora_specs::mocks::storage_ghost as storage,
+    certora_specs::summaries::storage,
 };
 #[cfg(not(feature = "certora_storage_ghost"))]
 use crate::{

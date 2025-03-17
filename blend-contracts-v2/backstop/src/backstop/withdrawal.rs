@@ -1,5 +1,5 @@
 #[cfg(feature = "certora_storage_ghost")] // @note changed
-use crate::{contract::require_nonnegative, certora_specs::mocks::storage_ghost as storage, BackstopError};
+use crate::{contract::require_nonnegative, certora_specs::summaries::storage, BackstopError};
 #[cfg(not(feature = "certora_storage_ghost"))]
 use crate::{contract::require_nonnegative, storage, BackstopError};
 

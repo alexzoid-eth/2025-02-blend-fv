@@ -4,7 +4,7 @@ use soroban_sdk::{Address, Env, unwrap::UnwrapOptimized};
 use crate::constants::Q4W_LOCK_TIME;
 
 #[cfg(feature = "certora_storage_ghost")] 
-use crate::certora_specs::mocks::storage_ghost as storage;
+use crate::certora_specs::summaries::storage;
 #[cfg(not(feature = "certora_storage_ghost"))]
 use crate::storage;
 

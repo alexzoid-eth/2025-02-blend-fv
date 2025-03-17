@@ -13,20 +13,17 @@ use crate::certora_specs::summaries::emissions::{
 };
 
 #[cfg(feature = "certora_storage_ghost")] 
-use crate::certora_specs::mocks::storage_ghost as storage;
+use crate::certora_specs::summaries::storage;
 #[cfg(not(feature = "certora_storage_ghost"))]
 use crate::storage;
 
-// Helper function to check emission update properties
 fn verify_emission_state(
     before_pb: &PoolBalance,
     before_ub: &UserBalance
 ) {
-    // Get emission state from ghost
     let emission_pb = unsafe { GHOST_EMISSION_POOL_BALANCE.get() };
     let emission_ub = unsafe { GHOST_EMISSION_USER_BALANCE.get() };
     
-    // Check that emission state matches input state
     cvlr_assert!(emission_pb.shares == before_pb.shares);
     cvlr_assert!(emission_pb.tokens == before_pb.tokens);
     cvlr_assert!(emission_pb.q4w == before_pb.q4w);
@@ -49,7 +46,6 @@ pub fn integrity_emission_deposit(
         
     crate::backstop::execute_deposit(e, from, pool_address, amount);
     
-    // Verify correct emission update
     verify_emission_state(&before_pb, &before_ub);
 }
 
@@ -64,13 +60,11 @@ pub fn integrity_emission_withdraw(
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
 
-    // Assume emission state is uninitialized before execution
     cvlr_assume!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
     cvlr_assume!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     crate::backstop::execute_withdraw(e, from, pool_address, amount);
     
-    // Check emission state is still uninitialized after execution
     cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
     cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 }
@@ -91,7 +85,6 @@ pub fn integrity_emission_queue_withdrawal(
         
     crate::backstop::execute_queue_withdrawal(e, from, pool_address, amount);
     
-    // Verify correct emission update
     verify_emission_state(&before_pb, &before_ub);
 }
 
@@ -111,7 +104,6 @@ pub fn integrity_emission_dequeue_withdrawal(
         
     crate::backstop::execute_dequeue_withdrawal(e, from, pool_address, amount);
     
-    // Verify correct emission update
     verify_emission_state(&before_pb, &before_ub);
 }
 
@@ -126,13 +118,11 @@ pub fn integrity_emission_donate(
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
 
-    // Assume emission state is uninitialized before execution
     cvlr_assume!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
     cvlr_assume!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     crate::backstop::execute_donate(e, from, pool_address, amount);
     
-    // Check emission state is still uninitialized after execution
     cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
     cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 }
@@ -148,13 +138,11 @@ pub fn integrity_emission_draw(
 ) {
     init_verification!(e, pb, ub, pool_address, to, amount, FV_MAX_Q4W_VEC_LEN);
 
-    // Assume emission state is uninitialized before execution
     cvlr_assume!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
     cvlr_assume!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     crate::backstop::execute_draw(e, pool_address, amount, to);
     
-    // Check emission state is still uninitialized after execution
     cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
     cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 }

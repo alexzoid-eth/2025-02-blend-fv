@@ -44,7 +44,7 @@ use crate::certora_specs::isolation::{
     isolation_user,
 };
 #[cfg(feature = "certora_storage_ghost")] 
-use crate::certora_specs::mocks::storage_ghost as storage;
+use crate::certora_specs::summaries::storage;
 #[cfg(not(feature = "certora_storage_ghost"))]
 use crate::storage;
 

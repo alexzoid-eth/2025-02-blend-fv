@@ -14,10 +14,9 @@ use crate::init_verification;
 use crate::certora_specs::valid_state::valid_state_pool_user;
 use crate::certora_specs::base::clear_upper_bits;
 use crate::certora_specs::FV_MAX_Q4W_VEC_LEN;
-use crate::certora_specs::mocks::token_ghost;
 
 #[cfg(feature = "certora_storage_ghost")] 
-use crate::certora_specs::mocks::storage_ghost as storage;
+use crate::certora_specs::summaries::storage;
 #[cfg(not(feature = "certora_storage_ghost"))]
 use crate::storage;
 
@@ -31,10 +30,6 @@ pub fn integrity_balance_deposit(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
-
-    // Initialize token operations ghost state
-    token_ghost::initialize_ghost_token_ops();
-    cvlr_assume!(token_ghost::get_last_token_op().is_none());
 
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
@@ -67,15 +62,6 @@ pub fn integrity_balance_deposit(
     cvlr_assert!(pb_tokens_change > 0);                 // Pool tokens should increase as tokens are deposited
     cvlr_assert!(pb_q4w_change == 0);                   // Pool Q4W should remain unchanged
     cvlr_assert!(ub_q4w_amount_change == 0);            // User's queued withdrawal amount should remain unchanged
-    
-    // Check token transfer operation
-    let last_op = token_ghost::get_last_token_op();
-    cvlr_assert!(last_op.is_some());
-    let op = last_op.unwrap();
-    cvlr_assert!(op.op_type == token_ghost::TokenOpType::Transfer);
-    cvlr_assert!(op.from == *from);
-    cvlr_assert!(op.to == e.current_contract_address());
-    cvlr_assert!(op.amount == amount);
 }
 
 #[rule]
@@ -88,10 +74,6 @@ pub fn integrity_balance_withdraw(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
-
-    // Initialize token operations ghost state
-    token_ghost::initialize_ghost_token_ops();
-    cvlr_assume!(token_ghost::get_last_token_op().is_none());
 
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
@@ -124,15 +106,6 @@ pub fn integrity_balance_withdraw(
     cvlr_assert!(pb_shares_change == -amount);      // Pool shares should decrease by amount
     cvlr_assert!(pb_tokens_change == -ret);         // Pool tokens should decrease by returned amount
     cvlr_assert!(ub_shares_change == 0);            // User shares should not change
-    
-    // Check token transfer operation
-    let last_op = token_ghost::get_last_token_op();
-    cvlr_assert!(last_op.is_some());
-    let op = last_op.unwrap();
-    cvlr_assert!(op.op_type == token_ghost::TokenOpType::Transfer);
-    cvlr_assert!(op.from == e.current_contract_address());
-    cvlr_assert!(op.to == *from);
-    cvlr_assert!(op.amount == ret);
 }
 
 #[rule]
@@ -145,10 +118,6 @@ pub fn integrity_balance_queue_withdrawal(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
-
-    // Initialize token operations ghost state
-    token_ghost::initialize_ghost_token_ops();
-    cvlr_assume!(token_ghost::get_last_token_op().is_none());
 
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
@@ -183,9 +152,6 @@ pub fn integrity_balance_queue_withdrawal(
     cvlr_assert!(pb_tokens_change == 0);            // Pool tokens should not change
     cvlr_assert!(ret.amount == amount);             // Returned Q4W should have correct amount
     cvlr_assert!(ret.exp > e.ledger().timestamp()); // Expiration should be in the future
-    
-    // Verify no token transfer occurred
-    cvlr_assert!(token_ghost::get_last_token_op().is_none());
 }
 
 #[rule]
@@ -198,10 +164,6 @@ pub fn integrity_balance_dequeue_withdrawal(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
-
-    // Initialize token operations ghost state
-    token_ghost::initialize_ghost_token_ops();
-    cvlr_assume!(token_ghost::get_last_token_op().is_none());
 
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
@@ -234,9 +196,6 @@ pub fn integrity_balance_dequeue_withdrawal(
     cvlr_assert!(pb_q4w_change == -amount);         // Pool Q4W should decrease by amount
     cvlr_assert!(pb_shares_change == 0);            // Pool shares should not change
     cvlr_assert!(pb_tokens_change == 0);            // Pool tokens should not change
-    
-    // Verify no token transfer occurred
-    cvlr_assert!(token_ghost::get_last_token_op().is_none());
 }
 
 #[rule]
@@ -249,10 +208,6 @@ pub fn integrity_balance_donate(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
-
-    // Initialize token operations ghost state
-    token_ghost::initialize_ghost_token_ops();
-    cvlr_assume!(token_ghost::get_last_token_op().is_none());
 
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, from);
@@ -285,15 +240,6 @@ pub fn integrity_balance_donate(
     cvlr_assert!(pb_q4w_change == 0);           // Pool Q4W should not change
     cvlr_assert!(ub_shares_change == 0);        // User shares should not change
     cvlr_assert!(ub_q4w_amount_change == 0);    // User Q4W should not change
-    
-    // Check token transfer operation
-    let last_op = token_ghost::get_last_token_op();
-    cvlr_assert!(last_op.is_some());
-    let op = last_op.unwrap();
-    cvlr_assert!(op.op_type == token_ghost::TokenOpType::TransferFrom);
-    cvlr_assert!(op.from == *from);
-    cvlr_assert!(op.to == e.current_contract_address());
-    cvlr_assert!(op.amount == amount);
 }
 
 #[rule]
@@ -306,10 +252,6 @@ pub fn integrity_balance_draw(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, pool_address, to, amount, FV_MAX_Q4W_VEC_LEN);
-
-    // Initialize token operations ghost state
-    token_ghost::initialize_ghost_token_ops();
-    cvlr_assume!(token_ghost::get_last_token_op().is_none());
 
     let before_pb: PoolBalance = storage::get_pool_balance(&e, pool_address);
     let before_ub: UserBalance = storage::get_user_balance(&e, pool_address, to);
@@ -342,15 +284,6 @@ pub fn integrity_balance_draw(
     cvlr_assert!(pb_q4w_change == 0);           // Pool Q4W should not change
     cvlr_assert!(ub_shares_change == 0);        // User shares should not change
     cvlr_assert!(ub_q4w_amount_change == 0);    // User Q4W should not change
-    
-    // Check token transfer operation
-    let last_op = token_ghost::get_last_token_op();
-    cvlr_assert!(last_op.is_some());
-    let op = last_op.unwrap();
-    cvlr_assert!(op.op_type == token_ghost::TokenOpType::Transfer);
-    cvlr_assert!(op.from == e.current_contract_address());
-    cvlr_assert!(op.to == *to);
-    cvlr_assert!(op.amount == amount);
 }
 
 #[rule]
@@ -361,11 +294,7 @@ pub fn integrity_balance_load_pool_backstop_data(
     ub: UserBalance
 ) {
     init_verification!(e, pb, ub, address, address, 0, FV_MAX_Q4W_VEC_LEN);
-    
-    // Initialize token operations ghost state
-    token_ghost::initialize_ghost_token_ops();
-    cvlr_assume!(token_ghost::get_last_token_op().is_none());
-    
+        
     let before_pb: PoolBalance = storage::get_pool_balance(&e, address);
     let before_ub: UserBalance = storage::get_user_balance(&e, address, address);
         
@@ -387,7 +316,4 @@ pub fn integrity_balance_load_pool_backstop_data(
     } else {
         cvlr_assert!(pool_backstop_data.q4w_pct == 0);
     }
-    
-    // Verify no token transfer occurred
-    cvlr_assert!(token_ghost::get_last_token_op().is_none());
 }
