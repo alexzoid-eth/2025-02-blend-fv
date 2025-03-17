@@ -1,6 +1,6 @@
 use soroban_sdk::{Env, Address, unwrap::UnwrapOptimized};
 use cvlr::{cvlr_assume, cvlr_assert};
-use crate::backstop::{PoolBalance, UserBalance, execute_deposit, execute_withdraw};
+use crate::backstop::{PoolBalance, UserBalance, execute_deposit, execute_withdraw, load_pool_backstop_data};
 use cvlr_soroban_derive::rule;
 use crate::init_verification;
 use crate::certora_specs::FV_MAX_Q4W_VEC_LEN;
@@ -61,7 +61,29 @@ pub fn high_level_withdrawal_expiration_enforced(
     cvlr_assert!(false);
 }
 
-// Verify properties of the conversion functions
+// When a pool is empty (zero shares), token-to-share conversion is 1:1 as expected for initial deposits
+#[rule]
+pub fn high_level_share_token_initial_conversion(
+    e: &Env, 
+    pool_address: &Address,
+    tokens_amount: i128,
+    pb: PoolBalance,
+    ub: UserBalance
+) {
+    init_verification!(e, pb, ub, pool_address, pool_address, tokens_amount, FV_MAX_Q4W_VEC_LEN);
+    
+    let pool_balance = storage::get_pool_balance(&e, pool_address);
+    cvlr_assume!(pool_balance.shares == 0);
+
+    // Zero shares means 1:1 conversion (initial deposit case)
+    let computed_shares = pool_balance.convert_to_shares(tokens_amount);
+    cvlr_assert!(computed_shares == tokens_amount);
+    
+    let computed_tokens = pool_balance.convert_to_tokens(tokens_amount);
+    cvlr_assert!(computed_tokens == tokens_amount);
+}
+
+// Token/share conversions maintain consistent exchange rates and roundtrip conversions
 #[rule]
 pub fn high_level_share_token_conversion(
     e: &Env, 
@@ -74,36 +96,29 @@ pub fn high_level_share_token_conversion(
     
     let pool_balance = storage::get_pool_balance(&e, pool_address);
     
-    // Zero shares means 1:1 conversion (initial deposit case)
-    if pool_balance.shares == 0 {
-        let computed_shares = pool_balance.convert_to_shares(tokens_amount);
-        cvlr_assert!(computed_shares == tokens_amount);
-        
-        let computed_tokens = pool_balance.convert_to_tokens(tokens_amount);
-        cvlr_assert!(computed_tokens == tokens_amount);
-    } 
-    // For non-zero shares, verify the bidirectional conversion maintains consistency
-    else if tokens_amount > 0 {
+    cvlr_assume!(pool_balance.shares != 0);
+    cvlr_assume!(tokens_amount > 0);
 
-        let computed_shares = pool_balance.convert_to_shares(tokens_amount);
-        let roundtrip_tokens = pool_balance.convert_to_tokens(computed_shares);
+    let computed_shares = pool_balance.convert_to_shares(tokens_amount);
+    let roundtrip_tokens = pool_balance.convert_to_tokens(computed_shares);
+    
+    // Due to fixed-point math rounding, roundtrip might lose a small amount
+    let diff = tokens_amount - roundtrip_tokens;
+    cvlr_assert!(diff >= 0 && diff <= 2);
+    
+    // Shares/tokens ratio should be consistent
+    if computed_shares > 0 {
+        let input_ratio = tokens_amount.fixed_div_floor(computed_shares, SCALAR_7).unwrap_optimized();
+        let pool_ratio = pool_balance.tokens.fixed_div_floor(pool_balance.shares, SCALAR_7).unwrap_optimized();
         
-        // Due to fixed-point math rounding, roundtrip might lose a small amount
-        let diff = tokens_amount - roundtrip_tokens;
-        cvlr_assert!(diff >= 0 && diff <= 2);
-        
-        // Shares/tokens ratio should be consistent
-        if computed_shares > 0 {
-            let input_ratio = tokens_amount.fixed_div_floor(computed_shares, SCALAR_7).unwrap_optimized();
-            let pool_ratio = pool_balance.tokens.fixed_div_floor(pool_balance.shares, SCALAR_7).unwrap_optimized();
-            
-            // Allow for minimal rounding error (at most 1 per division)
-            let ratio_diff = if input_ratio > pool_ratio { 
-                input_ratio - pool_ratio 
-            } else { 
-                pool_ratio - input_ratio 
-            };
-            cvlr_assert!(ratio_diff <= 2);
-        }
+        // Allow for minimal rounding error (at most 1 per division)
+        let ratio_diff = if input_ratio > pool_ratio { 
+            input_ratio - pool_ratio 
+        } else { 
+            pool_ratio - input_ratio 
+        };
+        cvlr_assert!(ratio_diff <= 2);
     }
+
+    cvlr_assert!(true);
 }
