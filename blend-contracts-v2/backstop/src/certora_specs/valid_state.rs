@@ -139,7 +139,7 @@ pub fn valid_state_ub_q4w_expiration(
 }
 
 // If a Q4W entry has a non-zero expiration time, it must have a non-zero amount
-// @note violated in `queue_withdrawal` due in issue (separate `_violated` config created)
+// @note Violated in `queue_withdrawal` due in issue (separate `_violated` config created)
 pub fn valid_state_ub_q4w_exp_implies_amount(
     e: Env,
     pool: Address,
@@ -159,6 +159,7 @@ pub fn valid_state_ub_q4w_exp_implies_amount(
 }
 
 // A user's shares plus all q4w amounts equal to the total pool shares
+// @note weird violations without i64 casting
 pub fn valid_state_ub_shares_plus_q4w_sum_eq_pb_shares(
     e: Env,
     pool: Address,
@@ -169,7 +170,7 @@ pub fn valid_state_ub_shares_plus_q4w_sum_eq_pb_shares(
     
     if ub.q4w.len() == 1 {
         let entry0 = ub.q4w.get(0).unwrap_optimized();
-        let sum = ub.shares as i64 + entry0.amount as i64;
+        let sum = ub.shares + entry0.amount;
 
         sum as i64 == pb.shares as i64
     } else {
@@ -178,6 +179,7 @@ pub fn valid_state_ub_shares_plus_q4w_sum_eq_pb_shares(
 }
 
 // The sum of all amounts in the q4w vector must be less than pool's q4w
+// @note weird violations without i64 casting
 pub fn valid_state_ub_q4w_sum_eq_pb_q4w(
     e: Env,
     pool: Address,
@@ -206,7 +208,7 @@ pub fn valid_state_user_not_pool(
     let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
 
     if user == pool || user == e.current_contract_address() {
-        pb.shares as i64 == 0 && pb.tokens as i64 == 0 && pb.q4w as i64 == 0 && ub.shares as i64 == 0
+        pb.shares == 0 && pb.tokens == 0 && pb.q4w == 0 && ub.shares == 0
     } else {
         true
     }
@@ -222,7 +224,7 @@ pub fn valid_state_pool_from_factory(
     let pool_factory_client = mocks::pool_factory::PoolFactoryClient::new(&e, &pool);
     
     if pool_factory_client.is_pool(&pool) == false {
-        pb.shares as i64 == 0 && pb.tokens as i64 == 0 && pb.q4w as i64 == 0
+        pb.shares == 0 && pb.tokens == 0 && pb.q4w == 0
     } else {
         true
     }

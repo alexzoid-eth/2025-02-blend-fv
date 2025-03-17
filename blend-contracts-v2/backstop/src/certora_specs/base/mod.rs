@@ -80,7 +80,7 @@ macro_rules! init_verification {
                 && entry0.amount as i64 <= i32::MAX as i64);
         }
 
-        // Clear variables upper bits, seems it could help in comparison problem
+        // @note helps in i128 comparison problem
         clear_upper_bits($amount);
         clear_upper_bits(read_pb.shares);
         clear_upper_bits(read_pb.tokens);

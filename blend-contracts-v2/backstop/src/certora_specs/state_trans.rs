@@ -197,7 +197,7 @@ pub fn state_trans_user_shares_decrease_consistency(
     cvlr_assert!(true);
 }
 
-// Rule to verify balance relationships when user's queued withdrawal amount changes
+// Verify balance relationships when user's queued withdrawal amount changes
 pub fn state_trans_user_q4w_change_consistency(
     e: &Env, 
     pool: &Address, 
