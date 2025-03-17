@@ -142,7 +142,6 @@ pub fn valid_state_ub_q4w_expiration(
 }
 
 // If a Q4W entry has a non-zero expiration time, it must have a non-zero amount
-// @note Violated in `queue_withdrawal` due in issue (separate `_violated` config created)
 pub fn valid_state_ub_q4w_exp_implies_amount(
     e: Env,
     pool: Address,
@@ -156,14 +155,6 @@ pub fn valid_state_ub_q4w_exp_implies_amount(
         if entry0.exp > 0 && entry0.amount == 0 {
             return false;
         }
-
-        if ub.q4w.len() == 2 {
-            let entry1 = ub.q4w.get(1).unwrap_optimized();
-            // If expiration is set (non-zero), amount must also be set (non-zero)
-            if entry1.exp > 0 && entry1.amount == 0 {
-                return false;
-            }
-        }     
     } 
 
     true

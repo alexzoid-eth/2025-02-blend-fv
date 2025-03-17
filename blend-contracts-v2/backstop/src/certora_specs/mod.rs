@@ -4,6 +4,7 @@ pub(crate) mod sanity;
 pub(crate) mod valid_state;
 pub(crate) mod state_trans;
 pub(crate) mod high_level;
+pub(crate) mod integrity;
 
 use crate::backstop::{self, PoolBackstopData, PoolBalance, UserBalance};
 use crate::certora_specs::base::{Call, log_state::log_state_details, clear_upper_bits};
@@ -34,7 +35,6 @@ use crate::certora_specs::state_trans::{
     state_trans_ub_shares_decrease_consistency,
     state_trans_ub_q4w_amount_consistency,
 };
-
 #[cfg(feature = "certora_storage_ghost")] 
 use crate::certora_specs::mocks::storage_ghost as storage;
 #[cfg(not(feature = "certora_storage_ghost"))]
