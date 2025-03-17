@@ -6,7 +6,8 @@ use crate::backstop::{PoolBalance, UserBalance,
     execute_queue_withdrawal,
     execute_dequeue_withdrawal,
     execute_donate,
-    execute_draw
+    execute_draw,
+    load_pool_backstop_data
 };
 use cvlr_soroban_derive::rule;
 use crate::init_verification;
@@ -339,4 +340,36 @@ pub fn integrity_execute_draw(
     // Check emission state is still uninitialized after execution
     cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
     cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
+}
+
+#[rule]
+pub fn integrity_load_pool_backstop_data(
+    e: &Env, 
+    address: &Address,
+    pb: PoolBalance,
+    ub: UserBalance
+) {
+    init_verification!(e, pb, ub, address, address, 0, FV_MAX_Q4W_VEC_LEN);
+    
+    let before_pb: PoolBalance = storage::get_pool_balance(&e, address);
+    let before_ub: UserBalance = storage::get_user_balance(&e, address, address);
+        
+    let pool_backstop_data = load_pool_backstop_data(e, address);
+    
+    let after_pb: PoolBalance = storage::get_pool_balance(&e, address);
+    let after_ub: UserBalance = storage::get_user_balance(&e, address, address);
+    
+    // Verify that state hasn't changed 
+    cvlr_assert!(before_pb.shares == after_pb.shares);
+    cvlr_assert!(before_pb.tokens == after_pb.tokens);
+    cvlr_assert!(before_pb.q4w == after_pb.q4w);
+    cvlr_assert!(before_ub.shares == after_ub.shares);
+        
+    // Verify return values
+    cvlr_assert!(before_pb.tokens == pool_backstop_data.tokens);
+    if before_pb.shares > 0 {
+        cvlr_assert!(pool_backstop_data.q4w_pct != 0);
+    } else {
+        cvlr_assert!(pool_backstop_data.q4w_pct == 0);
+    }
 }
