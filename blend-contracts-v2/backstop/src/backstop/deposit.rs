@@ -1,11 +1,11 @@
-#[cfg(feature = "certora")] // @note changed
+#[cfg(feature = "certora_storage_ghost")] // @note changed
 use crate::{contract::require_nonnegative, certora_specs::mocks::storage_ghost as storage, BackstopError};
-#[cfg(not(feature = "certora"))]
+#[cfg(not(feature = "certora_storage_ghost"))]
 use crate::{contract::require_nonnegative, emissions, storage, BackstopError};
 
-#[cfg(feature = "certora")]
+#[cfg(feature = "certora_token_mock")]
 use crate::certora_specs::mocks::token::TokenClient;
-#[cfg(not(feature = "certora"))]
+#[cfg(not(feature = "certora_token_mock"))]
 use sep_41_token::TokenClient;
 
 use soroban_sdk::{panic_with_error, Address, Env};
@@ -22,7 +22,7 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
     require_is_from_pool_factory(e, pool_address, pool_balance.shares);
     let mut user_balance = storage::get_user_balance(e, pool_address, from);
 
-    #[cfg(not(feature = "certora"))] // @note changed 
+    #[cfg(not(feature = "certora_emission_disable"))] // @note changed 
     emissions::update_emissions(e, pool_address, &pool_balance, from, &user_balance);
 
     let backstop_token_client = TokenClient::new(e, &storage::get_backstop_token(e));

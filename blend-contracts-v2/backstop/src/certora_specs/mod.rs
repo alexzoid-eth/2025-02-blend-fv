@@ -3,9 +3,9 @@ pub(crate) mod base;
 pub(crate) mod sanity;
 pub(crate) mod valid_state;
 pub(crate) mod state_trans;
+pub(crate) mod high_level;
 
 use crate::backstop::{self, PoolBackstopData, PoolBalance, UserBalance};
-use crate::certora_specs::mocks::storage_ghost as storage;
 use crate::certora_specs::base::{Call, log_state::log_state_details, clear_upper_bits};
 use crate::{init_verification, invariant_rule, make_callable, parametric_rule, pass_arg};
 use cvlr::{cvlr_assert, cvlr_assume};
@@ -29,11 +29,18 @@ use crate::certora_specs::valid_state::{
 };
 use crate::certora_specs::state_trans::{
     state_trans_pb_shares_tokens_directional_change,
-    state_trans_q4w_balance_consistency,
-    state_trans_user_shares_increase_consistency,
-    state_trans_user_shares_decrease_consistency,
-    state_trans_user_q4w_change_consistency,
+    state_trans_pb_q4w_consistency,
+    state_trans_ub_shares_increase_consistency,
+    state_trans_ub_shares_decrease_consistency,
+    state_trans_ub_q4w_amount_consistency,
 };
+
+#[cfg(feature = "certora_storage_ghost")] 
+use crate::certora_specs::mocks::storage_ghost as storage;
+#[cfg(not(feature = "certora_storage_ghost"))]
+use crate::storage;
+
+pub const FV_MAX_Q4W_VEC_LEN: u32 = 1;
 
 // Helpers for external functions
 make_callable!(backstop, execute_deposit, from: Address, pool_address: Address, amount: i128);
@@ -65,7 +72,7 @@ invariant_rule!(valid_state_pool_from_factory);
 
 // State transition parametric rules
 parametric_rule!(state_trans_pb_shares_tokens_directional_change);
-parametric_rule!(state_trans_q4w_balance_consistency);
-parametric_rule!(state_trans_user_shares_increase_consistency);
-parametric_rule!(state_trans_user_shares_decrease_consistency);
-parametric_rule!(state_trans_user_q4w_change_consistency);
+parametric_rule!(state_trans_pb_q4w_consistency);
+parametric_rule!(state_trans_ub_shares_increase_consistency);
+parametric_rule!(state_trans_ub_shares_decrease_consistency);
+parametric_rule!(state_trans_ub_q4w_amount_consistency);

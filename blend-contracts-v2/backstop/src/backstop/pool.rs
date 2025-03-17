@@ -1,14 +1,14 @@
 use soroban_fixed_point_math::FixedPoint;
 use soroban_sdk::{contracttype, panic_with_error, unwrap::UnwrapOptimized, Address, Env};
 
-#[cfg(feature = "certora")] // @note changed
+#[cfg(feature = "certora_storage_ghost")] // @note changed
 use crate::{
     constants::SCALAR_7,
     dependencies::CometClient,
     errors::BackstopError,
     certora_specs::mocks::storage_ghost as storage,
 };
-#[cfg(not(feature = "certora"))]
+#[cfg(not(feature = "certora_storage_ghost"))]
 use crate::{
     constants::SCALAR_7,
     dependencies::{CometClient, PoolFactoryClient},
@@ -16,7 +16,7 @@ use crate::{
     storage,
 };
 
-#[cfg(feature = "certora")]
+#[cfg(feature = "certora_pool_factory_mock")]
 use crate::certora_specs::mocks::{self, pool_factory::*};
 
 /// The pool's backstop data
@@ -104,9 +104,9 @@ pub fn load_pool_backstop_data(e: &Env, address: &Address) -> PoolBackstopData {
 /// If the pool address cannot be verified
 pub fn require_is_from_pool_factory(e: &Env, address: &Address, balance: i128) {
     if balance == 0 {
-        #[cfg(not(feature = "certora"))]
+        #[cfg(not(feature = "certora_pool_factory_mock"))]
         let pool_factory_client = PoolFactoryClient::new(e, &storage::get_pool_factory(e));
-        #[cfg(feature = "certora")]
+        #[cfg(feature = "certora_pool_factory_mock")]
         let pool_factory_client = mocks::pool_factory::PoolFactoryClient::new(e, address);
         if !pool_factory_client.is_pool(address) {
             panic_with_error!(e, BackstopError::NotPool);

@@ -14,7 +14,11 @@ doctest = false
 testutils = [
     "soroban-sdk/testutils",
 ]
-certora = []
+certora_vec_one_q4w = []
+certora_storage_ghost = []
+certora_emission_disable = []
+certora_token_mock = []
+certora_pool_factory_mock = []
 
 [dependencies]
 soroban-sdk = { workspace = true }

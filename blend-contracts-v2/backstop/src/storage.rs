@@ -216,7 +216,7 @@ pub fn set_backstop_token(e: &Env, backstop_token_id: &Address) {
 
 /********** User Shares **********/
 
-#[cfg(feature = "certora")]
+#[cfg(feature = "certora_vec_one_q4w")]
 use crate::certora_specs::mocks::vec_one_q4w::vec_one_empty;
 
 /// Fetch the balance's for a given user
@@ -229,7 +229,7 @@ pub fn get_user_balance(e: &Env, pool: &Address, user: &Address) -> UserBalance 
         pool: pool.clone(),
         user: user.clone(),
     });
-    #[cfg(not(feature = "certora"))] // @note changed
+    #[cfg(not(feature = "certora_vec_one_q4w"))] // @note changed
     {
         get_persistent_default(
             e,
@@ -243,7 +243,7 @@ pub fn get_user_balance(e: &Env, pool: &Address, user: &Address) -> UserBalance 
         )
     }
     
-    #[cfg(feature = "certora")]
+    #[cfg(feature = "certora_vec_one_q4w")]
     {
         get_persistent_default(
             e,

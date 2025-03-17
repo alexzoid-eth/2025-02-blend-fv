@@ -48,20 +48,21 @@ pub fn clear_upper_bits(value: i128) {
 
 #[macro_export]
 macro_rules! init_verification {
-    ($e:expr, $pb:expr, $ub:expr, $pool:expr, $user:expr, $amount:expr) => {
+    ($e:expr, $pb:expr, $ub:expr, $pool:expr, $user:expr, $amount:expr, $q4w_len:expr) => {
         
         // Initialize ghost storage from rule parameters
+        #[cfg(feature = "certora_storage_ghost")] 
         storage::initialize_ghost_maps($pb.clone(), $ub.clone());
 
         // Explicitly assume that reading from the ghost maps returns the expected values
         let read_pb = storage::get_pool_balance(&$e, &$pool);
         let read_ub = storage::get_user_balance(&$e, &$pool, &$user);
-        cvlr_assume!(read_pb.shares as i64 == $pb.shares as i64);
-        cvlr_assume!(read_pb.tokens as i64 == $pb.tokens as i64);
-        cvlr_assume!(read_pb.q4w as i64 == $pb.q4w as i64);
-        cvlr_assume!(read_ub.shares as i64 == $ub.shares as i64);
+        cvlr_assume!(read_pb.shares == $pb.shares);
+        cvlr_assume!(read_pb.tokens == $pb.tokens);
+        cvlr_assume!(read_pb.q4w == $pb.q4w);
+        cvlr_assume!(read_ub.shares == $ub.shares);
         cvlr_assume!(read_ub.q4w.len() == $ub.q4w.len());
-        cvlr_assume!(read_ub.q4w.len() <= 1);
+        cvlr_assume!(read_ub.q4w.len() <= $q4w_len);
 
         // Bound inputs as i32
         cvlr_assume!($amount as i64 >= i32::MIN as i64 
@@ -74,10 +75,15 @@ macro_rules! init_verification {
             && read_pb.q4w as i64 <= i32::MAX as i64);
         cvlr_assume!(read_ub.shares as i64 >= i32::MIN as i64 
             && read_ub.shares as i64 <= i32::MAX as i64);
-        if read_ub.q4w.len() == 1 {
+        if read_ub.q4w.len() != 0 {
             let entry0 = read_ub.q4w.get(0).unwrap_optimized();
             cvlr_assume!(entry0.amount as i64 >= i32::MIN as i64 
                 && entry0.amount as i64 <= i32::MAX as i64);
+            if read_ub.q4w.len() == 2 {
+                let entry1 = read_ub.q4w.get(1).unwrap_optimized();
+                cvlr_assume!(entry1.amount as i64 >= i32::MIN as i64 
+                    && entry1.amount as i64 <= i32::MAX as i64);    
+            }
         }
 
         // @note helps in i128 comparison problem
@@ -86,9 +92,13 @@ macro_rules! init_verification {
         clear_upper_bits(read_pb.tokens);
         clear_upper_bits(read_pb.q4w);
         clear_upper_bits(read_ub.shares);    
-        if read_ub.q4w.len() == 1 {
+        if read_ub.q4w.len() != 0 {
             let entry0 = read_ub.q4w.get(0).unwrap_optimized();
             clear_upper_bits(entry0.amount);
+            if read_ub.q4w.len() == 2 {
+                let entry1 = read_ub.q4w.get(1).unwrap_optimized();
+                clear_upper_bits(entry1.amount);    
+            }
         }
 
         // Assume valid state
@@ -110,7 +120,7 @@ macro_rules! parametric_rule {
                 pool_address: Address, 
                 amount: i128
             ) {
-                init_verification!(e, pb, ub, pool_address, from, amount);
+                init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
                 
                 let call_fn = || { 
                     log_state_details(e.clone(), pool_address.clone(), from.clone(), amount);
@@ -130,7 +140,7 @@ macro_rules! parametric_rule {
                 pool_address: Address, 
                 amount: i128
             ) {
-                init_verification!(e, pb, ub, pool_address, from, amount);
+                init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
                 
                 let call_fn = || { 
                     log_state_details(e.clone(), pool_address.clone(), from.clone(), amount);
@@ -150,7 +160,7 @@ macro_rules! parametric_rule {
                 amount: i128,
                 to: Address
             ) {
-                init_verification!(e, pb, ub, pool_address, to, amount);
+                init_verification!(e, pb, ub, pool_address, to, amount, FV_MAX_Q4W_VEC_LEN);
                 
                 let call_fn = || { 
                     log_state_details(e.clone(), pool_address.clone(), to.clone(), amount);
@@ -170,7 +180,7 @@ macro_rules! parametric_rule {
                 pool_address: Address, 
                 amount: i128
             ) {
-                init_verification!(e, pb, ub, pool_address, from, amount);
+                init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
                 
                 let call_fn = || { 
                     log_state_details(e.clone(), pool_address.clone(), from.clone(), amount);
@@ -190,7 +200,7 @@ macro_rules! parametric_rule {
                 pool_address: Address, 
                 amount: i128
             ) {
-                init_verification!(e, pb, ub, pool_address, from, amount);
+                init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
                 
                 let call_fn = || { 
                     log_state_details(e.clone(), pool_address.clone(), from.clone(), amount);
@@ -210,7 +220,7 @@ macro_rules! parametric_rule {
                 pool_address: Address, 
                 amount: i128
             ) {
-                init_verification!(e, pb, ub, pool_address, from, amount);
+                init_verification!(e, pb, ub, pool_address, from, amount, FV_MAX_Q4W_VEC_LEN);
                 
                 let call_fn = || { 
                     log_state_details(e.clone(), pool_address.clone(), from.clone(), amount);
@@ -237,7 +247,7 @@ macro_rules! invariant_rule {
                 amount: i128,
                 call_fn: impl FnOnce()
             ) {
-                init_verification!(e, pb, ub, pool, user, amount);
+                init_verification!(e, pb, ub, pool, user, amount, FV_MAX_Q4W_VEC_LEN);
 
                 cvlr_assume!($inv(e.clone(), pool.clone(), user.clone()));
                 

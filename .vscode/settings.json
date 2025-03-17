@@ -3,6 +3,7 @@
         "certora",
         "contracttype",
         "cvlr",
+        "justfile",
         "nondet",
         "soroban"
     ]

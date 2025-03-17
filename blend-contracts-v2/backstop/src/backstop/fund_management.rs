@@ -1,13 +1,13 @@
-#[cfg(feature = "certora")] // @note changed
+#[cfg(feature = "certora_storage_ghost")] // @note changed
 use crate::{contract::require_nonnegative, certora_specs::mocks::storage_ghost as storage, BackstopError};
-#[cfg(not(feature = "certora"))]
+#[cfg(not(feature = "certora_storage_ghost"))]
 use crate::{contract::require_nonnegative, storage, BackstopError};
 
 use soroban_sdk::{panic_with_error, Address, Env};
 
-#[cfg(feature = "certora")]
+#[cfg(feature = "certora_token_mock")]
 use crate::certora_specs::mocks::token::TokenClient;
-#[cfg(not(feature = "certora"))]
+#[cfg(not(feature = "certora_token_mock"))]
 use sep_41_token::TokenClient;
 
 use super::require_is_from_pool_factory;

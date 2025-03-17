@@ -1,11 +1,12 @@
-use crate::backstop::{PoolBalance, UserBalance, execute_deposit};
+use crate::backstop::{PoolBalance, UserBalance};
 use crate::certora_specs::mocks;
-use crate::certora_specs::mocks::storage_ghost as storage;
 use soroban_sdk::{Address, Env, unwrap::UnwrapOptimized};
-use cvlr::{cvlr_assert, cvlr_assume};
-use cvlr_soroban_derive::rule;
-use cvlr_soroban::nondet_address;
 use crate::constants::Q4W_LOCK_TIME;
+
+#[cfg(feature = "certora_storage_ghost")] 
+use crate::certora_specs::mocks::storage_ghost as storage;
+#[cfg(not(feature = "certora_storage_ghost"))]
+use crate::storage;
 
 // All valid state functions in one place
 pub fn valid_state_pool_user(
@@ -34,8 +35,7 @@ pub fn valid_state_pool_user(
     && valid_state_pool_from_factory(e.clone(), pool.clone(), user.clone())
 }
 
-// PoolBalance shares and tokens are non-negative
-// @note Violated in `execute_deposit` due overflow issue in `PoolBalance.deposit()` (separate `_violated` config created)
+// PoolBalance shares are non-negative
 pub fn valid_state_nonnegative_pb_shares(
     e: Env,
     pool: Address,
@@ -44,19 +44,6 @@ pub fn valid_state_nonnegative_pb_shares(
     let pb: PoolBalance = storage::get_pool_balance(&e, &pool);
 
     pb.shares.is_negative() == false 
-}
-
-#[rule]
-pub fn valid_state_nonnegative_pb_shares_execute_deposit_violated(
-    e: &Env, 
-    from: &Address, 
-    pool: &Address, 
-    amount: i128
-) {
-    let user = nondet_address();
-    cvlr_assume!(valid_state_nonnegative_pb_shares(e.clone(), pool.clone(), user.clone()));
-    execute_deposit(e, from, pool, amount);
-    cvlr_assert!(valid_state_nonnegative_pb_shares(e.clone(), pool.clone(), user.clone()));
 }
 
 // PoolBalance q4w and tokens are non-negative
@@ -102,11 +89,19 @@ pub fn valid_state_nonnegative_ub_q4w_amount(
 
     if ub.q4w.len() != 0 {
         let entry0 = ub.q4w.get(0).unwrap_optimized();
+        if entry0.amount.is_negative() {
+            return false;
+        }
 
-        entry0.amount.is_negative() == false
-    } else {
-        true
-    }
+        if ub.q4w.len() == 2 {
+            let entry1 = ub.q4w.get(1).unwrap_optimized();
+            if entry1.amount.is_negative() {
+                return false;
+            }            
+        }     
+    } 
+
+    true
 }
 
 // q4w (shares queued for withdrawal) should never exceed total shares
@@ -128,14 +123,22 @@ pub fn valid_state_ub_q4w_expiration(
 ) -> bool {
     let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
 
-    if ub.q4w.len() == 1 {
+    if ub.q4w.len() != 0 {
         let max_timestamp = e.ledger().timestamp() + Q4W_LOCK_TIME;
         let entry0 = ub.q4w.get(0).unwrap_optimized();
+        if entry0.exp > max_timestamp {
+            return false;
+        }
 
-        entry0.exp <= max_timestamp
-    } else {
-        true
+        if ub.q4w.len() == 2 {
+            let entry1 = ub.q4w.get(1).unwrap_optimized();
+            if entry1.exp > max_timestamp {
+                return false;
+            }
+        }     
     } 
+
+    true
 }
 
 // If a Q4W entry has a non-zero expiration time, it must have a non-zero amount
@@ -147,12 +150,20 @@ pub fn valid_state_ub_q4w_exp_implies_amount(
 ) -> bool {
     let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
 
-    if ub.q4w.len() == 1 {
+    if ub.q4w.len() != 0 {
         let entry0 = ub.q4w.get(0).unwrap_optimized();
         // If expiration is set (non-zero), amount must also be set (non-zero)
         if entry0.exp > 0 && entry0.amount == 0 {
             return false;
         }
+
+        if ub.q4w.len() == 2 {
+            let entry1 = ub.q4w.get(1).unwrap_optimized();
+            // If expiration is set (non-zero), amount must also be set (non-zero)
+            if entry1.exp > 0 && entry1.amount == 0 {
+                return false;
+            }
+        }     
     } 
 
     true
@@ -168,14 +179,18 @@ pub fn valid_state_ub_shares_plus_q4w_sum_eq_pb_shares(
     let pb: PoolBalance = storage::get_pool_balance(&e, &pool);
     let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
     
-    if ub.q4w.len() == 1 {
+    let mut sum = ub.shares as i64;
+    if ub.q4w.len() != 0 {
         let entry0 = ub.q4w.get(0).unwrap_optimized();
-        let sum = ub.shares + entry0.amount;
+        sum += entry0.amount as i64;
 
-        sum as i64 == pb.shares as i64
-    } else {
-        ub.shares as i64 == pb.shares as i64
-    }
+        if ub.q4w.len() == 2 {
+            let entry1 = ub.q4w.get(1).unwrap_optimized();
+            sum += entry1.amount as i64;
+        } 
+    } 
+
+    sum == pb.shares as i64
 }
 
 // The sum of all amounts in the q4w vector must be less than pool's q4w
@@ -188,14 +203,18 @@ pub fn valid_state_ub_q4w_sum_eq_pb_q4w(
     let pb: PoolBalance = storage::get_pool_balance(&e, &pool);
     let ub: UserBalance = storage::get_user_balance(&e, &pool, &user);
 
-    if ub.q4w.len() == 1 {
+    let mut q4w_sum = 0;
+    if ub.q4w.len() != 0 {
         let entry0 = ub.q4w.get(0).unwrap_optimized();
-        let q4w_sum = entry0.amount as i64;
+        q4w_sum += entry0.amount as i64;
 
-        pb.q4w as i64 == q4w_sum as i64
-    } else {
-        pb.q4w as i64 == 0
+        if ub.q4w.len() == 2 {
+            let entry1 = ub.q4w.get(1).unwrap_optimized();
+            q4w_sum += entry1.amount as i64;   
+        }    
     }
+
+    pb.q4w as i64 == q4w_sum
 }
 
 // User who equals the pool address or the contract address always has a zero balance in that pool

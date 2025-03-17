@@ -84,9 +84,14 @@ pub fn log_state_details(
     log_ub_shares(ub.shares);
     clog!(ub.q4w.len());
     
-    if ub.q4w.len() == 1 {
+    if ub.q4w.len() != 0 {
         let entry0: crate::Q4W = ub.q4w.get(0).unwrap_optimized();
         log_ub_q4w_amount(entry0.amount);
         clog!(entry0.exp);
+        if ub.q4w.len() == 2 {
+            let entry1: crate::Q4W = ub.q4w.get(1).unwrap_optimized();
+            log_ub_q4w_amount(entry1.amount);
+            clog!(entry1.exp);    
+        }
     }
 }

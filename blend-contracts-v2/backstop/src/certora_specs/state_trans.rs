@@ -1,7 +1,11 @@
 use soroban_sdk::{Env, Address, unwrap::UnwrapOptimized};
 use cvlr::cvlr_assert;
 use crate::backstop::{PoolBalance, UserBalance};
+
+#[cfg(feature = "certora_storage_ghost")] 
 use crate::certora_specs::mocks::storage_ghost as storage;
+#[cfg(not(feature = "certora_storage_ghost"))]
+use crate::storage;
 
 // If shares increase, tokens must increase and if shares decrease, tokens must decrease
 pub fn state_trans_pb_shares_tokens_directional_change(
@@ -27,8 +31,8 @@ pub fn state_trans_pb_shares_tokens_directional_change(
     cvlr_assert!(true);
 }
 
-// Verify the relationship between q4w changes with invariant checks
-pub fn state_trans_q4w_balance_consistency(
+// Verify the relationship for pool balance q4w changes
+pub fn state_trans_pb_q4w_consistency(
     e: &Env, 
     pool: &Address, 
     user: &Address, 
@@ -89,8 +93,8 @@ pub fn state_trans_q4w_balance_consistency(
     cvlr_assert!(true);
 }
 
-// Verify balance relationships when user shares change
-pub fn state_trans_user_shares_increase_consistency(
+// Verify balance relationships when user shares increase
+pub fn state_trans_ub_shares_increase_consistency(
     e: &Env, 
     pool: &Address, 
     user: &Address, 
@@ -148,7 +152,7 @@ pub fn state_trans_user_shares_increase_consistency(
 }
 
 // Verify balance relationships when user shares change
-pub fn state_trans_user_shares_decrease_consistency(
+pub fn state_trans_ub_shares_decrease_consistency(
     e: &Env, 
     pool: &Address, 
     user: &Address, 
@@ -198,7 +202,7 @@ pub fn state_trans_user_shares_decrease_consistency(
 }
 
 // Verify balance relationships when user's queued withdrawal amount changes
-pub fn state_trans_user_q4w_change_consistency(
+pub fn state_trans_ub_q4w_amount_consistency(
     e: &Env, 
     pool: &Address, 
     user: &Address, 
