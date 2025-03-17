@@ -5,6 +5,7 @@
         "cvlr",
         "justfile",
         "nondet",
-        "soroban"
+        "soroban",
+        "uninit"
     ]
 }

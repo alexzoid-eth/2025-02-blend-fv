@@ -1,5 +1,6 @@
 pub(crate) mod mocks;
 pub(crate) mod base;
+pub(crate) mod summaries;
 pub(crate) mod sanity;
 pub(crate) mod valid_state;
 pub(crate) mod state_trans;

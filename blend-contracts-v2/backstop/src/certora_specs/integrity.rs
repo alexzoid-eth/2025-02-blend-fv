@@ -10,9 +10,11 @@ use crate::backstop::{PoolBalance, UserBalance,
 };
 use cvlr_soroban_derive::rule;
 use crate::init_verification;
+use crate::certora_specs::valid_state::valid_state_pool_user;
+use crate::certora_specs::summaries::emissions::GHOST_EMISSION_POOL_BALANCE;
+use crate::certora_specs::summaries::emissions::GHOST_EMISSION_USER_BALANCE;
 use crate::certora_specs::base::clear_upper_bits;
 use crate::certora_specs::FV_MAX_Q4W_VEC_LEN;
-use crate::certora_specs::valid_state::valid_state_pool_user;
 
 #[cfg(feature = "certora_storage_ghost")] 
 use crate::certora_specs::mocks::storage_ghost as storage;
@@ -50,6 +52,10 @@ pub fn integrity_execute_deposit(
         0
     };
 
+    // Get emission state after execution
+    let emission_pb_after = unsafe { GHOST_EMISSION_POOL_BALANCE.get() };
+    let emission_ub_after = unsafe { GHOST_EMISSION_USER_BALANCE.get() };
+
     let ub_shares_change = after_ub.shares - before_ub.shares;
     let pb_shares_change = after_pb.shares - before_pb.shares;
     let pb_tokens_change = after_pb.tokens - before_pb.tokens;
@@ -61,6 +67,12 @@ pub fn integrity_execute_deposit(
     cvlr_assert!(pb_tokens_change > 0);                 // Pool tokens should increase as tokens are deposited
     cvlr_assert!(pb_q4w_change == 0);                   // Pool Q4W should remain unchanged
     cvlr_assert!(ub_q4w_amount_change == 0);            // User's queued withdrawal amount should remain unchanged
+    
+    // Check that emission state is updated correctly - compare each field individually
+    cvlr_assert!(emission_pb_after.shares == before_pb.shares); 
+    cvlr_assert!(emission_pb_after.tokens == before_pb.tokens);
+    cvlr_assert!(emission_pb_after.q4w == before_pb.q4w);     
+    cvlr_assert!(emission_ub_after.shares == before_ub.shares); 
 }
 
 #[rule]
@@ -82,6 +94,10 @@ pub fn integrity_execute_withdraw(
     } else {
         0
     };
+
+    // Check emission state is uninitialized before execution
+    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
+    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     let ret = execute_withdraw(e, from, pool_address, amount);
 
@@ -105,6 +121,10 @@ pub fn integrity_execute_withdraw(
     cvlr_assert!(pb_shares_change == -amount);      // Pool shares should decrease by amount
     cvlr_assert!(pb_tokens_change == -ret);         // Pool tokens should decrease by returned amount
     cvlr_assert!(ub_shares_change == 0);            // User shares should not change
+    
+    // Check emission state is still uninitialized after execution
+    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
+    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 }
 
 #[rule]
@@ -138,6 +158,10 @@ pub fn integrity_execute_queue_withdrawal(
         0
     };
 
+    // Get emission state after execution
+    let emission_pb_after = unsafe { GHOST_EMISSION_POOL_BALANCE.get() };
+    let emission_ub_after = unsafe { GHOST_EMISSION_USER_BALANCE.get() };
+
     let ub_shares_change = after_ub.shares - before_ub.shares;
     let pb_shares_change = after_pb.shares - before_pb.shares;
     let pb_tokens_change = after_pb.tokens - before_pb.tokens;
@@ -151,6 +175,12 @@ pub fn integrity_execute_queue_withdrawal(
     cvlr_assert!(pb_tokens_change == 0);            // Pool tokens should not change
     cvlr_assert!(ret.amount == amount);             // Returned Q4W should have correct amount
     cvlr_assert!(ret.exp > e.ledger().timestamp()); // Expiration should be in the future
+    
+    // Check that emission state is updated correctly - compare each field individually
+    cvlr_assert!(emission_pb_after.shares == before_pb.shares);  
+    cvlr_assert!(emission_pb_after.tokens == before_pb.tokens); 
+    cvlr_assert!(emission_pb_after.q4w == before_pb.q4w);  
+    cvlr_assert!(emission_ub_after.shares == before_ub.shares); 
 }
 
 #[rule]
@@ -184,6 +214,10 @@ pub fn integrity_execute_dequeue_withdrawal(
         0
     };
 
+    // Get emission state after execution
+    let emission_pb_after = unsafe { GHOST_EMISSION_POOL_BALANCE.get() };
+    let emission_ub_after = unsafe { GHOST_EMISSION_USER_BALANCE.get() };
+
     let ub_shares_change = after_ub.shares - before_ub.shares;
     let pb_shares_change = after_pb.shares - before_pb.shares;
     let pb_tokens_change = after_pb.tokens - before_pb.tokens;
@@ -195,6 +229,12 @@ pub fn integrity_execute_dequeue_withdrawal(
     cvlr_assert!(pb_q4w_change == -amount);         // Pool Q4W should decrease by amount
     cvlr_assert!(pb_shares_change == 0);            // Pool shares should not change
     cvlr_assert!(pb_tokens_change == 0);            // Pool tokens should not change
+    
+    // Check that emission state is updated correctly
+    cvlr_assert!(emission_pb_after.shares == before_pb.shares);  
+    cvlr_assert!(emission_pb_after.tokens == before_pb.tokens); 
+    cvlr_assert!(emission_pb_after.q4w == before_pb.q4w);  
+    cvlr_assert!(emission_ub_after.shares == before_ub.shares); 
 }
 
 #[rule]
@@ -216,6 +256,10 @@ pub fn integrity_execute_donate(
     } else {
         0
     };
+
+    // Check emission state is uninitialized before execution
+    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
+    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     execute_donate(e, from, pool_address, amount);
 
@@ -239,6 +283,10 @@ pub fn integrity_execute_donate(
     cvlr_assert!(pb_q4w_change == 0);           // Pool Q4W should not change
     cvlr_assert!(ub_shares_change == 0);        // User shares should not change
     cvlr_assert!(ub_q4w_amount_change == 0);    // User Q4W should not change
+    
+    // Check emission state is still uninitialized after execution
+    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
+    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 }
 
 #[rule]
@@ -260,6 +308,10 @@ pub fn integrity_execute_draw(
     } else {
         0
     };
+
+    // Check emission state is uninitialized before execution
+    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
+    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 
     execute_draw(e, pool_address, amount, to);
 
@@ -283,4 +335,8 @@ pub fn integrity_execute_draw(
     cvlr_assert!(pb_q4w_change == 0);           // Pool Q4W should not change
     cvlr_assert!(ub_shares_change == 0);        // User shares should not change
     cvlr_assert!(ub_q4w_amount_change == 0);    // User Q4W should not change
+    
+    // Check emission state is still uninitialized after execution
+    cvlr_assert!(unsafe { GHOST_EMISSION_POOL_BALANCE.is_uninit() });
+    cvlr_assert!(unsafe { GHOST_EMISSION_USER_BALANCE.is_uninit() });
 }
