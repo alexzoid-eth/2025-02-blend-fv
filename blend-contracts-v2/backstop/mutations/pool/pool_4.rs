@@ -201,7 +201,7 @@ impl PoolBalance {
             panic_with_error!(e, BackstopError::InsufficientFunds);
         }
         self.tokens -= tokens;
-        // self.shares -= shares; MUTANT
+        self.shares -= shares;
         self.q4w -= shares;
     }
 
@@ -210,7 +210,7 @@ impl PoolBalance {
     /// ### Arguments
     /// * `shares` - The amount of shares to queue for withdraw
     pub fn queue_for_withdraw(&mut self, shares: i128) {
-        self.q4w += shares;
+        self.q4w -= shares; // MUTANT changed + to -
     }
 
     /// Dequeue queued for withdraw for the pool

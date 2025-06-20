@@ -187,7 +187,7 @@ impl PoolBalance {
     /// * `tokens` - The amount of tokens to add
     /// * `shares` - The amount of shares to add
     pub fn deposit(&mut self, tokens: i128, shares: i128) {
-        self.tokens += tokens;
+        // self.tokens += tokens; MUTANT
         self.shares += shares;
     }
 
@@ -201,7 +201,7 @@ impl PoolBalance {
             panic_with_error!(e, BackstopError::InsufficientFunds);
         }
         self.tokens -= tokens;
-        // self.shares -= shares; MUTANT
+        self.shares -= shares;
         self.q4w -= shares;
     }
 
