@@ -1,3 +1,4 @@
+#[cfg(not(feature = "certora_vec_q4w"))] // @note changed
 use cvlr_soroban::nondet_vec;
 use soroban_sdk::{contracttype, panic_with_error, vec, Env, Vec};
 
@@ -5,6 +6,9 @@ use crate::{
     constants::{MAX_Q4W_SIZE, Q4W_LOCK_TIME},
     errors::BackstopError,
 };
+
+#[cfg(feature = "certora_vec_q4w")] // @note changed
+use crate::certora_specs::summaries::vec_q4w::{VecQ4W, vec_q4w_empty};
 
 /// A deposit that is queued for withdrawal
 #[derive(Clone)]
@@ -23,6 +27,7 @@ impl cvlr::nondet::Nondet for Q4W {
     }
 }
 
+#[cfg(not(feature = "certora_vec_q4w"))]
 /// A deposit that is queued for withdrawal
 #[derive(Clone)]
 #[contracttype]
@@ -31,11 +36,21 @@ pub struct UserBalance {
     pub q4w: Vec<Q4W>, // a list of queued withdrawals
 }
 
+#[cfg(feature = "certora_vec_q4w")]
+#[derive(Clone)]
+#[contracttype]
+pub struct UserBalance {
+    pub shares: i128,  // the balance of shares the user owns
+    pub q4w: VecQ4W, // a simplified list for verification
+}
 
 impl cvlr::nondet::Nondet for UserBalance {
     fn nondet() -> Self {
         Self {
             shares: cvlr::nondet(),
+            #[cfg(feature = "certora_vec_q4w")] // @note changed
+            q4w: cvlr::nondet(),
+            #[cfg(not(feature = "certora_vec_q4w"))]
             q4w: nondet_vec()
         }
     }
@@ -45,6 +60,9 @@ impl UserBalance {
     pub fn env_default(e: &Env) -> UserBalance {
         UserBalance {
             shares: 0,
+            #[cfg(feature = "certora_vec_q4w")] // @note changed
+            q4w: vec_q4w_empty(e),
+            #[cfg(not(feature = "certora_vec_q4w"))]
             q4w: vec![e],
         }
     }
@@ -138,7 +156,7 @@ impl UserBalance {
         
         // validate the invoke has enough unlocked Q4W to claim
         // manage the q4w list while verifying
-        let mut left_to_dequeue: i128 = to_dequeue; 
+        let mut left_to_dequeue: i128 = to_dequeue;
         for _index in 0..self.q4w.len() {
             let mut cur_q4w = self.q4w.pop_back_unchecked();
             if cur_q4w.amount > left_to_dequeue {

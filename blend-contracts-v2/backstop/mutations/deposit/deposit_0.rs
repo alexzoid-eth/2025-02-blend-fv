@@ -1,8 +1,16 @@
-use crate::{contract::require_nonnegative, emissions, storage, BackstopError};
+#[cfg(feature = "certora_storage_ghost")] // @note changed
+use crate::{contract::require_nonnegative, certora_specs::summaries::storage, BackstopError};
+#[cfg(not(feature = "certora_storage_ghost"))]
+use crate::{contract::require_nonnegative, storage, BackstopError};
 
-#[cfg(feature = "certora")]
+#[cfg(feature = "certora_emission_summarized")] 
+use crate::certora_specs::summaries::emissions;
+#[cfg(not(feature = "certora_emission_summarized"))] 
+use crate::emissions;
+
+#[cfg(feature = "certora_token_mock")]
 use crate::certora_specs::mocks::token::TokenClient;
-#[cfg(not(feature = "certora"))]
+#[cfg(not(feature = "certora_token_mock"))]
 use sep_41_token::TokenClient;
 
 use soroban_sdk::{panic_with_error, Address, Env};
@@ -21,8 +29,17 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
 
     emissions::update_emissions(e, pool_address, &pool_balance, from, &user_balance);
 
-    let backstop_token_client = TokenClient::new(e, &storage::get_backstop_token(e));
-    backstop_token_client.transfer(from, &e.current_contract_address(), &amount);
+    #[cfg(feature = "certora_token_mock")] // @note changed
+    {
+        let backstop_token_addr = storage::get_backstop_token(e);
+        let backstop_token_client = TokenClient::new(e, &backstop_token_addr);
+        backstop_token_client.transfer(from, &e.current_contract_address(), &amount);        
+    }
+    #[cfg(not(feature = "certora_token_mock"))]
+    {
+        let backstop_token_client = TokenClient::new(e, &storage::get_backstop_token(e));
+        backstop_token_client.transfer(from, &e.current_contract_address(), &amount);        
+    }
 
     let to_mint = pool_balance.convert_to_shares(amount);
     if to_mint <= 0 {
