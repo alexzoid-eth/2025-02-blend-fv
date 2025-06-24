@@ -1,0 +1,335 @@
+{
+    "original": "https://prover.certora.com/output/7749274/b684e5809c0949a9b87529ce731dcd45?anonymousKey=6a52ba34c00e2429b80cb65276ae4519af0f4d9e",
+    "mutants": [
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/deposit-merged/deposit_2.rs",
+                "original_filename": "../src/backstop/deposit.rs",
+                "directory": "../mutations/deposit-merged",
+                "id": "deposit_2",
+                "diff": "45,47c45,47\n<     if to_mint <= 0 {\n<         panic_with_error!(e, &BackstopError::InvalidShareMintAmount);\n<     }\n---\n>     // if to_mint <= 0 { MUTANT\n>     //     panic_with_error!(e, &BackstopError::InvalidShareMintAmount);\n>     // }\n309c309\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/deposit-merged/deposit_2.rs",
+                "name": "deposit_2"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/95f75590cbad42039314672e5a653cd7?anonymousKey=7df988dd52497b6fe768e1cc8b4c3117d25c528f",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/95f75590cbad42039314672e5a653cd7?anonymousKey=7df988dd52497b6fe768e1cc8b4c3117d25c528f"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/deposit-merged/deposit_3.rs",
+                "original_filename": "../src/backstop/deposit.rs",
+                "directory": "../mutations/deposit-merged",
+                "id": "deposit_3",
+                "diff": "22c22\n<     require_nonnegative(e, amount);\n---\n>     // require_nonnegative(e, amount); MUTANT\n309c309\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/deposit-merged/deposit_3.rs",
+                "name": "deposit_3"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/16e1d945334d4917a1c45a5e1f5812e8?anonymousKey=59e4c584560db458af045b64fdb48825474d3790",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/16e1d945334d4917a1c45a5e1f5812e8?anonymousKey=59e4c584560db458af045b64fdb48825474d3790"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/deposit-merged/deposit_0.rs",
+                "original_filename": "../src/backstop/deposit.rs",
+                "directory": "../mutations/deposit-merged",
+                "id": "deposit_0",
+                "diff": "48c48\n<     pool_balance.deposit(amount, to_mint);\n---\n>     // pool_balance.deposit(amount, to_mint); MUTANT\n309c309\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/deposit-merged/deposit_0.rs",
+                "name": "deposit_0"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/f846224f4a7644889ea6720f2d8e4a09?anonymousKey=0eb704fde4f3862e688586e00c7e8eabad71881e",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/f846224f4a7644889ea6720f2d8e4a09?anonymousKey=0eb704fde4f3862e688586e00c7e8eabad71881e"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/deposit-merged/deposit_1.rs",
+                "original_filename": "../src/backstop/deposit.rs",
+                "directory": "../mutations/deposit-merged",
+                "id": "deposit_1",
+                "diff": "49c49\n<     user_balance.add_shares(to_mint);\n---\n>     // user_balance.add_shares(to_mint); MUTANT\n309c309\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/deposit-merged/deposit_1.rs",
+                "name": "deposit_1"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/f3bdaaa0ccd7414ea130c10cf57a46af?anonymousKey=316a4d473b575c78528f1ae52a6f142a89ba386f",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/f3bdaaa0ccd7414ea130c10cf57a46af?anonymousKey=316a4d473b575c78528f1ae52a6f142a89ba386f"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/fundmanagement-merged/fund_management_4.rs",
+                "original_filename": "../src/backstop/fund_management.rs",
+                "directory": "../mutations/fundmanagement-merged",
+                "id": "fund_management_4",
+                "diff": "71c71\n<     pool_balance.deposit(amount, 0);\n---\n>     pool_balance.deposit(amount - 1, 0); // MUTANT\n328c328\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/fundmanagement-merged/fund_management_4.rs",
+                "name": "fund_management_4"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/7f4b54368b1b4648af87b290bd489320?anonymousKey=3c25403d666c09e05589d1b6231bebf0e0c08f61",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/7f4b54368b1b4648af87b290bd489320?anonymousKey=3c25403d666c09e05589d1b6231bebf0e0c08f61"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/fundmanagement-merged/fund_management_3.rs",
+                "original_filename": "../src/backstop/fund_management.rs",
+                "directory": "../mutations/fundmanagement-merged",
+                "id": "fund_management_3",
+                "diff": "71c71\n<     pool_balance.deposit(amount, 0);\n---\n>     pool_balance.deposit(0, 0); // MUTANT\n328c328\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/fundmanagement-merged/fund_management_3.rs",
+                "name": "fund_management_3"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/e640a0379f6840789dc959f8153866ba?anonymousKey=4b65b651287dbf48e315da2cd122d9ec797fdcc8",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/e640a0379f6840789dc959f8153866ba?anonymousKey=4b65b651287dbf48e315da2cd122d9ec797fdcc8"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/fundmanagement-merged/fund_management_0.rs",
+                "original_filename": "../src/backstop/fund_management.rs",
+                "directory": "../mutations/fundmanagement-merged",
+                "id": "fund_management_0",
+                "diff": "23c23\n<     pool_balance.withdraw(e, amount, 0);\n---\n>     pool_balance.withdraw(e, 0, 0); // MUTANT\n328c328\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/fundmanagement-merged/fund_management_0.rs",
+                "name": "fund_management_0"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/1f765b0e2bb04bcfa9166ba1fe0cbee0?anonymousKey=11435d1d599592cd7fbb8ecc271572a867a0e054",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/1f765b0e2bb04bcfa9166ba1fe0cbee0?anonymousKey=11435d1d599592cd7fbb8ecc271572a867a0e054"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/fundmanagement-merged/fund_management_2.rs",
+                "original_filename": "../src/backstop/fund_management.rs",
+                "directory": "../mutations/fundmanagement-merged",
+                "id": "fund_management_2",
+                "diff": "41c41\n<     require_nonnegative(e, amount);\n---\n>     // require_nonnegative(e, amount); MUTANT\n328c328\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/fundmanagement-merged/fund_management_2.rs",
+                "name": "fund_management_2"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/b919af953315493ab7c09d87cf22810b?anonymousKey=f9a787e7eb05d7a2f69ec35cf51184e4f4c44a2f",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/b919af953315493ab7c09d87cf22810b?anonymousKey=f9a787e7eb05d7a2f69ec35cf51184e4f4c44a2f"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/fundmanagement-merged/fund_management_1.rs",
+                "original_filename": "../src/backstop/fund_management.rs",
+                "directory": "../mutations/fundmanagement-merged",
+                "id": "fund_management_1",
+                "diff": "19c19\n<     require_nonnegative(e, amount);\n---\n>     // require_nonnegative(e, amount); MUTANT\n328c328\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/fundmanagement-merged/fund_management_1.rs",
+                "name": "fund_management_1"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/fd595786ca844072a2cc8fed027325a5?anonymousKey=bd9521ee7c96b2e1f7b4aecc41efb6e0937e0be6",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/fd595786ca844072a2cc8fed027325a5?anonymousKey=bd9521ee7c96b2e1f7b4aecc41efb6e0937e0be6"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/pool-merged/pool_2.rs",
+                "original_filename": "../src/backstop/pool.rs",
+                "directory": "../mutations/pool-merged",
+                "id": "pool_2",
+                "diff": "213c213\n<         self.q4w -= shares;\n---\n>         // self.q4w -= shares; MUTANT\n",
+                "description": "../mutations/pool-merged/pool_2.rs",
+                "name": "pool_2"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/c26656675ca04b3197fd83f5c2331847?anonymousKey=74f4dfa501c7a805f07cd38158eabbf7d99211c9",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/c26656675ca04b3197fd83f5c2331847?anonymousKey=74f4dfa501c7a805f07cd38158eabbf7d99211c9"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/pool-merged/pool_4.rs",
+                "original_filename": "../src/backstop/pool.rs",
+                "directory": "../mutations/pool-merged",
+                "id": "pool_4",
+                "diff": "221c221\n<         self.q4w += shares;\n---\n>         self.q4w -= shares; // MUTANT changed + to -\n629c629\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/pool-merged/pool_4.rs",
+                "name": "pool_4"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/c5dddaf6b3774999ad96d03e4da50508?anonymousKey=3383c7b9d9204309e2a6df8ac3385f1adb33826f",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/c5dddaf6b3774999ad96d03e4da50508?anonymousKey=3383c7b9d9204309e2a6df8ac3385f1adb33826f"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/pool-merged/pool_3.rs",
+                "original_filename": "../src/backstop/pool.rs",
+                "directory": "../mutations/pool-merged",
+                "id": "pool_3",
+                "diff": "198c198\n<         self.tokens += tokens;\n---\n>         // self.tokens += tokens; MUTANT\n629c629\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/pool-merged/pool_3.rs",
+                "name": "pool_3"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/22b9cbda13514a39aac498a5e94c3d4a?anonymousKey=f2222ee322f1e6095a1e9151c17da03cfef2c8e6",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/22b9cbda13514a39aac498a5e94c3d4a?anonymousKey=f2222ee322f1e6095a1e9151c17da03cfef2c8e6"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/pool-merged/pool_0.rs",
+                "original_filename": "../src/backstop/pool.rs",
+                "directory": "../mutations/pool-merged",
+                "id": "pool_0",
+                "diff": "211c211\n<         self.tokens -= tokens;\n---\n>         // self.tokens -= tokens; MUTANT\n",
+                "description": "../mutations/pool-merged/pool_0.rs",
+                "name": "pool_0"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/79ccc116e7ea4ca6aa30d8250f42d335?anonymousKey=9d76b2a66a54adbf954fc54c53e9cb493108e835",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/79ccc116e7ea4ca6aa30d8250f42d335?anonymousKey=9d76b2a66a54adbf954fc54c53e9cb493108e835"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/pool-merged/pool_1.rs",
+                "original_filename": "../src/backstop/pool.rs",
+                "directory": "../mutations/pool-merged",
+                "id": "pool_1",
+                "diff": "212c212\n<         self.shares -= shares;\n---\n>         // self.shares -= shares; MUTANT\n",
+                "description": "../mutations/pool-merged/pool_1.rs",
+                "name": "pool_1"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/72c2bca9c73e4d7bb82522a1a46969ec?anonymousKey=71f550edfd05cbade9d0c7a055f5d90a96f0097f",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/72c2bca9c73e4d7bb82522a1a46969ec?anonymousKey=71f550edfd05cbade9d0c7a055f5d90a96f0097f"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/user-merged/user_0.rs",
+                "original_filename": "../src/backstop/user.rs",
+                "directory": "../mutations/user-merged",
+                "id": "user_0",
+                "diff": "77c77\n<         self.shares += to_add;\n---\n>         self.shares += 0; // MUTANT\n",
+                "description": "../mutations/user-merged/user_0.rs",
+                "name": "user_0"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/c63fdc489c8a4818a8177437b57a666e?anonymousKey=89141eef3bef505b3013c018ec057e1b51511ca9",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/c63fdc489c8a4818a8177437b57a666e?anonymousKey=89141eef3bef505b3013c018ec057e1b51511ca9"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/user-merged/user_1.rs",
+                "original_filename": "../src/backstop/user.rs",
+                "directory": "../mutations/user-merged",
+                "id": "user_1",
+                "diff": "98c98\n<         self.shares = self.shares - to_q;\n---\n>         self.shares = self.shares + to_q; // MUTANT\n",
+                "description": "../mutations/user-merged/user_1.rs",
+                "name": "user_1"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/76e001ef69ff48f2bb976439ac6876d9?anonymousKey=b9dfbfb52c054aff99e3f2cefb9e5c0386371132",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/76e001ef69ff48f2bb976439ac6876d9?anonymousKey=b9dfbfb52c054aff99e3f2cefb9e5c0386371132"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/user-merged/user_2.rs",
+                "original_filename": "../src/backstop/user.rs",
+                "directory": "../mutations/user-merged",
+                "id": "user_2",
+                "diff": "159c159\n<         let mut left_to_dequeue: i128 = to_dequeue;\n---\n>         let mut left_to_dequeue: i128 = to_dequeue; \n174c174\n<                 left_to_dequeue -= cur_q4w.amount;\n---\n>                 left_to_dequeue -= 0; // MUTANT\n",
+                "description": "../mutations/user-merged/user_2.rs",
+                "name": "user_2"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/69b457f9e9924f9d87ab1abd6e5daf61?anonymousKey=a152f9876513abfa588c03b19c205eb84c2ef473",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/69b457f9e9924f9d87ab1abd6e5daf61?anonymousKey=a152f9876513abfa588c03b19c205eb84c2ef473"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/user-merged/user_3.rs",
+                "original_filename": "../src/backstop/user.rs",
+                "directory": "../mutations/user-merged",
+                "id": "user_3",
+                "diff": "123c123\n<                 if cur_q4w.amount > left_to_withdraw {\n---\n>                 if cur_q4w.amount < left_to_withdraw { // MUTANT\n",
+                "description": "../mutations/user-merged/user_3.rs",
+                "name": "user_3"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/a338e490f940402685e23ff7e2f250aa?anonymousKey=d438044c82ae79162846aab16f0f59b864e6df1a",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/a338e490f940402685e23ff7e2f250aa?anonymousKey=d438044c82ae79162846aab16f0f59b864e6df1a"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/withdraw-merged/withdraw_2.rs",
+                "original_filename": "../src/backstop/withdrawal.rs",
+                "directory": "../mutations/withdraw-merged",
+                "id": "withdraw_2",
+                "diff": "55c55\n<     user_balance.add_shares(amount);\n---\n>     // user_balance.add_shares(amount); MUTANT\n524c524\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/withdraw-merged/withdraw_2.rs",
+                "name": "withdraw_2"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/8d3c03d60c644974b56884a4730e553f?anonymousKey=18919d1c28723bc4ab16e448d61d370fcf0b56f4",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/8d3c03d60c644974b56884a4730e553f?anonymousKey=18919d1c28723bc4ab16e448d61d370fcf0b56f4"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/withdraw-merged/withdraw_1.rs",
+                "original_filename": "../src/backstop/withdrawal.rs",
+                "directory": "../mutations/withdraw-merged",
+                "id": "withdraw_1",
+                "diff": "35c35\n<     user_balance.queue_shares_for_withdrawal(e, amount);\n---\n>     // user_balance.queue_shares_for_withdrawal(e, amount); MUTANT\n524c524\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/withdraw-merged/withdraw_1.rs",
+                "name": "withdraw_1"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/0a5a43c28df141b8af576055daf9135d?anonymousKey=8efedfafdf82c3ae8cb2c08731045b45a30c33f4",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/0a5a43c28df141b8af576055daf9135d?anonymousKey=8efedfafdf82c3ae8cb2c08731045b45a30c33f4"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/withdraw-merged/withdraw_0.rs",
+                "original_filename": "../src/backstop/withdrawal.rs",
+                "directory": "../mutations/withdraw-merged",
+                "id": "withdraw_0",
+                "diff": "58c58\n<     storage::set_user_balance(e, pool_address, from, &user_balance);\n---\n>     // storage::set_user_balance(e, pool_address, from, &user_balance); MUTANT\n524c524\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/withdraw-merged/withdraw_0.rs",
+                "name": "withdraw_0"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/4e6d5fb0a7264f4aa7f884e30c2b910f?anonymousKey=4746a463d149f698c6c800a594ebfe98d198b43c",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/4e6d5fb0a7264f4aa7f884e30c2b910f?anonymousKey=4746a463d149f698c6c800a594ebfe98d198b43c"
+        },
+        {
+            "gambit_mutant": {
+                "filename": "../mutations/withdraw-merged/withdraw_3.rs",
+                "original_filename": "../src/backstop/withdrawal.rs",
+                "directory": "../mutations/withdraw-merged",
+                "id": "withdraw_3",
+                "diff": "72,74c72,74\n<     if to_return == 0 {\n<         panic_with_error!(e, &BackstopError::InvalidTokenWithdrawAmount);\n<     }\n---\n>     // if to_return == 0 { MUTANT\n>     //     panic_with_error!(e, &BackstopError::InvalidTokenWithdrawAmount);\n>     // }\n524c524\n< }\n---\n> }\n\\ No newline at end of file\n",
+                "description": "../mutations/withdraw-merged/withdraw_3.rs",
+                "name": "withdraw_3"
+            },
+            "link": "https://prover.certora.com/jobStatus/7749274/64f559c5d24e49549b3cb847b41e0c58?anonymousKey=3706aa22e80c0178de8b8eb3ac227cebf74c5a0d",
+            "success": true,
+            "run_directory": "",
+            "rule_report_link": "https://prover.certora.com/output/7749274/64f559c5d24e49549b3cb847b41e0c58?anonymousKey=3706aa22e80c0178de8b8eb3ac227cebf74c5a0d"
+        }
+    ]
+}
