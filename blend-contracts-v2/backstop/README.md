@@ -32,31 +32,10 @@
 
 - [Manual Mutations Testing](#manual-mutations-testing)
   - [Deposit](#deposit)
-    - [deposit_0.rs](#deposit_0---multiple-properties)
-    - [deposit_1.rs](#deposit_1---multiple-properties)
-    - [deposit_2.rs](#deposit_2---multiple-properties)
-    - [deposit_3.rs](#deposit_3---multiple-properties)
   - [Fund Management](#fund-management)
-    - [fund_management_0.rs](#fund_management_0---multiple-properties)
-    - [fund_management_1 - valid_state_user_not_pool_execute_draw](#fund_management_1---valid_state_user_not_pool_execute_draw)
-    - [fund_management_2.rs](#fund_management_2---multiple-properties)
-    - [fund_management_3.rs](#fund_management_3---multiple-properties)
-    - [fund_management_4.rs](#fund_management_4---multiple-properties)
   - [Pool](#pool)
-    - [pool_0.rs](#pool_0---multiple-properties)
-    - [pool_1.rs](#pool_1---multiple-properties)
-    - [pool_2.rs](#pool_2---multiple-properties)
-    - [pool_3.rs](#pool_3---multiple-properties)
-    - [pool_4.rs](#pool_4---multiple-properties)
   - [User](#user)
-    - [user_0.rs](#user_0---multiple-properties)
-    - [user_1.rs](#user_1---multiple-properties)
-    - [user_3.rs](#user_3---multiple-properties)
   - [Withdrawal](#withdrawal)
-    - [withdraw_0.rs](#withdraw_0---multiple-properties)
-    - [withdraw_1.rs](#withdraw_1---multiple-properties)
-    - [withdraw_2.rs](#withdraw_2---multiple-properties)
-    - [withdraw_3 - state_trans_pb_shares_tokens_directional_change_execute_withdraw](#withdraw_3---state_trans_pb_shares_tokens_directional_change_execute_withdraw)
 
 - [Real Bug Finding](#real-bug-finding)
   - [Zero-amount Withdrawal Queue Entry](#zero-amount-withdrawal-queue-entry)
@@ -299,14 +278,12 @@ This section documents the manual mutations from the Certora FV contest applied 
 
 ### Deposit
 
-#### deposit_0.rs
+#### [mutations/deposit/deposit_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_0.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/914416d6b1b84f1cac5bd4b670a46fca/?anonymousKey=380941738830b18c4d8203ccf59db163efe4d6d2) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 
 Mutation: Comments out the pool balance deposit operation while keeping user balance update, breaking balance consistency.
-
-[blend-contracts-v2/backstop/mutations/deposit/deposit_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_0.rs)
 
 ```rust
     let to_mint = pool_balance.convert_to_shares(amount);
@@ -319,15 +296,13 @@ Mutation: Comments out the pool balance deposit operation while keeping user bal
     storage::set_pool_balance(e, pool_address, &pool_balance);
 ``` 
 
-#### deposit_1.rs
+#### [mutations/deposit/deposit_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_1.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/14331731b7704237a94b9f1231144094/?anonymousKey=c62fc49662629ae9a734adfac04283dc9b41fc72) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [❌](https://prover.certora.com/output/52567/6508f009f9bc463797450f1f241899f7/?anonymousKey=dece2f2116734fdf4a9fd139e2eb1c80f029cb2b) [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
 
 Mutation: Comments out the user balance share addition while keeping pool balance update, creating inconsistent state.
-
-[blend-contracts-v2/backstop/mutations/deposit/deposit_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_1.rs)
 
 ```rust
     let to_mint = pool_balance.convert_to_shares(amount);
@@ -340,14 +315,12 @@ Mutation: Comments out the user balance share addition while keeping pool balanc
     storage::set_pool_balance(e, pool_address, &pool_balance);
 ``` 
 
-#### deposit_2.rs
+#### [mutations/deposit/deposit_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_2.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/08dc4e2759044ea9963ea0f23d74ffb1/?anonymousKey=04dda8b235c758c351385cc0bfd38036a553494b) [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
 
 Mutation: Removes validation check for zero or negative share amounts, allowing invalid deposits.
-
-[blend-contracts-v2/backstop/mutations/deposit/deposit_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_2.rs)
 
 ```rust
     let to_mint = pool_balance.convert_to_shares(amount);
@@ -358,7 +331,7 @@ Mutation: Removes validation check for zero or negative share amounts, allowing 
     user_balance.add_shares(to_mint);
 ``` 
 
-#### deposit_3.rs
+#### [mutations/deposit/deposit_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_3.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/8b516fe8d2f34284a345c378b32adb6b/?anonymousKey=d2e1a3ce36b88ec7fa45fedbbb9e28b50a996e16) [valid_state_nonnegative_pb_tokens_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61)
@@ -366,8 +339,6 @@ Caught by:
 - [❌](https://prover.certora.com/output/52567/a39ec6de0c594f80a5e4e809c3f4d86b/?anonymousKey=48fa16a16b728b282675beb0bda1f3fdcd462a39) [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
 
 Mutation: Removes input validation for negative amounts, allowing deposits with negative values.
-
-[blend-contracts-v2/backstop/mutations/deposit/deposit_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_3.rs)
 
 ```rust
 pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: i128) -> i128 {
@@ -379,14 +350,12 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
 
 ### Fund Management
 
-#### fund_management_0.rs
+#### [mutations/fundmanagement/fund_management_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_0.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/8c76c135abc74f38b6495d2716526778/?anonymousKey=d024bc9b32db5521539998dda570fb55fa664355) [integrity_balance_draw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L246)
 
 Mutation: Inserts spurious withdrawal operation with zero amounts, potentially affecting balance tracking.
-
-[blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_0.rs)
 
 ```rust
     let mut pool_balance = storage::get_pool_balance(e, pool_address);
@@ -397,16 +366,12 @@ Mutation: Inserts spurious withdrawal operation with zero amounts, potentially a
     #[cfg(feature = "certora_token_mock")] // @note changed
 ``` 
 
-#### fund_management_1 - valid_state_user_not_pool_execute_draw
+#### [mutations/fundmanagement/fund_management_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_1.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/a01e5c18d26044b8bca3f9a19980f47d/?anonymousKey=a18ea4bc91d8294d26c3bd72be4321982f4d7361) [valid_state_user_not_pool_execute_draw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L212)
 
-Mutation:
-
-Removes input validation for negative amounts in draw operations, allowing invalid withdrawals.
-
-[blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_1.rs)
+Mutation: Removes input validation for negative amounts in draw operations, allowing invalid withdrawals.
 
 ```rust
 pub fn execute_draw(e: &Env, pool_address: &Address, amount: i128, to: &Address) {
@@ -415,16 +380,12 @@ pub fn execute_draw(e: &Env, pool_address: &Address, amount: i128, to: &Address)
     let mut pool_balance = storage::get_pool_balance(e, pool_address);
 ```
 
-**Link:** [✅](https://prover.certora.com/output/52567/a01e5c18d26044b8bca3f9a19980f47d/?anonymousKey=a18ea4bc91d8294d26c3bd72be4321982f4d7361)
-
-#### fund_management_2.rs
+#### [mutations/fundmanagement/fund_management_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_2.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/7909ec79f1c845bfa3b756a90d53e309/?anonymousKey=46034b44a1b37fa5ceb3d7b5af6a22725c85a91b) [valid_state_nonnegative_pb_tokens_execute_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61)
 
 Mutation: Removes input validation for negative amounts in donate operations, allowing invalid donations.
-
-[blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_2.rs)
 
 ```rust
 pub fn execute_donate(e: &Env, from: &Address, pool_address: &Address, amount: i128) {
@@ -434,14 +395,12 @@ pub fn execute_donate(e: &Env, from: &Address, pool_address: &Address, amount: i
     }
 ``` 
 
-#### fund_management_3.rs
+#### [mutations/fundmanagement/fund_management_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_3.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/d8f276f9aa9042f38b55b9130f86f8d5/?anonymousKey=3d4df9ef8d85684b75d2fb63d32c6c2e12a3efd6) [integrity_balance_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L202)
 
 Mutation: Replaces proper amount deposit with zero values, breaking balance tracking in donations.
-
-[blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_3.rs)
 
 ```rust
     }
@@ -451,15 +410,13 @@ Mutation: Replaces proper amount deposit with zero values, breaking balance trac
 }
 ``` 
 
-#### fund_management_4.rs
+#### [mutations/fundmanagement/fund_management_4.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_4.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/ce00e561343d439f82358e1846f6d640/?anonymousKey=04a0e1400f71f0cb6db4b907b9ea9daf4534c204) [valid_state_nonnegative_pb_tokens_execute_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61)
 - [❌](https://prover.certora.com/output/52567/ccd242e9532f426ba3e9d12cde1e15bc/?anonymousKey=1a4a0d5cea6933d5f4c0de67d61471347931c169) [integrity_balance_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L202)
 
 Mutation: Deposits incorrect token amount (amount - 1) instead of the full amount, creating balance discrepancies.
-
-[blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_4.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_4.rs)
 
 ```rust
     }
@@ -471,7 +428,7 @@ Mutation: Deposits incorrect token amount (amount - 1) instead of the full amoun
 
 ### Pool
 
-#### pool_0.rs
+#### [mutations/pool/pool_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_0.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/26f7c3a3941742c8b3579f4f2b806fb6/?anonymousKey=c6eee262ee50ee97db5adabb92ffbf3cc9855288) [state_trans_pb_shares_tokens_directional_change_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11)
@@ -479,8 +436,6 @@ Caught by:
 - [❌](https://prover.certora.com/output/52567/8eba4d8acb6349358c95c3523161cb06/?anonymousKey=a0ef0c7277193afe65135f9885489c7aa2cfea4a) [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
 
 Mutation: Comments out the token balance reduction during withdrawal while keeping share updates, breaking token-share consistency.
-
-[blend-contracts-v2/backstop/mutations/pool/pool_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_0.rs)
 
 ```rust
         if tokens > self.tokens || shares > self.shares || shares > self.q4w {
@@ -491,7 +446,7 @@ Mutation: Comments out the token balance reduction during withdrawal while keepi
         self.q4w -= shares;
 ``` 
 
-#### pool_1.rs
+#### [mutations/pool/pool_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_1.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/1d64b45b45934be188c82d0011157e09/?anonymousKey=94c46c84f809566acb3bb4b76c1a1bf719ac3e00) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
@@ -499,8 +454,6 @@ Caught by:
 - [❌](https://prover.certora.com/output/52567/36affc41d1fd42909c8ef7b6ac0b2ad7/?anonymousKey=ed864386a3cedd1bc49d779a89a4600b508ccc61) [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
 
 Mutation: Comments out the share balance reduction during withdrawal while keeping token and queue updates, breaking share accounting.
-
-[blend-contracts-v2/backstop/mutations/pool/pool_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_1.rs)
 
 ```rust
         if tokens > self.tokens || shares > self.shares || shares > self.q4w {
@@ -512,7 +465,7 @@ Mutation: Comments out the share balance reduction during withdrawal while keepi
 ```
 
 
-#### pool_2.rs
+#### [mutations/pool/pool_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_2.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/67d956ccb6d6410e80ae135d47b4db38/?anonymousKey=14e8f582cf54893a55a01e9d16f5d4698e8c79b0) [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
@@ -521,8 +474,6 @@ Caught by:
 - [❌](https://prover.certora.com/output/52567/aefa7db3827a416c820fe3abeb524c0a/?anonymousKey=cf2f72a01a090338e4033758943da2f72814f3c6) [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
 
 Mutation: Comments out the queue-for-withdrawal balance reduction during withdrawal, breaking queue consistency.
-
-[blend-contracts-v2/backstop/mutations/pool/pool_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_2.rs)
 
 ```rust
         if tokens > self.tokens || shares > self.shares || shares > self.q4w {
@@ -533,7 +484,7 @@ Mutation: Comments out the queue-for-withdrawal balance reduction during withdra
         // self.q4w -= shares; MUTANT
 ``` 
 
-#### pool_3.rs
+#### [mutations/pool/pool_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_3.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/f5707974beef4678a9f36d8eb7644ddf/?anonymousKey=8571744d83dc711f83b8ee8fe833957ac3392499) [state_trans_pb_shares_tokens_directional_change_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11)
@@ -542,8 +493,6 @@ Caught by:
 
 Mutation: Comments out the token balance increase during deposit while keeping share updates, breaking token-share consistency.
 
-[blend-contracts-v2/backstop/mutations/pool/pool_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_3.rs)
-
 ```rust
     pub fn deposit(&mut self, tokens: i128, shares: i128) {
         // self.tokens += tokens; MUTANT
@@ -551,7 +500,7 @@ Mutation: Comments out the token balance increase during deposit while keeping s
     }
 ``` 
 
-#### pool_4.rs
+#### [mutations/pool/pool_4.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_4.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9) [valid_state_nonnegative_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L50)
@@ -562,8 +511,6 @@ Caught by:
 
 Mutation: Changes the queue-for-withdrawal operation from addition to subtraction, causing negative balances.
 
-[blend-contracts-v2/backstop/mutations/pool/pool_4.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_4.rs)
-
 ```rust
     pub fn queue_for_withdraw(&mut self, shares: i128) {
         self.q4w -= shares; // MUTANT changed + to -
@@ -572,7 +519,7 @@ Mutation: Changes the queue-for-withdrawal operation from addition to subtractio
 
 ### User
 
-#### user_0.rs
+#### [mutations/user/user_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_0.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/f18a9b3fbcb5444ea3fb4b54dea116ab/?anonymousKey=1f6cef4f20df0f32cce4800ebcb1653ad2b8c52a) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
@@ -582,15 +529,13 @@ Caught by:
 
 Mutation: Replaces the share addition parameter with zero, preventing user balance updates.
 
-[blend-contracts-v2/backstop/mutations/user/user_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_0.rs)
-
 ```rust
     pub fn add_shares(&mut self, to_add: i128) {
         self.shares += 0; // MUTANT
     }
 ``` 
 
-#### user_1.rs
+#### [mutations/user/user_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_1.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/0ab156788c824d0d9fd0c972493e8331/?anonymousKey=ae20d57296b969ff670adc2c3273b93bc6afcd1f) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
@@ -600,8 +545,6 @@ Caught by:
 
 Mutation: Changes user share reduction to addition during queue operation, causing incorrect balance calculations.
 
-[blend-contracts-v2/backstop/mutations/user/user_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_1.rs)
-
 ```rust
         self.shares = self.shares + to_q; // MUTANT
 
@@ -609,14 +552,12 @@ Mutation: Changes user share reduction to addition during queue operation, causi
         let new_q4w = Q4W {
 ``` 
 
-#### user_2.rs
+#### [mutations/user/user_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_2.rs)
 
 Caught by:
 - No violations detected
 
 Mutation: Replaces the dequeue amount reduction with zero, preventing proper queue processing.
-
-[blend-contracts-v2/backstop/mutations/user/user_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_2.rs)
 
 ```rust
             } else {
@@ -626,7 +567,7 @@ Mutation: Replaces the dequeue amount reduction with zero, preventing proper que
         }
 ```
 
-#### user_3.rs
+#### [mutations/user/user_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_3.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a) [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
@@ -637,8 +578,6 @@ Caught by:
 
 Mutation: Changes withdrawal amount comparison from greater-than-or-equal to less-than, causing incorrect queue processing logic.
 
-[blend-contracts-v2/backstop/mutations/user/user_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_3.rs)
-
 ```rust
             if cur_q4w.exp <= e.ledger().timestamp() {
                 if cur_q4w.amount < left_to_withdraw { // MUTANT
@@ -648,15 +587,13 @@ Mutation: Changes withdrawal amount comparison from greater-than-or-equal to les
 
 ### Withdrawal
 
-#### withdraw_0.rs
+#### [mutations/withdraw/withdraw_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_0.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/da42ba4e5109434b917800f14f2366ec/?anonymousKey=25d43a69b474c0cb6196a582366633902da7fce4) [valid_state_ub_q4w_sum_eq_pb_q4w_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
 - [❌](https://prover.certora.com/output/52567/7bb336be49924c50b1c05b66e68eaefd/?anonymousKey=3215f615950fa8b42c39317cfca7547a669215b8) [integrity_balance_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L158)
 
 Mutation: Comments out the user balance storage update during dequeue, preventing balance persistence.
-
-[blend-contracts-v2/backstop/mutations/withdraw/withdraw_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_0.rs)
 
 ```rust
     user_balance.dequeue_shares(e, amount);
@@ -668,7 +605,7 @@ Mutation: Comments out the user balance storage update during dequeue, preventin
 ```
 
 
-#### withdraw_1.rs
+#### [mutations/withdraw/withdraw_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_1.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb) [valid_state_pb_q4w_leq_shares_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L108)
@@ -678,8 +615,6 @@ Caught by:
 
 Mutation: Comments out the user queue operation during withdrawal queuing, breaking user-pool queue consistency.
 
-[blend-contracts-v2/backstop/mutations/withdraw/withdraw_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_1.rs)
-
 ```rust
     // user_balance.queue_shares_for_withdrawal(e, amount); MUTANT
     pool_balance.queue_for_withdraw(amount);
@@ -688,15 +623,13 @@ Mutation: Comments out the user queue operation during withdrawal queuing, break
 ```
 
 
-#### withdraw_2.rs
+#### [mutations/withdraw/withdraw_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_2.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/a2ee19b9f9104bd49e3b7a725b744bb8/?anonymousKey=57e7b8e61238f2eae65ab2d2c15fc25eb975871c) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [❌](https://prover.certora.com/output/52567/6fc3d0fd57a24e42be5c8c363f9f7598/?anonymousKey=ca2d5dc446572e98184ee16def629b975d6c8d2c) [integrity_balance_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L158)
 
 Mutation: Comments out the user share addition during dequeue, preventing share reallocation to user.
-
-[blend-contracts-v2/backstop/mutations/withdraw/withdraw_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_2.rs)
 
 ```rust
     user_balance.dequeue_shares(e, amount);
@@ -707,14 +640,12 @@ Mutation: Comments out the user share addition during dequeue, preventing share 
 ```
 
 
-#### withdraw_3 - state_trans_pb_shares_tokens_directional_change_execute_withdraw
+#### [mutations/withdraw/withdraw_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_3.rs)
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/9d209d2e1be6448dae850da3d05759db/?anonymousKey=877f5965b79c4a3edf347f6d243be3211bdb34b2) [state_trans_pb_shares_tokens_directional_change_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11)
 
 Mutation: Comments out the zero-amount withdrawal validation, allowing invalid withdrawals to proceed.
-
-[blend-contracts-v2/backstop/mutations/withdraw/withdraw_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_3.rs)
 
 ```rust
     let to_return = pool_balance.convert_to_tokens(amount);
@@ -723,8 +654,6 @@ Mutation: Comments out the zero-amount withdrawal validation, allowing invalid w
     // }
     pool_balance.withdraw(e, to_return, amount);
 ```
-
-**Link:** [✅](https://prover.certora.com/output/52567/9d209d2e1be6448dae850da3d05759db/?anonymousKey=877f5965b79c4a3edf347f6d243be3211bdb34b2)
 
 ---
 
