@@ -271,7 +271,7 @@ All integrity properties [✅ passed verification](https://prover.certora.com/ou
 
 #### Emission Integrity
 
-| Source | Rule | Description | Caught mutations | Links |
+| Source | Rule | Description | Caught mutations |
 |------------|---------------|-------------|------------------|
 | [INT-08](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_emission.rs) | integrity_emission_deposit | Emission state correct during deposit | - |
 | [INT-09](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_emission.rs) | integrity_emission_withdraw | Emission state correct during withdraw | - |
@@ -282,7 +282,7 @@ All integrity properties [✅ passed verification](https://prover.certora.com/ou
 
 #### Token Integrity
 
-| Source | Rule | Description | Caught mutations | Links |
+| Source | Rule | Description | Caught mutations |
 |------------|---------------|-------------|------------------|
 | [INT-14](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_token.rs) | integrity_token_deposit | Token transfers correct during deposit | - |
 | [INT-15](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_token.rs) | integrity_token_withdraw | Token transfers correct during withdraw | - |
