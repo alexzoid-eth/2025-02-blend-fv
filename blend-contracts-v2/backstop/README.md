@@ -511,10 +511,6 @@ Mutation: Comments out the share balance reduction during withdrawal while keepi
         self.q4w -= shares;
 ```
 
-Links: 
-- [✅](https://prover.certora.com/output/52567/1d64b45b45934be188c82d0011157e09/?anonymousKey=94c46c84f809566acb3bb4b76c1a1bf719ac3e00)
-- [✅](https://prover.certora.com/output/52567/ef7db8f876c04c5f9c55999c43142b0c/?anonymousKey=de9ecff0b1bf45071ce683c2a6c74d2f5b71718b)
-- [✅](https://prover.certora.com/output/52567/36affc41d1fd42909c8ef7b6ac0b2ad7/?anonymousKey=ed864386a3cedd1bc49d779a89a4600b508ccc61)
 
 #### pool_2.rs
 
@@ -649,10 +645,6 @@ Mutation: Changes withdrawal amount comparison from greater-than-or-equal to les
                     // last record we need to update, but the q4w should remain
 ```
 
-Links:
-- [✅](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a)
-- [✅](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053)
-- [✅](https://prover.certora.com/output/52567/e573758a36fd4b979fa7d2a0ab44f2e7/?anonymousKey=4d38a32dc3020a3c037dcc19049c9050c90384d3)
 
 ### Withdrawal
 
@@ -675,9 +667,6 @@ Mutation: Comments out the user balance storage update during dequeue, preventin
     storage::set_pool_balance(e, pool_address, &pool_balance);
 ```
 
-Links:
-- [✅](https://prover.certora.com/output/52567/da42ba4e5109434b917800f14f2366ec/?anonymousKey=25d43a69b474c0cb6196a582366633902da7fce4)
-- [✅](https://prover.certora.com/output/52567/7bb336be49924c50b1c05b66e68eaefd/?anonymousKey=3215f615950fa8b42c39317cfca7547a669215b8)
 
 #### withdraw_1.rs
 
@@ -698,10 +687,6 @@ Mutation: Comments out the user queue operation during withdrawal queuing, break
     storage::set_user_balance(e, pool_address, from, &user_balance);
 ```
 
-Links:
-- [✅](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb)
-- [✅](https://prover.certora.com/output/52567/2a86fbe7d28f4dfbbee1d0f1eba119e7/?anonymousKey=4cae8150862c7c1dc7d3ffe667669a62d8f06483)
-- [✅](https://prover.certora.com/output/52567/29a8128d9dfe49c5bd23d556a713278c/?anonymousKey=d35e7a76f12daa71eb81f9dd2cfe1872565a5791)
 
 #### withdraw_2.rs
 
@@ -721,9 +706,6 @@ Mutation: Comments out the user share addition during dequeue, preventing share 
     storage::set_user_balance(e, pool_address, from, &user_balance);
 ```
 
-Links:
-- [✅](https://prover.certora.com/output/52567/a2ee19b9f9104bd49e3b7a725b744bb8/?anonymousKey=57e7b8e61238f2eae65ab2d2c15fc25eb975871c)
-- [✅](https://prover.certora.com/output/52567/6fc3d0fd57a24e42be5c8c363f9f7598/?anonymousKey=ca2d5dc446572e98184ee16def629b975d6c8d2c)
 
 #### withdraw_3 - state_trans_pb_shares_tokens_directional_change_execute_withdraw
 
