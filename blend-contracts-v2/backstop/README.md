@@ -301,10 +301,10 @@ This section documents the manual mutations from the Certora FV contest applied 
 
 #### deposit_0 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 
-**Mutation:**
+Mutation:
 
 Comments out the pool balance deposit operation while keeping user balance update, breaking balance consistency.
 
@@ -323,11 +323,11 @@ Comments out the pool balance deposit operation while keeping user balance updat
 
 #### deposit_1 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
 
-**Mutation:**
+Mutation:
 
 Comments out the user balance share addition while keeping pool balance update, creating inconsistent state.
 
@@ -346,10 +346,10 @@ Comments out the user balance share addition while keeping pool balance update, 
 
 #### deposit_2 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
 
-**Mutation:**
+Mutation:
 
 Removes validation check for zero or negative share amounts, allowing invalid deposits.
 
@@ -366,12 +366,12 @@ Removes validation check for zero or negative share amounts, allowing invalid de
 
 #### deposit_3 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_nonnegative_pb_tokens_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61)
 - [state_trans_pb_shares_tokens_directional_change_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11)
 - [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
 
-**Mutation:**
+Mutation:
 
 Removes input validation for negative amounts, allowing deposits with negative values.
 
@@ -389,10 +389,10 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
 
 #### fund_management_0 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [integrity_balance_draw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L246)
 
-**Mutation:**
+Mutation:
 
 Inserts spurious withdrawal operation with zero amounts, potentially affecting balance tracking.
 
@@ -409,10 +409,10 @@ Inserts spurious withdrawal operation with zero amounts, potentially affecting b
 
 #### fund_management_1 - valid_state_user_not_pool_execute_draw
 
-**Caught by:**
+Caught by:
 - [valid_state_user_not_pool_execute_draw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L212)
 
-**Mutation:**
+Mutation:
 
 Removes input validation for negative amounts in draw operations, allowing invalid withdrawals.
 
@@ -429,10 +429,10 @@ pub fn execute_draw(e: &Env, pool_address: &Address, amount: i128, to: &Address)
 
 #### fund_management_2 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_nonnegative_pb_tokens_execute_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61)
 
-**Mutation:**
+Mutation:
 
 Removes input validation for negative amounts in donate operations, allowing invalid donations.
 
@@ -448,10 +448,10 @@ pub fn execute_donate(e: &Env, from: &Address, pool_address: &Address, amount: i
 
 #### fund_management_3 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [integrity_balance_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L202)
 
-**Mutation:**
+Mutation:
 
 Replaces proper amount deposit with zero values, breaking balance tracking in donations.
 
@@ -467,11 +467,11 @@ Replaces proper amount deposit with zero values, breaking balance tracking in do
 
 #### fund_management_4 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_nonnegative_pb_tokens_execute_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61)
 - [integrity_balance_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L202)
 
-**Mutation:**
+Mutation:
 
 Deposits incorrect token amount (amount - 1) instead of the full amount, creating balance discrepancies.
 
@@ -489,12 +489,12 @@ Deposits incorrect token amount (amount - 1) instead of the full amount, creatin
 
 #### pool_0 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [state_trans_pb_shares_tokens_directional_change_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11)
 - [integrity_balance_draw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L246)
 - [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
 
-**Mutation:**
+Mutation:
 
 Comments out the token balance reduction during withdrawal while keeping share updates, breaking token-share consistency.
 
@@ -511,12 +511,12 @@ Comments out the token balance reduction during withdrawal while keeping share u
 
 #### pool_1 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
 - [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
 
-**Mutation:**
+Mutation:
 
 Comments out the share balance reduction during withdrawal while keeping token and queue updates, breaking share accounting.
 
@@ -531,20 +531,20 @@ Comments out the share balance reduction during withdrawal while keeping token a
         self.q4w -= shares;
 ```
 
-**Links:** 
+Links: 
 - [✅](https://prover.certora.com/output/52567/1d64b45b45934be188c82d0011157e09/?anonymousKey=94c46c84f809566acb3bb4b76c1a1bf719ac3e00)
 - [✅](https://prover.certora.com/output/52567/ef7db8f876c04c5f9c55999c43142b0c/?anonymousKey=de9ecff0b1bf45071ce683c2a6c74d2f5b71718b)
 - [✅](https://prover.certora.com/output/52567/36affc41d1fd42909c8ef7b6ac0b2ad7/?anonymousKey=ed864386a3cedd1bc49d779a89a4600b508ccc61)
 
 #### pool_2 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
 - [valid_state_pb_q4w_leq_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L108)
 - [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
 - [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
 
-**Mutation:**
+Mutation:
 
 Comments out the queue-for-withdrawal balance reduction during withdrawal, breaking queue consistency.
 
@@ -561,12 +561,12 @@ Comments out the queue-for-withdrawal balance reduction during withdrawal, break
 
 #### pool_3 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [state_trans_pb_shares_tokens_directional_change_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11)
 - [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
 - [integrity_balance_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L202)
 
-**Mutation:**
+Mutation:
 
 Comments out the token balance increase during deposit while keeping share updates, breaking token-share consistency.
 
@@ -581,14 +581,14 @@ Comments out the token balance increase during deposit while keeping share updat
 
 #### pool_4 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_nonnegative_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L50)
 - [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
 - [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
 - [state_trans_ub_shares_decrease_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L155)
 - [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112)
 
-**Mutation:**
+Mutation:
 
 Changes the queue-for-withdrawal operation from addition to subtraction, causing negative balances.
 
@@ -604,13 +604,13 @@ Changes the queue-for-withdrawal operation from addition to subtraction, causing
 
 #### user_0 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
 - [integrity_balance_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L158)
 
-**Mutation:**
+Mutation:
 
 Replaces the share addition parameter with zero, preventing user balance updates.
 
@@ -624,13 +624,13 @@ Replaces the share addition parameter with zero, preventing user balance updates
 
 #### user_1 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [state_trans_pb_q4w_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35)
 - [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
 - [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112)
 
-**Mutation:**
+Mutation:
 
 Changes user share reduction to addition during queue operation, causing incorrect balance calculations.
 
@@ -645,10 +645,10 @@ Changes user share reduction to addition during queue operation, causing incorre
 
 #### user_2 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - No violations detected
 
-**Mutation:**
+Mutation:
 
 Replaces the dequeue amount reduction with zero, preventing proper queue processing.
 
@@ -664,14 +664,14 @@ Replaces the dequeue amount reduction with zero, preventing proper queue process
 
 #### user_3 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
 - [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [state_trans_pb_q4w_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35)
 - [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
 - [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
 
-**Mutation:**
+Mutation:
 
 Changes withdrawal amount comparison from greater-than-or-equal to less-than, causing incorrect queue processing logic.
 
@@ -683,7 +683,7 @@ Changes withdrawal amount comparison from greater-than-or-equal to less-than, ca
                     // last record we need to update, but the q4w should remain
 ```
 
-**Links:**
+Links:
 - [✅](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a)
 - [✅](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053)
 - [✅](https://prover.certora.com/output/52567/e573758a36fd4b979fa7d2a0ab44f2e7/?anonymousKey=4d38a32dc3020a3c037dcc19049c9050c90384d3)
@@ -692,11 +692,11 @@ Changes withdrawal amount comparison from greater-than-or-equal to less-than, ca
 
 #### withdraw_0 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_ub_q4w_sum_eq_pb_q4w_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
 - [integrity_balance_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L158)
 
-**Mutation:**
+Mutation:
 
 Comments out the user balance storage update during dequeue, preventing balance persistence.
 
@@ -711,19 +711,19 @@ Comments out the user balance storage update during dequeue, preventing balance 
     storage::set_pool_balance(e, pool_address, &pool_balance);
 ```
 
-**Links:**
+Links:
 - [✅](https://prover.certora.com/output/52567/da42ba4e5109434b917800f14f2366ec/?anonymousKey=25d43a69b474c0cb6196a582366633902da7fce4)
 - [✅](https://prover.certora.com/output/52567/7bb336be49924c50b1c05b66e68eaefd/?anonymousKey=3215f615950fa8b42c39317cfca7547a669215b8)
 
 #### withdraw_1 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_pb_q4w_leq_shares_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L108)
 - [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
 - [state_trans_pb_q4w_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35)
 - [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112)
 
-**Mutation:**
+Mutation:
 
 Comments out the user queue operation during withdrawal queuing, breaking user-pool queue consistency.
 
@@ -736,18 +736,18 @@ Comments out the user queue operation during withdrawal queuing, breaking user-p
     storage::set_user_balance(e, pool_address, from, &user_balance);
 ```
 
-**Links:**
+Links:
 - [✅](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb)
 - [✅](https://prover.certora.com/output/52567/2a86fbe7d28f4dfbbee1d0f1eba119e7/?anonymousKey=4cae8150862c7c1dc7d3ffe667669a62d8f06483)
 - [✅](https://prover.certora.com/output/52567/29a8128d9dfe49c5bd23d556a713278c/?anonymousKey=d35e7a76f12daa71eb81f9dd2cfe1872565a5791)
 
 #### withdraw_2 - Multiple Properties
 
-**Caught by:**
+Caught by:
 - [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [integrity_balance_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L158)
 
-**Mutation:**
+Mutation:
 
 Comments out the user share addition during dequeue, preventing share reallocation to user.
 
@@ -761,16 +761,16 @@ Comments out the user share addition during dequeue, preventing share reallocati
     storage::set_user_balance(e, pool_address, from, &user_balance);
 ```
 
-**Links:**
+Links:
 - [✅](https://prover.certora.com/output/52567/a2ee19b9f9104bd49e3b7a725b744bb8/?anonymousKey=57e7b8e61238f2eae65ab2d2c15fc25eb975871c)
 - [✅](https://prover.certora.com/output/52567/6fc3d0fd57a24e42be5c8c363f9f7598/?anonymousKey=ca2d5dc446572e98184ee16def629b975d6c8d2c)
 
 #### withdraw_3 - state_trans_pb_shares_tokens_directional_change_execute_withdraw
 
-**Caught by:**
+Caught by:
 - [state_trans_pb_shares_tokens_directional_change_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11)
 
-**Mutation:**
+Mutation:
 
 Comments out the zero-amount withdrawal validation, allowing invalid withdrawals to proceed.
 
