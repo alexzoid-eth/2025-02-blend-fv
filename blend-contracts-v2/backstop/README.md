@@ -3,6 +3,7 @@
 - Competition: https://code4rena.com/audits/2025-02-blend-v2-audit-certora-formal-verification
 - Repository: https://github.com/code-423n4/2025-02-blend-fv
 - Latest Commit Hash: [6b803fa](https://github.com/code-423n4/2025-02-blend-fv/commit/6b803fa4605f731cacdadbc80d89161b0c27b781)
+- Scope: [blend-contracts-v2/backstop](https://github.com/code-423n4/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop)
 - Date: February 2025
 - Author: [@alexzoid_eth](https://x.com/alexzoid_eth) 
 - Certora Prover version: 7.26.0 
@@ -70,14 +71,22 @@
 
 Certora Formal Verification (FV) provides mathematical proofs of smart contract correctness by verifying code against a formal specification. It complements techniques like testing and fuzzing, which can only sometimes detect bugs based on predefined properties. In contrast, Certora FV examines all possible states and execution paths in a contract.
 
-Simply put, the formal verification process involves crafting properties (similar to writing tests) in CVL language and submitting them alongside compiled Solidity smart contracts to a remote prover. This prover essentially transforms the contract bytecode and rules into a mathematical model and determines the validity of rules.
+Simply put, the formal verification process involves crafting properties (similar to writing tests) in native RUST language and submitting them alongside compiled programs to a remote prover. This prover essentially transforms the program bytecode and rules into a mathematical model and determines the validity of rules.
 
 ### Types of Properties
 
-When constructing properties in formal verification, we mainly deal with two types: **Invariants** and **Rules**.
+When constructing properties in formal verification, we mainly deal with two types: **Invariants** and **Rules**. Invariants are implemented in parametric style (one property for each external function) with `parametric_rule!()` macros. 
+
+The structure of parametric rule:
+- Initialize ghost storage from rule parameters (this a hack to reduce complexity of storage infractions)
+- Assume realistic timestamp
+- Assume valid state invariants hold
+- Log all storage variables
+- Execute external function
+- Log all storage variables again
 
 #### Invariants
-- Conditions that MUST **always remain true** throughout the contract's lifecycle.
+- Conditions that MUST **always remain true** throughout the contract's lifecycle. Implemented with `invariant_rule!()`. Similar to parametric rules, but check the property hold with `cvlr_assert!()` macros. 
 - Process:
   1. Define an initial condition for the contract's state.
   2. Execute an external function.
@@ -89,7 +98,7 @@ When constructing properties in formal verification, we mainly deal with two typ
 #### Rules
 - Flexible checks for specific behaviors or conditions.
 - Structure:
-  1. Setup: Set assumptions (e.g., "user balance is non-zero").
+  1. Setup: Set valid state assumptions (e.g., "user balance is non-zero") with `init_verification!()` macros.
   2. Execution: Simulate contract behavior by calling external functions.
   3. Verification:
      - Use `cvlr_assert!()` to check if a condition is **always true** (e.g., "balance never goes negative").
@@ -101,18 +110,16 @@ When constructing properties in formal verification, we mainly deal with two typ
 The process is divided into two stages: **Setup** and **Crafting Properties**.
 
 #### Setup
-This stage prepares the contract and prover for verification:
-- Resolve external contract calls.
-- Simplify complex operations (e.g., math or bitwise calculations) for prover compatibility.
-- Mirroring storage r/w operations into ghosts variables.
-- Address prover limitations (e.g., timeouts or incompatibilities).
+This stage prepares the contract and prover for verification. Use conditional source code compilation with `just features`.
+- Resolve external contract calls, declare mocks in `mocks` and `summaries` directory (with `certora_token_mock`, `certora_pool_factory_mock` and `certora_emission_summarized` features)
+- Simplify complex operations (mirroring storage r/w operations into ghosts variables with `certora_storage_ghost` feature, vector interactions with `certora_vec_q4w`) to reduce timeouts.
 - Prove **Valid State properties** (invariants) as a foundation for further checks.
 
 #### Crafting Properties
 This stage defines and implements the properties:
 - Write properties in **plain English** for clarity.
-- Categorize properties by purpose (e.g., Valid State, Variable Transition).
-- Use proven invariants as assumptions in **Rules** for efficiency.
+- Categorize properties by purpose (e.g., Valid State, Variable Transition). Some of them are implemented in parametric style (`valid_state.rs`, `state_trans.rs`, `sanity.rs`, `isolation.rs`), while others (`integrity_*.rs`, `high_level.rs`) as regular rules. 
+- Use proven valid state invariants as assumptions in **Rules** for efficiency.
 
 ### Assumptions
 
@@ -120,40 +127,41 @@ Assumptions simplify the verification process and are classified as **Safe** or 
 
 #### Safe Assumptions
 
-##### Protocol Parameter Boundaries
-- Q4W (Queue for Withdrawal) queue limited to MAX_Q4W_SIZE = 20 entries
-- Withdrawal queue entries must have non-zero amounts when expiration is set
-- Pool addresses cannot be user addresses
-- Backstop token addresses must be valid
+##### Timestamp Constraints
+- Block timestamps are always non-zero (`e.ledger().timestamp() > 0`)
 
-##### Token Properties
-- BLND and USDC token decimals are fixed and known
-- Token transfers follow standard ERC20 behavior
-- Zero transfers are handled correctly
+##### Valid State Invariants
+These invariants are proven to always hold and can be safely assumed:
 
-##### Mathematical Properties
-- Arithmetic operations use safe math with overflow protection
-- Share calculations maintain precision requirements
+**Non-negative Value Invariants:**
+- `valid_state_nonnegative_pb_shares`: Pool balance shares are non-negative
+- `valid_state_nonnegative_pb_tokens`: Pool balance tokens are non-negative
+- `valid_state_nonnegative_pb_q4w`: Pool balance Q4W amounts are non-negative
+- `valid_state_nonnegative_ub_shares`: User balance shares are non-negative
+- `valid_state_nonnegative_ub_q4w_amount`: User Q4W entry amounts are non-negative
 
-##### State Consistency
-- User balances and pool balances are synchronized
-- Q4W entries are properly ordered by expiration time
+**Pool Balance Invariants:**
+- `valid_state_pb_q4w_leq_shares`: Pool Q4W total does not exceed pool shares
+
+**User Balance Invariants:**
+- `valid_state_ub_shares_plus_q4w_sum_eq_pb_shares`: User shares + Q4W amounts equal pool shares
+- `valid_state_ub_q4w_sum_eq_pb_q4w`: Sum of user Q4W amounts equals pool Q4W total
+- `valid_state_ub_q4w_expiration`: Q4W entry expiration times do not exceed timestamp + Q4W_LOCK_TIME
+- `valid_state_ub_q4w_exp_implies_amount`: Q4W entries with expiration have non-zero amounts
+
+**General State Invariants:**
+- `valid_state_user_not_pool`: User addresses cannot be pool or contract addresses (zero balance enforced)
+- `valid_state_pool_from_factory`: Only factory-deployed pools can have non-zero balances
 
 #### Unsafe Assumptions
 
-##### Value Range Restrictions
-- Maximum share amounts limited to practical ranges
-- Total pool deposits capped at reasonable limits
-- Emission rates bounded to prevent overflow
+##### Mocks and Summaries
+- Token contracts mocked with `certora_token_mock` feature
+- Pool factory mocked with `certora_pool_factory_mock` feature
+- Emission calculations summarized with `certora_emission_summarized` feature
 
-##### Timing Simplifications
-- Block timestamps increase monotonically
-- Q4W expiration times are reasonable (within expected ranges)
-
-##### External Contract Simplifications
-- Pool factory returns valid pool addresses
-- Token contracts behave according to ERC20 standard
-- External calls don't introduce unexpected reentrancy
+##### Loop Unrolling
+- Vector iterations limited to 2 iterations (`loop_iter = 2` in configs)
 
 ---
 
@@ -163,10 +171,10 @@ The verification properties are categorized into the following types:
 
 1. **Valid State (VS)**: System state invariants that MUST always hold
 2. **State Transitions (ST)**: Rules governing state changes during operations
-3. **Integrity (INT)**: Properties ensuring data consistency and correctness
-4. **Isolation (ISO)**: Properties verifying operation independence and non-interference
+3. **Isolation (ISO)**: Properties verifying operation independence and non-interference
+4. **Sanity (SA)**: Basic reachability and functionality checks
 5. **High Level (HL)**: Complex business logic and protocol-specific rules
-6. **Sanity (SA)**: Basic reachability and functionality checks
+6. **Integrity (INT)**: Properties ensuring data consistency and correctness
 
 Each job status linked to a corresponding run in the dashboard with a specific status:
 
@@ -178,65 +186,98 @@ Each job status linked to a corresponding run in the dashboard with a specific s
 
 The states define the possible values that the system's variables can take. These invariants ensure the backstop contract maintains consistency at all times.
 
-| Source | Invariant | Description | Links |
-|------------|---------------|-------------|------|
-| VS-01 | valid_state_ub_shares_plus_q4w_sum_eq_pb_shares | User shares + Q4W amounts must equal pool shares | ✅ |
-| VS-02 | valid_state_ub_q4w_sum_eq_pb_q4w | Sum of user Q4W amounts must equal pool Q4W total | ✅ |
-| VS-03 | valid_state_pb_q4w_leq_shares | Pool Q4W total must not exceed pool shares | ✅ |
-| VS-04 | valid_state_user_not_pool | User addresses cannot be pool addresses | ✅ |
-| VS-05 | valid_state_ub_q4w_exp_implies_amount | Q4W entries with expiration must have non-zero amounts | ✅ |
+| Source | Invariant | Description | Caught mutations | Links |
+|------------|---------------|-------------|------------------|------|
+| [VS-01](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_nonnegative_pb_shares | Pool balance shares are non-negative | - | ✅ |
+| [VS-02](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_nonnegative_pb_tokens | Pool balance tokens are non-negative | - | ✅ |
+| [VS-03](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_nonnegative_pb_q4w | Pool balance Q4W amounts are non-negative | - | ✅ |
+| [VS-04](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_nonnegative_ub_shares | User balance shares are non-negative | - | ✅ |
+| [VS-05](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_nonnegative_ub_q4w_amount | User Q4W entry amounts are non-negative | - | ✅ |
+| [VS-06](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_pb_q4w_leq_shares | Pool Q4W total must not exceed pool shares | [withdraw_1](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_1.rs) | ✅ |
+| [VS-07](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_ub_shares_plus_q4w_sum_eq_pb_shares | User shares + Q4W amounts must equal pool shares | [pool_1](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/pool/pool_1.rs), [user_3](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/user/user_3.rs), [withdraw_2](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_2.rs) | ✅ |
+| [VS-08](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_ub_q4w_sum_eq_pb_q4w | Sum of user Q4W amounts must equal pool Q4W total | [user_3](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/user/user_3.rs), [withdraw_0](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_0.rs), [withdraw_1](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_1.rs) | ✅ |
+| [VS-09](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_ub_q4w_expiration | Q4W entry expiration times do not exceed timestamp + Q4W_LOCK_TIME | - | ✅ |
+| [VS-10](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_ub_q4w_exp_implies_amount | Q4W entries with expiration must have non-zero amounts | - | ✅ |
+| [VS-11](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_user_not_pool | User addresses cannot be pool or contract addresses | [fund_management_1](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_1.rs) | ✅ |
+| [VS-12](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs) | valid_state_pool_from_factory | Only factory-deployed pools can have non-zero balances | - | ✅ |
 
 ### State Transitions
 
 These properties verify that state changes occur correctly during contract operations.
 
-| Source | Rule | Description | Links |
-|------------|---------------|-------------|------|
-| ST-01 | state_trans_pb_shares_tokens_directional_change | Pool shares and tokens change in same direction | ✅ |
-| ST-02 | state_trans_pb_q4w_consistency | Pool Q4W changes are consistent with operations | ✅ |
-| ST-03 | state_trans_ub_q4w_amount_consistency | User Q4W amount changes are properly tracked | ✅ |
-
-### Integrity
-
-Properties ensuring data integrity and calculation correctness throughout operations.
-
-| Source | Rule | Description | Links |
-|------------|---------------|-------------|------|
-| INT-01 | integrity_balance_deposit | Deposits correctly update balances | ✅ |
-| INT-02 | integrity_balance_withdraw | Withdrawals correctly update balances | ✅ |
-| INT-03 | integrity_balance_queue_withdrawal | Queue withdrawal correctly updates balances | ✅ |
-| INT-04 | integrity_balance_dequeue_withdrawal | Dequeue withdrawal correctly updates balances | ✅ |
-| INT-05 | integrity_emission_correctness | Emission calculations are accurate | ✅ |
-| INT-06 | integrity_token_consistency | Token balances match internal accounting | ✅ |
+| Source | Rule | Description | Caught mutations | Links |
+|------------|---------------|-------------|------------------|------|
+| [ST-01](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs) | state_trans_pb_shares_tokens_directional_change | Pool shares and tokens change in same direction | [withdraw_3](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_3.rs) | ✅ |
+| [ST-02](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs) | state_trans_pb_q4w_consistency | Pool Q4W changes are consistent with operations | [user_3](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/user/user_3.rs), [withdraw_1](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_1.rs) | ✅ |
+| [ST-03](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs) | state_trans_ub_shares_increase_consistency | User balance consistency when shares increase | - | ✅ |
+| [ST-04](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs) | state_trans_ub_shares_decrease_consistency | User balance consistency when shares decrease | - | ✅ |
+| [ST-05](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs) | state_trans_ub_q4w_amount_consistency | User Q4W amount changes are properly tracked | [pool_1](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/pool/pool_1.rs), [user_3](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/user/user_3.rs) | ✅ |
 
 ### Isolation
 
 Properties verifying that operations on different pools and users are properly isolated.
 
-| Source | Rule | Description | Links |
-|------------|---------------|-------------|------|
-| ISO-01 | isolation_pool_operations | Operations on one pool don't affect others | ✅ |
-| ISO-02 | isolation_user_operations | Operations by one user don't affect others | ✅ |
-
-### High Level
-
-Complex business logic and protocol-specific properties.
-
-| Source | Rule | Description | Links |
-|------------|---------------|-------------|------|
-| HL-01 | high_level_withdrawal_queue_ordering | Q4W entries maintain proper ordering | ✅ |
-| HL-02 | high_level_emission_distribution | Emissions are distributed proportionally | ✅ |
-| HL-03 | high_level_fund_management | Fund management operations are secure | ✅ |
+| Source | Rule | Description | Caught mutations | Links |
+|------------|---------------|-------------|------------------|------|
+| [ISO-01](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/isolation.rs) | isolation_pool | Operations on one pool don't affect others | - | ✅ |
+| [ISO-02](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/isolation.rs) | isolation_user | Operations by one user don't affect others | - | ✅ |
 
 ### Sanity
 
 Basic checks ensuring contract functions remain accessible and operational.
 
-| Source | Rule | Description | Links |
-|------------|---------------|-------------|------|
-| SA-01 | sanity_deposit_reachable | Deposit function is always callable | ✅ |
-| SA-02 | sanity_withdraw_reachable | Withdraw function is always callable | ✅ |
-| SA-03 | sanity_queue_withdrawal_reachable | Queue withdrawal is always callable | ✅ |
+| Source | Rule | Description | Caught mutations | Links |
+|------------|---------------|-------------|------------------|------|
+| [SA-01](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/sanity.rs) | sanity | All external functions remain callable under valid state | - | ✅ |
+
+### High Level
+
+Complex business logic and protocol-specific properties.
+
+| Source | Rule | Description | Caught mutations | Links |
+|------------|---------------|-------------|------------------|------|
+| [HL-01](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/high_level.rs) | high_level_deposit_returns_converted_shares | Deposit returns correct share conversion | - | ✅ |
+| [HL-02](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/high_level.rs) | high_level_withdrawal_expiration_enforced | Withdrawals can't happen before expiration | - | ✅ |
+| [HL-03](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/high_level.rs) | high_level_share_token_initial_conversion | 1:1 conversion when pool is empty | - | ✅ |
+| [HL-04](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/high_level.rs) | high_level_share_token_conversion | Consistent token/share conversion rates | - | ✅ |
+
+### Integrity
+
+Properties ensuring data integrity and calculation correctness throughout operations.
+
+#### Balance Integrity
+
+| Source | Rule | Description | Caught mutations | Links |
+|------------|---------------|-------------|------------------|------|
+| [INT-01](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs) | integrity_balance_deposit | Deposits correctly update balances | - | ✅ |
+| [INT-02](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs) | integrity_balance_withdraw | Withdrawals correctly update balances | [pool_1](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/pool/pool_1.rs), [user_3](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/user/user_3.rs) | ✅ |
+| [INT-03](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs) | integrity_balance_queue_withdrawal | Queue withdrawal correctly updates balances | [withdraw_1](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_1.rs) | ✅ |
+| [INT-04](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs) | integrity_balance_dequeue_withdrawal | Dequeue withdrawal correctly updates balances | [withdraw_0](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_0.rs), [withdraw_2](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_2.rs) | ✅ |
+| [INT-05](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs) | integrity_balance_donate | Donations correctly update balances | - | ✅ |
+| [INT-06](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs) | integrity_balance_draw | Draw operations correctly update balances | - | ✅ |
+| [INT-07](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs) | integrity_balance_load_pool_backstop_data | Data loading doesn't change state | - | ✅ |
+
+#### Emission Integrity
+
+| Source | Rule | Description | Caught mutations | Links |
+|------------|---------------|-------------|------------------|------|
+| [INT-08](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_emission.rs) | integrity_emission_deposit | Emission state correct during deposit | - | ✅ |
+| [INT-09](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_emission.rs) | integrity_emission_withdraw | Emission state correct during withdraw | - | ✅ |
+| [INT-10](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_emission.rs) | integrity_emission_queue_withdrawal | Emission state correct during queue withdrawal | - | ✅ |
+| [INT-11](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_emission.rs) | integrity_emission_dequeue_withdrawal | Emission state correct during dequeue withdrawal | - | ✅ |
+| [INT-12](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_emission.rs) | integrity_emission_donate | Emission state correct during donate | - | ✅ |
+| [INT-13](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_emission.rs) | integrity_emission_draw | Emission state correct during draw | - | ✅ |
+
+#### Token Integrity
+
+| Source | Rule | Description | Caught mutations | Links |
+|------------|---------------|-------------|------------------|------|
+| [INT-14](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_token.rs) | integrity_token_deposit | Token transfers correct during deposit | - | ✅ |
+| [INT-15](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_token.rs) | integrity_token_withdraw | Token transfers correct during withdraw | - | ✅ |
+| [INT-16](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_token.rs) | integrity_token_donate | Token transfers correct during donate | - | ✅ |
+| [INT-17](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_token.rs) | integrity_token_draw | Token transfers correct during draw | - | ✅ |
+| [INT-18](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_token.rs) | integrity_token_queue_withdrawal | No token transfers during queue withdrawal | - | ✅ |
+| [INT-19](https://github.com/alexzoid-eth/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop/src/certora_specs/integrity_token.rs) | integrity_token_dequeue_withdrawal | No token transfers during dequeue withdrawal | - | ✅ |
 
 ---
 
@@ -517,27 +558,18 @@ FV rule [passed](https://prover.certora.com/output/52567/77b0a59850034d4f93e1bb9
 
 ### Certora Prover Installation
 
-1. Install the Certora Prover CLI:
-```bash
-pip install certora-cli==0.7.26
-```
-
-2. Set up your Certora API key:
-```bash
-export CERTORAKEY=<your-api-key>
-```
+For step-by-step installation steps refer to this setup [tutorial](https://alexzoid.com/first-steps-with-certora-fv-catching-a-real-bug#heading-setup).  
 
 ### Verification Execution
 
 1. Build the backstop contract with Certora features:
 ```bash
-cd backstop
+cd blend-contracts-v2/backstop/confs
 just build
 ```
 
 2. Run a specific verification:
 ```bash
-cd confs
 certoraSorobanProver <config_file>.conf
 ```
 
@@ -550,11 +582,3 @@ certoraSorobanProver <config_file>.conf
 ```bash
 ./run_conf.sh <pattern>
 ```
-
-Example configurations:
-- `sanity_verified.conf` - Basic correctness checks
-- `integrity_verified.conf` - Balance/emission/token integrity  
-- `valid_state_verified.conf` - State invariants
-- `state_trans_verified.conf` - State transitions
-- `isolation_pool_verified.conf` / `isolation_user_verified.conf` - Isolation properties
-- `high_level_verified.conf` - High-level properties
