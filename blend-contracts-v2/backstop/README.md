@@ -303,88 +303,171 @@ This section documents the manual mutations from the Certora FV contest applied 
 
 **Caught by:**
 - valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit
-- state_trans_pb_shares_tokens_directional_change_execute_deposit
-- integrity_balance_deposit
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    let to_mint = pool_balance.convert_to_shares(amount);
+    if to_mint <= 0 {
+        panic_with_error!(e, &BackstopError::InvalidShareMintAmount);
+    }
+    // pool_balance.deposit(amount, to_mint); MUTANT
+    user_balance.add_shares(to_mint);
+
+    storage::set_pool_balance(e, pool_address, &pool_balance);
+``` 
 
 #### deposit_1 - Multiple Properties
 
 **Caught by:**
 - valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit
-- state_trans_pb_shares_tokens_directional_change_execute_deposit
 - integrity_balance_deposit
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    let to_mint = pool_balance.convert_to_shares(amount);
+    if to_mint <= 0 {
+        panic_with_error!(e, &BackstopError::InvalidShareMintAmount);
+    }
+    pool_balance.deposit(amount, to_mint); 
+    // user_balance.add_shares(to_mint); MUTANT
+
+    storage::set_pool_balance(e, pool_address, &pool_balance);
+``` 
 
 #### deposit_2 - Multiple Properties
 
 **Caught by:**
-- valid_state_pb_q4w_leq_shares_execute_deposit
-- integrity_emission_correctness_execute_deposit
+- integrity_balance_deposit
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    let to_mint = pool_balance.convert_to_shares(amount);
+    // if to_mint <= 0 { MUTANT
+    //     panic_with_error!(e, &BackstopError::InvalidShareMintAmount);
+    // }
+    pool_balance.deposit(amount, to_mint); 
+    user_balance.add_shares(to_mint);
+``` 
 
 #### deposit_3 - Multiple Properties
 
 **Caught by:**
-- integrity_token_consistency_execute_deposit
-- high_level_emission_distribution
+- valid_state_nonnegative_pb_tokens_execute_deposit
+- state_trans_pb_shares_tokens_directional_change_execute_deposit
+- integrity_balance_deposit
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: i128) -> i128 {
+    // require_nonnegative(e, amount); MUTANT
+    if from == pool_address || from == &e.current_contract_address() {
+        panic_with_error!(e, &BackstopError::BadRequest)
+    }
+``` 
 
 ### Fund Management
 
 #### fund_management_0 - Multiple Properties
 
 **Caught by:**
-- valid_state_user_not_pool_execute_delete_expired_q4w
-- integrity_balance_delete_expired_q4w
+- integrity_balance_draw
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    let mut pool_balance = storage::get_pool_balance(e, pool_address);
+
+    pool_balance.withdraw(e, 0, 0); // MUTANT
+    storage::set_pool_balance(e, pool_address, &pool_balance);
+
+    #[cfg(feature = "certora_token_mock")] // @note changed
+``` 
 
 #### fund_management_1 - valid_state_user_not_pool_execute_draw
 
 **Caught by:**
 - valid_state_user_not_pool_execute_draw
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+pub fn execute_draw(e: &Env, pool_address: &Address, amount: i128, to: &Address) {
+    // require_nonnegative(e, amount); MUTANT
+
+    let mut pool_balance = storage::get_pool_balance(e, pool_address);
+```
 
 **Link:** [✅](https://prover.certora.com/output/52567/a01e5c18d26044b8bca3f9a19980f47d/?anonymousKey=a18ea4bc91d8294d26c3bd72be4321982f4d7361)
 
 #### fund_management_2 - Multiple Properties
 
 **Caught by:**
-- integrity_emission_correctness_execute_gulp_pool_emissions
-- high_level_emission_distribution
+- valid_state_nonnegative_pb_tokens_execute_donate
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+pub fn execute_donate(e: &Env, from: &Address, pool_address: &Address, amount: i128) {
+    // require_nonnegative(e, amount); MUTANT
+    if from == pool_address || from == &e.current_contract_address() {
+        panic_with_error!(e, &BackstopError::BadRequest)
+    }
+``` 
 
 #### fund_management_3 - Multiple Properties
 
 **Caught by:**
-- integrity_token_consistency_execute_fill_backstop
-- high_level_fund_management
+- integrity_balance_donate
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    }
+    
+    pool_balance.deposit(0, 0); // MUTANT
+    storage::set_pool_balance(e, pool_address, &pool_balance);
+}
+``` 
 
 #### fund_management_4 - Multiple Properties
 
 **Caught by:**
-- integrity_token_consistency_execute_draw
-- high_level_fund_management
+- valid_state_nonnegative_pb_tokens_execute_donate
+- integrity_balance_donate
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    }
+    
+    pool_balance.deposit(amount - 1, 0); // MUTANT
+    storage::set_pool_balance(e, pool_address, &pool_balance);
+}
+``` 
 
 ### Pool
 
 #### pool_0 - Multiple Properties
 
 **Caught by:**
-- valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_add_pool
-- integrity_balance_add_pool
+- state_trans_pb_shares_tokens_directional_change_execute_withdraw
+- integrity_balance_draw
+- integrity_balance_withdraw
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+        if tokens > self.tokens || shares > self.shares || shares > self.q4w {
+            panic_with_error!(e, BackstopError::InsufficientFunds);
+        }
+        // self.tokens -= tokens; MUTANT
+        self.shares -= shares;
+        self.q4w -= shares;
+``` 
 
 #### pool_1 - Multiple Properties
 
@@ -393,7 +476,16 @@ This section documents the manual mutations from the Certora FV contest applied 
 - state_trans_ub_q4w_amount_consistency_execute_withdraw
 - integrity_balance_withdraw
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+        if tokens > self.tokens || shares > self.shares || shares > self.q4w {
+            panic_with_error!(e, BackstopError::InsufficientFunds);
+        }
+        self.tokens -= tokens;
+        // self.shares -= shares; MUTANT
+        self.q4w -= shares;
+```
 
 **Links:** 
 - [✅](https://prover.certora.com/output/52567/1d64b45b45934be188c82d0011157e09/?anonymousKey=94c46c84f809566acb3bb4b76c1a1bf719ac3e00)
@@ -403,44 +495,104 @@ This section documents the manual mutations from the Certora FV contest applied 
 #### pool_2 - Multiple Properties
 
 **Caught by:**
-- integrity_emission_correctness_execute_add_reward
-- high_level_emission_distribution
+- valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw
+- valid_state_pb_q4w_leq_shares_execute_withdraw
+- state_trans_ub_q4w_amount_consistency_execute_withdraw
+- integrity_balance_withdraw
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+        if tokens > self.tokens || shares > self.shares || shares > self.q4w {
+            panic_with_error!(e, BackstopError::InsufficientFunds);
+        }
+        self.tokens -= tokens;
+        self.shares -= shares;
+        // self.q4w -= shares; MUTANT
+``` 
 
 #### pool_3 - Multiple Properties
 
 **Caught by:**
-- integrity_token_consistency_execute_del_pool
-- isolation_pool_operations
+- state_trans_pb_shares_tokens_directional_change_execute_deposit
+- integrity_balance_deposit
+- integrity_balance_donate
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    pub fn deposit(&mut self, tokens: i128, shares: i128) {
+        // self.tokens += tokens; MUTANT
+        self.shares += shares;
+    }
+``` 
 
 #### pool_4 - Multiple Properties
 
 **Caught by:**
-- integrity_emission_correctness_execute_gulp_pool_emissions
-- high_level_emission_distribution
+- valid_state_nonnegative_pb_q4w_execute_queue_withdrawal
+- valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal
+- state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal
+- state_trans_ub_shares_decrease_consistency_execute_queue_withdrawal
+- integrity_balance_queue_withdrawal
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    pub fn queue_for_withdraw(&mut self, shares: i128) {
+        self.q4w -= shares; // MUTANT changed + to -
+    }
+``` 
 
 ### User
 
 #### user_0 - Multiple Properties
 
 **Caught by:**
-- valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_gulp_user_emissions
-- integrity_emission_correctness_execute_gulp_user_emissions
+- valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit
+- valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal
+- integrity_balance_deposit
+- integrity_balance_dequeue_withdrawal
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    pub fn add_shares(&mut self, to_add: i128) {
+        self.shares += 0; // MUTANT
+    }
+``` 
 
 #### user_1 - Multiple Properties
 
 **Caught by:**
-- integrity_emission_correctness_execute_transfer_backstop_deposit
-- isolation_user_operations
+- valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_queue_withdrawal
+- state_trans_pb_q4w_consistency_execute_queue_withdrawal
+- state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal
+- integrity_balance_queue_withdrawal
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+        self.shares = self.shares + to_q; // MUTANT
+
+        // user has enough tokens to withdrawal, add Q4W
+        let new_q4w = Q4W {
+``` 
+
+#### user_2 - Multiple Properties
+
+**Caught by:**
+- No violations detected
+
+**Mutation:**
+
+```rust
+            } else {
+                // allow the pop to consume the record
+                left_to_dequeue -= 0; // MUTANT
+            }
+        }
+```
 
 #### user_3 - Multiple Properties
 
@@ -451,7 +603,13 @@ This section documents the manual mutations from the Certora FV contest applied 
 - state_trans_ub_q4w_amount_consistency_execute_withdraw
 - integrity_balance_withdraw
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+            if cur_q4w.exp <= e.ledger().timestamp() {
+                if cur_q4w.amount < left_to_withdraw { // MUTANT
+                    // last record we need to update, but the q4w should remain
+```
 
 **Links:**
 - [✅](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a)
@@ -466,7 +624,16 @@ This section documents the manual mutations from the Certora FV contest applied 
 - valid_state_ub_q4w_sum_eq_pb_q4w_execute_dequeue_withdrawal
 - integrity_balance_dequeue_withdrawal
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    user_balance.dequeue_shares(e, amount);
+    user_balance.add_shares(amount);
+    pool_balance.dequeue_q4w(e, amount);
+
+    // storage::set_user_balance(e, pool_address, from, &user_balance); MUTANT
+    storage::set_pool_balance(e, pool_address, &pool_balance);
+```
 
 **Links:**
 - [✅](https://prover.certora.com/output/52567/da42ba4e5109434b917800f14f2366ec/?anonymousKey=25d43a69b474c0cb6196a582366633902da7fce4)
@@ -480,7 +647,14 @@ This section documents the manual mutations from the Certora FV contest applied 
 - state_trans_pb_q4w_consistency_execute_queue_withdrawal
 - integrity_balance_queue_withdrawal
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    // user_balance.queue_shares_for_withdrawal(e, amount); MUTANT
+    pool_balance.queue_for_withdraw(amount);
+
+    storage::set_user_balance(e, pool_address, from, &user_balance);
+```
 
 **Links:**
 - [✅](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb)
@@ -493,7 +667,15 @@ This section documents the manual mutations from the Certora FV contest applied 
 - valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal
 - integrity_balance_dequeue_withdrawal
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    user_balance.dequeue_shares(e, amount);
+    // user_balance.add_shares(amount); MUTANT
+    pool_balance.dequeue_q4w(e, amount);
+
+    storage::set_user_balance(e, pool_address, from, &user_balance);
+```
 
 **Links:**
 - [✅](https://prover.certora.com/output/52567/a2ee19b9f9104bd49e3b7a725b744bb8/?anonymousKey=57e7b8e61238f2eae65ab2d2c15fc25eb975871c)
@@ -504,7 +686,15 @@ This section documents the manual mutations from the Certora FV contest applied 
 **Caught by:**
 - state_trans_pb_shares_tokens_directional_change_execute_withdraw
 
-**Mutation:** 
+**Mutation:**
+
+```rust
+    let to_return = pool_balance.convert_to_tokens(amount);
+    // if to_return == 0 { MUTANT
+    //     panic_with_error!(e, &BackstopError::InvalidTokenWithdrawAmount);
+    // }
+    pool_balance.withdraw(e, to_return, amount);
+```
 
 **Link:** [✅](https://prover.certora.com/output/52567/9d209d2e1be6448dae850da3d05759db/?anonymousKey=877f5965b79c4a3edf347f6d243be3211bdb34b2)
 
