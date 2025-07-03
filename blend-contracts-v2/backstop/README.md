@@ -320,7 +320,7 @@ Comments out the pool balance deposit operation while keeping user balance updat
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/914416d6b1b84f1cac5bd4b670a46fca/?anonymousKey=380941738830b18c4d8203ccf59db163efe4d6d2) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
+- [❌](https://prover.certora.com/output/52567/914416d6b1b84f1cac5bd4b670a46fca/?anonymousKey=380941738830b18c4d8203ccf59db163efe4d6d2) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
 
 #### [mutations/deposit/deposit_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_1.rs)
 
@@ -338,8 +338,8 @@ Comments out the user balance share addition while keeping pool balance update, 
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/14331731b7704237a94b9f1231144094/?anonymousKey=c62fc49662629ae9a734adfac04283dc9b41fc72) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
-- [❌](https://prover.certora.com/output/52567/6508f009f9bc463797450f1f241899f7/?anonymousKey=dece2f2116734fdf4a9fd139e2eb1c80f029cb2b) [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
+- [❌](https://prover.certora.com/output/52567/14331731b7704237a94b9f1231144094/?anonymousKey=c62fc49662629ae9a734adfac04283dc9b41fc72) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
+- [❌](https://prover.certora.com/output/52567/6508f009f9bc463797450f1f241899f7/?anonymousKey=dece2f2116734fdf4a9fd139e2eb1c80f029cb2b) **INT-01**: [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
 
 #### [mutations/deposit/deposit_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_2.rs)
 
@@ -355,7 +355,7 @@ Removes validation check for zero or negative share amounts, allowing invalid de
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/08dc4e2759044ea9963ea0f23d74ffb1/?anonymousKey=04dda8b235c758c351385cc0bfd38036a553494b) [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
+- [❌](https://prover.certora.com/output/52567/08dc4e2759044ea9963ea0f23d74ffb1/?anonymousKey=04dda8b235c758c351385cc0bfd38036a553494b) **INT-01**: [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
 
 #### [mutations/deposit/deposit_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_3.rs)
 
@@ -370,9 +370,9 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/8b516fe8d2f34284a345c378b32adb6b/?anonymousKey=d2e1a3ce36b88ec7fa45fedbbb9e28b50a996e16) [valid_state_nonnegative_pb_tokens_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61)
-- [❌](https://prover.certora.com/output/52567/54ebaad6116b4f408154032ea608b776/?anonymousKey=84f0016ae39af3eb610c76af03cd4dd052ca320b) [state_trans_pb_shares_tokens_directional_change_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11)
-- [❌](https://prover.certora.com/output/52567/a39ec6de0c594f80a5e4e809c3f4d86b/?anonymousKey=48fa16a16b728b282675beb0bda1f3fdcd462a39) [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
+- [❌](https://prover.certora.com/output/52567/8b516fe8d2f34284a345c378b32adb6b/?anonymousKey=d2e1a3ce36b88ec7fa45fedbbb9e28b50a996e16) **VS-02**: [valid_state_nonnegative_pb_tokens_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61) - Pool balance tokens are non-negative
+- [❌](https://prover.certora.com/output/52567/54ebaad6116b4f408154032ea608b776/?anonymousKey=84f0016ae39af3eb610c76af03cd4dd052ca320b) **ST-01**: [state_trans_pb_shares_tokens_directional_change_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11) - Pool shares and tokens change in same direction
+- [❌](https://prover.certora.com/output/52567/a39ec6de0c594f80a5e4e809c3f4d86b/?anonymousKey=48fa16a16b728b282675beb0bda1f3fdcd462a39) **INT-01**: [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
 
 ### Fund Management
 
