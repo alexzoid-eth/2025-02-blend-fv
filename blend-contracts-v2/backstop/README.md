@@ -10,6 +10,26 @@
 
 ---
 
+## About Blend Protocol
+
+Blend is a decentralized lending protocol built on Stellar's Soroban smart contract platform. It creates immutable, permissionless lending markets to increase trading and payment liquidity in the Stellar ecosystem while improving capital productivity. The protocol features isolated lending pools with mandatory insurance, reactive interest rate mechanisms, and permissionless pool creation, all within a non-custodial and censorship-resistant architecture.
+
+## About the Backstop Module
+
+The backstop module is a critical risk management component that protects lending pools from bad debt by providing first-loss capital. When a user's position isn't liquidated quickly enough, their bad debt is transferred to the backstop module. Users deposit BLND:USDC 80:20 liquidity pool shares and receive a percentage of interest paid by pool borrowers based on the pool's "Backstop Take Rate". While backstoppers can earn additional BLND emissions in the "reward zone", they assume first-loss risk - if a pool incurs bad debt, backstop deposits will be auctioned to cover losses proportionally. Withdrawals require a 21-day queue period, and earned interest and emissions are automatically reinvested.
+
+## Competition Scope
+
+For this formal verification competition, only the following files from the backstop module are in scope:
+
+- [`withdrawal.rs`](https://github.com/code-423n4/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/backstop/withdrawal.rs) - Handles user withdrawals and withdrawal queue management
+- [`user.rs`](https://github.com/code-423n4/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/backstop/user.rs) - Manages user balances and queue-for-withdrawal entries
+- [`deposit.rs`](https://github.com/code-423n4/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/backstop/deposit.rs) - Processes user deposits into the backstop module
+- [`fund_management.rs`](https://github.com/code-423n4/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/backstop/fund_management.rs) - Handles donations and draws from the backstop pool
+- [`pool.rs`](https://github.com/code-423n4/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/backstop/pool.rs) - Manages pool balance accounting and share conversions
+
+---
+
 # Table of Contents
 - [Formal Verification Methodology](#formal-verification-methodology)
   - [Types of Properties](#types-of-properties)
@@ -170,7 +190,7 @@ All valid state properties are stored in [valid_state.rs](src/certora_specs/vali
 | Source | Invariant | Description | Caught mutations |
 |------------|---------------|-------------|------------------|
 | VS-01 | valid_state_nonnegative_pb_shares | Pool balance shares are non-negative | - |
-| VS-02 | valid_state_nonnegative_pb_tokens | Pool balance tokens are non-negative | [[❌] ](https://prover.certora.com/output/52567/8b516fe8d2f34284a345c378b32adb6b/?anonymousKey=d2e1a3ce36b88ec7fa45fedbbb9e28b50a996e16)[deposit_3](mutations/deposit/deposit_3.rs), [❌](https://prover.certora.com/output/52567/7909ec79f1c845bfa3b756a90d53e309/?anonymousKey=46034b44a1b37fa5ceb3d7b5af6a22725c85a91b)[fundmanagement_2](mutations/fundmanagement/fundmanagement_2.rs), [❌](https://prover.certora.com/output/52567/ce00e561343d439f82358e1846f6d640/?anonymousKey=04a0e1400f71f0cb6db4b907b9ea9daf4534c204)[fundmanagement_4](mutations/fundmanagement/fundmanagement_4.rs) |
+| VS-02 | valid_state_nonnegative_pb_tokens | Pool balance tokens are non-negative | [❌](https://prover.certora.com/output/52567/8b516fe8d2f34284a345c378b32adb6b/?anonymousKey=d2e1a3ce36b88ec7fa45fedbbb9e28b50a996e16)[deposit_3](mutations/deposit/deposit_3.rs), [❌](https://prover.certora.com/output/52567/7909ec79f1c845bfa3b756a90d53e309/?anonymousKey=46034b44a1b37fa5ceb3d7b5af6a22725c85a91b)[fundmanagement_2](mutations/fundmanagement/fundmanagement_2.rs), [❌](https://prover.certora.com/output/52567/ce00e561343d439f82358e1846f6d640/?anonymousKey=04a0e1400f71f0cb6db4b907b9ea9daf4534c204)[fundmanagement_4](mutations/fundmanagement/fundmanagement_4.rs) |
 | VS-03 | valid_state_nonnegative_pb_q4w | Pool balance Q4W amounts are non-negative | [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9)[pool_4](mutations/pool/pool_4.rs) |
 | VS-04 | valid_state_nonnegative_ub_shares | User balance shares are non-negative | - |
 | VS-05 | valid_state_nonnegative_ub_q4w_amount | User Q4W entry amounts are non-negative | - |
