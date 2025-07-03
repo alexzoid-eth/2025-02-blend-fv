@@ -170,7 +170,7 @@ All valid state properties are stored in [valid_state.rs](src/certora_specs/vali
 | Source | Invariant | Description | Caught mutations |
 |------------|---------------|-------------|------------------|
 | VS-01 | valid_state_nonnegative_pb_shares | Pool balance shares are non-negative | - |
-| VS-02 | valid_state_nonnegative_pb_tokens | Pool balance tokens are non-negative | [❌](https://prover.certora.com/output/52567/8b516fe8d2f34284a345c378b32adb6b/?anonymousKey=d2e1a3ce36b88ec7fa45fedbbb9e28b50a996e16)[deposit_3](mutations/deposit/deposit_3.rs), [❌](https://prover.certora.com/output/52567/7909ec79f1c845bfa3b756a90d53e309/?anonymousKey=46034b44a1b37fa5ceb3d7b5af6a22725c85a91b)[fundmanagement_2](mutations/fundmanagement/fundmanagement_2.rs), [❌](https://prover.certora.com/output/52567/ce00e561343d439f82358e1846f6d640/?anonymousKey=04a0e1400f71f0cb6db4b907b9ea9daf4534c204)[fundmanagement_4](mutations/fundmanagement/fundmanagement_4.rs) |
+| VS-02 | valid_state_nonnegative_pb_tokens | Pool balance tokens are non-negative | [[❌]](https://prover.certora.com/output/52567/8b516fe8d2f34284a345c378b32adb6b/?anonymousKey=d2e1a3ce36b88ec7fa45fedbbb9e28b50a996e16)[deposit_3](mutations/deposit/deposit_3.rs), [❌](https://prover.certora.com/output/52567/7909ec79f1c845bfa3b756a90d53e309/?anonymousKey=46034b44a1b37fa5ceb3d7b5af6a22725c85a91b)[fundmanagement_2](mutations/fundmanagement/fundmanagement_2.rs), [❌](https://prover.certora.com/output/52567/ce00e561343d439f82358e1846f6d640/?anonymousKey=04a0e1400f71f0cb6db4b907b9ea9daf4534c204)[fundmanagement_4](mutations/fundmanagement/fundmanagement_4.rs) |
 | VS-03 | valid_state_nonnegative_pb_q4w | Pool balance Q4W amounts are non-negative | [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9)[pool_4](mutations/pool/pool_4.rs) |
 | VS-04 | valid_state_nonnegative_ub_shares | User balance shares are non-negative | - |
 | VS-05 | valid_state_nonnegative_ub_q4w_amount | User Q4W entry amounts are non-negative | - |
@@ -485,9 +485,9 @@ Comments out the queue-for-withdrawal balance reduction during withdrawal, break
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/67d956ccb6d6410e80ae135d47b4db38/?anonymousKey=14e8f582cf54893a55a01e9d16f5d4698e8c79b0) [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
-- [❌](https://prover.certora.com/output/52567/622b41db3cfb4f178124cb12bafb9a4d/?anonymousKey=654c252a0a3823df921c17884a744aa9f13cd5cd) [valid_state_pb_q4w_leq_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L108)
-- [❌](https://prover.certora.com/output/52567/67d956ccb6d6410e80ae135d47b4db38/?anonymousKey=14e8f582cf54893a55a01e9d16f5d4698e8c79b0) [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
-- [❌](https://prover.certora.com/output/52567/aefa7db3827a416c820fe3abeb524c0a/?anonymousKey=cf2f72a01a090338e4033758943da2f72814f3c6) [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
+- [❌](https://prover.certora.com/output/52567/67d956ccb6d6410e80ae135d47b4db38/?anonymousKey=14e8f582cf54893a55a01e9d16f5d4698e8c79b0) [valid_state_pb_q4w_leq_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L108)
+- [❌](https://prover.certora.com/output/52567/aefa7db3827a416c820fe3abeb524c0a/?anonymousKey=cf2f72a01a090338e4033758943da2f72814f3c6) [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
+- [❌](https://prover.certora.com/output/52567/622b41db3cfb4f178124cb12bafb9a4d/?anonymousKey=654c252a0a3823df921c17884a744aa9f13cd5cd) [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
 
 #### [mutations/pool/pool_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_3.rs)
 
@@ -517,10 +517,10 @@ Changes the queue-for-withdrawal operation from addition to subtraction, causing
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9) [valid_state_nonnegative_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L50)
-- [❌](https://prover.certora.com/output/52567/185e70c525aa4ca685804f04d0839e8e/?anonymousKey=c4892248f00f0d6893cac809e306dee236740e30) [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
-- [❌](https://prover.certora.com/output/52567/5852580aa117425b9b8e07d9d013c8bc/?anonymousKey=1c52736617324468b21bf5bd30342e1ecc19b141) [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
-- [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9) [state_trans_ub_shares_decrease_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L155)
-- [❌](https://prover.certora.com/output/52567/185e70c525aa4ca685804f04d0839e8e/?anonymousKey=c4892248f00f0d6893cac809e306dee236740e30) [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112)
+- [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9) [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
+- [❌](https://prover.certora.com/output/52567/185e70c525aa4ca685804f04d0839e8e/?anonymousKey=c4892248f00f0d6893cac809e306dee236740e30) [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
+- [❌](https://prover.certora.com/output/52567/185e70c525aa4ca685804f04d0839e8e/?anonymousKey=c4892248f00f0d6893cac809e306dee236740e30) [state_trans_ub_shares_decrease_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L155)
+- [❌](https://prover.certora.com/output/52567/5852580aa117425b9b8e07d9d013c8bc/?anonymousKey=1c52736617324468b21bf5bd30342e1ecc19b141) [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112)
 
 ### User
 
@@ -536,8 +536,8 @@ Replaces the share addition parameter with zero, preventing user balance updates
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/f18a9b3fbcb5444ea3fb4b54dea116ab/?anonymousKey=1f6cef4f20df0f32cce4800ebcb1653ad2b8c52a) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
-- [❌](https://prover.certora.com/output/52567/ae75814b40054057bca08d60a7dec97a/?anonymousKey=1dabf3d6bb70e84b89adf4f98d9a43ef1f8ac3cd) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
-- [❌](https://prover.certora.com/output/52567/f18a9b3fbcb5444ea3fb4b54dea116ab/?anonymousKey=1f6cef4f20df0f32cce4800ebcb1653ad2b8c52a) [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
+- [❌](https://prover.certora.com/output/52567/f18a9b3fbcb5444ea3fb4b54dea116ab/?anonymousKey=1f6cef4f20df0f32cce4800ebcb1653ad2b8c52a) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
+- [❌](https://prover.certora.com/output/52567/ae75814b40054057bca08d60a7dec97a/?anonymousKey=1dabf3d6bb70e84b89adf4f98d9a43ef1f8ac3cd) [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24)
 - [❌](https://prover.certora.com/output/52567/ae75814b40054057bca08d60a7dec97a/?anonymousKey=1dabf3d6bb70e84b89adf4f98d9a43ef1f8ac3cd) [integrity_balance_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L158) 
 
 #### [mutations/user/user_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_1.rs)
@@ -554,8 +554,8 @@ Changes user share reduction to addition during queue operation, causing incorre
 Caught by:
 - [❌](https://prover.certora.com/output/52567/0ab156788c824d0d9fd0c972493e8331/?anonymousKey=ae20d57296b969ff670adc2c3273b93bc6afcd1f) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
 - [❌](https://prover.certora.com/output/52567/72c6dbd8dd3b4237b7bffc8544417a97/?anonymousKey=a39f0596c331528221b7f4aa022bcc226770016f) [state_trans_pb_q4w_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35)
-- [❌](https://prover.certora.com/output/52567/dc103e6eaa6e480394d6e4d9116b56bf/?anonymousKey=e191a94e910be86373e961a6c1fb1d99b620ff5b) [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
-- [❌](https://prover.certora.com/output/52567/0ab156788c824d0d9fd0c972493e8331/?anonymousKey=ae20d57296b969ff670adc2c3273b93bc6afcd1f) [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112)
+- [❌](https://prover.certora.com/output/52567/72c6dbd8dd3b4237b7bffc8544417a97/?anonymousKey=a39f0596c331528221b7f4aa022bcc226770016f) [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
+- [❌](https://prover.certora.com/output/52567/dc103e6eaa6e480394d6e4d9116b56bf/?anonymousKey=e191a94e910be86373e961a6c1fb1d99b620ff5b) [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112)
 
 #### [mutations/user/user_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_3.rs)
 
@@ -569,10 +569,10 @@ Changes withdrawal amount comparison from greater-than-or-equal to less-than, ca
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a) [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
-- [❌](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
-- [❌](https://prover.certora.com/output/52567/e573758a36fd4b979fa7d2a0ab44f2e7/?anonymousKey=4d38a32dc3020a3c037dcc19049c9050c90384d3) [state_trans_pb_q4w_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35)
-- [❌](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a) [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
-- [❌](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053) [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
+- [❌](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a) [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165)
+- [❌](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053) [state_trans_pb_q4w_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35)
+- [❌](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053) [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205)
+- [❌](https://prover.certora.com/output/52567/e573758a36fd4b979fa7d2a0ab44f2e7/?anonymousKey=4d38a32dc3020a3c037dcc19049c9050c90384d3) [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68)
 
 ### Withdrawal
 
@@ -606,9 +606,9 @@ Comments out the user queue operation during withdrawal queuing, breaking user-p
 
 Caught by:
 - [❌](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb) [valid_state_pb_q4w_leq_shares_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L108)
-- [❌](https://prover.certora.com/output/52567/2a86fbe7d28f4dfbbee1d0f1eba119e7/?anonymousKey=4cae8150862c7c1dc7d3ffe667669a62d8f06483) [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
-- [❌](https://prover.certora.com/output/52567/29a8128d9dfe49c5bd23d556a713278c/?anonymousKey=d35e7a76f12daa71eb81f9dd2cfe1872565a5791) [state_trans_pb_q4w_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35)
-- [❌](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb) [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112)
+- [❌](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb) [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189)
+- [❌](https://prover.certora.com/output/52567/2a86fbe7d28f4dfbbee1d0f1eba119e7/?anonymousKey=4cae8150862c7c1dc7d3ffe667669a62d8f06483) [state_trans_pb_q4w_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35)
+- [❌](https://prover.certora.com/output/52567/29a8128d9dfe49c5bd23d556a713278c/?anonymousKey=d35e7a76f12daa71eb81f9dd2cfe1872565a5791) [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112)
 
 #### [mutations/withdraw/withdraw_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_2.rs)
 
