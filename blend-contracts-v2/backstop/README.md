@@ -304,7 +304,7 @@ This section documents the manual mutations from the Certora FV contest applied 
 
 ### Deposit
 
-#### [mutations/deposit/deposit_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_0.rs)
+#### [mutations/deposit/deposit_0.rs](mutations/deposit/deposit_0.rs)
 
 Comments out the pool balance deposit operation while keeping user balance update, breaking balance consistency.
 
@@ -320,9 +320,9 @@ Comments out the pool balance deposit operation while keeping user balance updat
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/914416d6b1b84f1cac5bd4b670a46fca/?anonymousKey=380941738830b18c4d8203ccf59db163efe4d6d2) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
+- [❌](https://prover.certora.com/output/52567/914416d6b1b84f1cac5bd4b670a46fca/?anonymousKey=380941738830b18c4d8203ccf59db163efe4d6d2) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
 
-#### [mutations/deposit/deposit_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_1.rs)
+#### [mutations/deposit/deposit_1.rs](mutations/deposit/deposit_1.rs)
 
 Comments out the user balance share addition while keeping pool balance update, creating inconsistent state.
 
@@ -338,10 +338,10 @@ Comments out the user balance share addition while keeping pool balance update, 
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/14331731b7704237a94b9f1231144094/?anonymousKey=c62fc49662629ae9a734adfac04283dc9b41fc72) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
-- [❌](https://prover.certora.com/output/52567/6508f009f9bc463797450f1f241899f7/?anonymousKey=dece2f2116734fdf4a9fd139e2eb1c80f029cb2b) **INT-01**: [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
+- [❌](https://prover.certora.com/output/52567/14331731b7704237a94b9f1231144094/?anonymousKey=c62fc49662629ae9a734adfac04283dc9b41fc72) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
+- [❌](https://prover.certora.com/output/52567/6508f009f9bc463797450f1f241899f7/?anonymousKey=dece2f2116734fdf4a9fd139e2eb1c80f029cb2b) **INT-01**: [integrity_balance_deposit](src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
 
-#### [mutations/deposit/deposit_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_2.rs)
+#### [mutations/deposit/deposit_2.rs](mutations/deposit/deposit_2.rs)
 
 Removes validation check for zero or negative share amounts, allowing invalid deposits.
 
@@ -355,9 +355,9 @@ Removes validation check for zero or negative share amounts, allowing invalid de
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/08dc4e2759044ea9963ea0f23d74ffb1/?anonymousKey=04dda8b235c758c351385cc0bfd38036a553494b) **INT-01**: [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
+- [❌](https://prover.certora.com/output/52567/08dc4e2759044ea9963ea0f23d74ffb1/?anonymousKey=04dda8b235c758c351385cc0bfd38036a553494b) **INT-01**: [integrity_balance_deposit](src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
 
-#### [mutations/deposit/deposit_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/deposit/deposit_3.rs)
+#### [mutations/deposit/deposit_3.rs](mutations/deposit/deposit_3.rs)
 
 Removes input validation for negative amounts, allowing deposits with negative values.
 
@@ -370,13 +370,13 @@ pub fn execute_deposit(e: &Env, from: &Address, pool_address: &Address, amount: 
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/8b516fe8d2f34284a345c378b32adb6b/?anonymousKey=d2e1a3ce36b88ec7fa45fedbbb9e28b50a996e16) **VS-02**: [valid_state_nonnegative_pb_tokens_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61) - Pool balance tokens are non-negative
-- [❌](https://prover.certora.com/output/52567/54ebaad6116b4f408154032ea608b776/?anonymousKey=84f0016ae39af3eb610c76af03cd4dd052ca320b) **ST-01**: [state_trans_pb_shares_tokens_directional_change_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11) - Pool shares and tokens change in same direction
-- [❌](https://prover.certora.com/output/52567/a39ec6de0c594f80a5e4e809c3f4d86b/?anonymousKey=48fa16a16b728b282675beb0bda1f3fdcd462a39) **INT-01**: [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
+- [❌](https://prover.certora.com/output/52567/8b516fe8d2f34284a345c378b32adb6b/?anonymousKey=d2e1a3ce36b88ec7fa45fedbbb9e28b50a996e16) **VS-02**: [valid_state_nonnegative_pb_tokens_execute_deposit](src/certora_specs/valid_state.rs#L61) - Pool balance tokens are non-negative
+- [❌](https://prover.certora.com/output/52567/54ebaad6116b4f408154032ea608b776/?anonymousKey=84f0016ae39af3eb610c76af03cd4dd052ca320b) **ST-01**: [state_trans_pb_shares_tokens_directional_change_execute_deposit](src/certora_specs/state_trans.rs#L11) - Pool shares and tokens change in same direction
+- [❌](https://prover.certora.com/output/52567/a39ec6de0c594f80a5e4e809c3f4d86b/?anonymousKey=48fa16a16b728b282675beb0bda1f3fdcd462a39) **INT-01**: [integrity_balance_deposit](src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
 
 ### Fund Management
 
-#### [mutations/fundmanagement/fund_management_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_0.rs)
+#### [mutations/fundmanagement/fund_management_0.rs](mutations/fundmanagement/fund_management_0.rs)
 
 Inserts spurious withdrawal operation with zero amounts, potentially affecting balance tracking.
 
@@ -390,9 +390,9 @@ Inserts spurious withdrawal operation with zero amounts, potentially affecting b
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/8c76c135abc74f38b6495d2716526778/?anonymousKey=d024bc9b32db5521539998dda570fb55fa664355) **INT-06**: [integrity_balance_draw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L246) - Draw operations correctly update balances
+- [❌](https://prover.certora.com/output/52567/8c76c135abc74f38b6495d2716526778/?anonymousKey=d024bc9b32db5521539998dda570fb55fa664355) **INT-06**: [integrity_balance_draw](src/certora_specs/integrity_balance.rs#L246) - Draw operations correctly update balances
 
-#### [mutations/fundmanagement/fund_management_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_1.rs)
+#### [mutations/fundmanagement/fund_management_1.rs](mutations/fundmanagement/fund_management_1.rs)
 
 Removes input validation for negative amounts in draw operations, allowing invalid withdrawals.
 
@@ -404,9 +404,9 @@ pub fn execute_draw(e: &Env, pool_address: &Address, amount: i128, to: &Address)
 ```
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/a01e5c18d26044b8bca3f9a19980f47d/?anonymousKey=a18ea4bc91d8294d26c3bd72be4321982f4d7361) **VS-11**: [valid_state_user_not_pool_execute_draw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L212) - User addresses cannot be pool or contract addresses
+- [❌](https://prover.certora.com/output/52567/a01e5c18d26044b8bca3f9a19980f47d/?anonymousKey=a18ea4bc91d8294d26c3bd72be4321982f4d7361) **VS-11**: [valid_state_user_not_pool_execute_draw](src/certora_specs/valid_state.rs#L212) - User addresses cannot be pool or contract addresses
 
-#### [mutations/fundmanagement/fund_management_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_2.rs)
+#### [mutations/fundmanagement/fund_management_2.rs](mutations/fundmanagement/fund_management_2.rs)
 
 Removes input validation for negative amounts in donate operations, allowing invalid donations.
 
@@ -419,9 +419,9 @@ pub fn execute_donate(e: &Env, from: &Address, pool_address: &Address, amount: i
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/7909ec79f1c845bfa3b756a90d53e309/?anonymousKey=46034b44a1b37fa5ceb3d7b5af6a22725c85a91b) **VS-02**: [valid_state_nonnegative_pb_tokens_execute_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61) - Pool balance tokens are non-negative
+- [❌](https://prover.certora.com/output/52567/7909ec79f1c845bfa3b756a90d53e309/?anonymousKey=46034b44a1b37fa5ceb3d7b5af6a22725c85a91b) **VS-02**: [valid_state_nonnegative_pb_tokens_execute_donate](src/certora_specs/valid_state.rs#L61) - Pool balance tokens are non-negative
 
-#### [mutations/fundmanagement/fund_management_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_3.rs)
+#### [mutations/fundmanagement/fund_management_3.rs](mutations/fundmanagement/fund_management_3.rs)
 
 Replaces proper amount deposit with zero values, breaking balance tracking in donations.
 
@@ -434,9 +434,9 @@ Replaces proper amount deposit with zero values, breaking balance tracking in do
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/d8f276f9aa9042f38b55b9130f86f8d5/?anonymousKey=3d4df9ef8d85684b75d2fb63d32c6c2e12a3efd6) **INT-05**: [integrity_balance_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L202) - Donations correctly update balances
+- [❌](https://prover.certora.com/output/52567/d8f276f9aa9042f38b55b9130f86f8d5/?anonymousKey=3d4df9ef8d85684b75d2fb63d32c6c2e12a3efd6) **INT-05**: [integrity_balance_donate](src/certora_specs/integrity_balance.rs#L202) - Donations correctly update balances
 
-#### [mutations/fundmanagement/fund_management_4.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/fundmanagement/fund_management_4.rs)
+#### [mutations/fundmanagement/fund_management_4.rs](mutations/fundmanagement/fund_management_4.rs)
 
 Deposits incorrect token amount (amount - 1) instead of the full amount, creating balance discrepancies.
 
@@ -449,12 +449,12 @@ Deposits incorrect token amount (amount - 1) instead of the full amount, creatin
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/ce00e561343d439f82358e1846f6d640/?anonymousKey=04a0e1400f71f0cb6db4b907b9ea9daf4534c204) **VS-02**: [valid_state_nonnegative_pb_tokens_execute_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L61) - Pool balance tokens are non-negative
-- [❌](https://prover.certora.com/output/52567/ccd242e9532f426ba3e9d12cde1e15bc/?anonymousKey=1a4a0d5cea6933d5f4c0de67d61471347931c169) **INT-05**: [integrity_balance_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L202) - Donations correctly update balances
+- [❌](https://prover.certora.com/output/52567/ce00e561343d439f82358e1846f6d640/?anonymousKey=04a0e1400f71f0cb6db4b907b9ea9daf4534c204) **VS-02**: [valid_state_nonnegative_pb_tokens_execute_donate](src/certora_specs/valid_state.rs#L61) - Pool balance tokens are non-negative
+- [❌](https://prover.certora.com/output/52567/ccd242e9532f426ba3e9d12cde1e15bc/?anonymousKey=1a4a0d5cea6933d5f4c0de67d61471347931c169) **INT-05**: [integrity_balance_donate](src/certora_specs/integrity_balance.rs#L202) - Donations correctly update balances
 
 ### Pool
 
-#### [mutations/pool/pool_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_0.rs)
+#### [mutations/pool/pool_0.rs](mutations/pool/pool_0.rs)
 
 Comments out the token balance reduction during withdrawal while keeping share updates, breaking token-share consistency.
 
@@ -468,11 +468,11 @@ Comments out the token balance reduction during withdrawal while keeping share u
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/26f7c3a3941742c8b3579f4f2b806fb6/?anonymousKey=c6eee262ee50ee97db5adabb92ffbf3cc9855288) **ST-01**: [state_trans_pb_shares_tokens_directional_change_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11) - Pool shares and tokens change in same direction
-- [❌](https://prover.certora.com/output/52567/8eba4d8acb6349358c95c3523161cb06/?anonymousKey=a0ef0c7277193afe65135f9885489c7aa2cfea4a) **INT-06**: [integrity_balance_draw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L246) - Draw operations correctly update balances
-- [❌](https://prover.certora.com/output/52567/8eba4d8acb6349358c95c3523161cb06/?anonymousKey=a0ef0c7277193afe65135f9885489c7aa2cfea4a) **INT-02**: [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68) - Withdrawals correctly update balances
+- [❌](https://prover.certora.com/output/52567/26f7c3a3941742c8b3579f4f2b806fb6/?anonymousKey=c6eee262ee50ee97db5adabb92ffbf3cc9855288) **ST-01**: [state_trans_pb_shares_tokens_directional_change_execute_withdraw](src/certora_specs/state_trans.rs#L11) - Pool shares and tokens change in same direction
+- [❌](https://prover.certora.com/output/52567/8eba4d8acb6349358c95c3523161cb06/?anonymousKey=a0ef0c7277193afe65135f9885489c7aa2cfea4a) **INT-06**: [integrity_balance_draw](src/certora_specs/integrity_balance.rs#L246) - Draw operations correctly update balances
+- [❌](https://prover.certora.com/output/52567/8eba4d8acb6349358c95c3523161cb06/?anonymousKey=a0ef0c7277193afe65135f9885489c7aa2cfea4a) **INT-02**: [integrity_balance_withdraw](src/certora_specs/integrity_balance.rs#L68) - Withdrawals correctly update balances
 
-#### [mutations/pool/pool_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_1.rs)
+#### [mutations/pool/pool_1.rs](mutations/pool/pool_1.rs)
 
 Comments out the share balance reduction during withdrawal while keeping token and queue updates, breaking share accounting.
 
@@ -486,11 +486,11 @@ Comments out the share balance reduction during withdrawal while keeping token a
 ```
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/1d64b45b45934be188c82d0011157e09/?anonymousKey=94c46c84f809566acb3bb4b76c1a1bf719ac3e00) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
-- [❌](https://prover.certora.com/output/52567/ef7db8f876c04c5f9c55999c43142b0c/?anonymousKey=de9ecff0b1bf45071ce683c2a6c74d2f5b71718b) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
-- [❌](https://prover.certora.com/output/52567/36affc41d1fd42909c8ef7b6ac0b2ad7/?anonymousKey=ed864386a3cedd1bc49d779a89a4600b508ccc61) **INT-02**: [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68) - Withdrawals correctly update balances
+- [❌](https://prover.certora.com/output/52567/1d64b45b45934be188c82d0011157e09/?anonymousKey=94c46c84f809566acb3bb4b76c1a1bf719ac3e00) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_withdraw](src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
+- [❌](https://prover.certora.com/output/52567/ef7db8f876c04c5f9c55999c43142b0c/?anonymousKey=de9ecff0b1bf45071ce683c2a6c74d2f5b71718b) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_withdraw](src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
+- [❌](https://prover.certora.com/output/52567/36affc41d1fd42909c8ef7b6ac0b2ad7/?anonymousKey=ed864386a3cedd1bc49d779a89a4600b508ccc61) **INT-02**: [integrity_balance_withdraw](src/certora_specs/integrity_balance.rs#L68) - Withdrawals correctly update balances
 
-#### [mutations/pool/pool_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_2.rs)
+#### [mutations/pool/pool_2.rs](mutations/pool/pool_2.rs)
 
 Comments out the queue-for-withdrawal balance reduction during withdrawal, breaking queue consistency.
 
@@ -504,12 +504,12 @@ Comments out the queue-for-withdrawal balance reduction during withdrawal, break
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/67d956ccb6d6410e80ae135d47b4db38/?anonymousKey=14e8f582cf54893a55a01e9d16f5d4698e8c79b0) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
-- [❌](https://prover.certora.com/output/52567/67d956ccb6d6410e80ae135d47b4db38/?anonymousKey=14e8f582cf54893a55a01e9d16f5d4698e8c79b0) **VS-06**: [valid_state_pb_q4w_leq_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L108) - Pool Q4W total must not exceed pool shares
-- [❌](https://prover.certora.com/output/52567/aefa7db3827a416c820fe3abeb524c0a/?anonymousKey=cf2f72a01a090338e4033758943da2f72814f3c6) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
-- [❌](https://prover.certora.com/output/52567/622b41db3cfb4f178124cb12bafb9a4d/?anonymousKey=654c252a0a3823df921c17884a744aa9f13cd5cd) **INT-02**: [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68) - Withdrawals correctly update balances
+- [❌](https://prover.certora.com/output/52567/67d956ccb6d6410e80ae135d47b4db38/?anonymousKey=14e8f582cf54893a55a01e9d16f5d4698e8c79b0) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
+- [❌](https://prover.certora.com/output/52567/67d956ccb6d6410e80ae135d47b4db38/?anonymousKey=14e8f582cf54893a55a01e9d16f5d4698e8c79b0) **VS-06**: [valid_state_pb_q4w_leq_shares_execute_withdraw](src/certora_specs/valid_state.rs#L108) - Pool Q4W total must not exceed pool shares
+- [❌](https://prover.certora.com/output/52567/aefa7db3827a416c820fe3abeb524c0a/?anonymousKey=cf2f72a01a090338e4033758943da2f72814f3c6) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_withdraw](src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
+- [❌](https://prover.certora.com/output/52567/622b41db3cfb4f178124cb12bafb9a4d/?anonymousKey=654c252a0a3823df921c17884a744aa9f13cd5cd) **INT-02**: [integrity_balance_withdraw](src/certora_specs/integrity_balance.rs#L68) - Withdrawals correctly update balances
 
-#### [mutations/pool/pool_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_3.rs)
+#### [mutations/pool/pool_3.rs](mutations/pool/pool_3.rs)
 
 Comments out the token balance increase during deposit while keeping share updates, breaking token-share consistency.
 
@@ -521,11 +521,11 @@ Comments out the token balance increase during deposit while keeping share updat
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/f5707974beef4678a9f36d8eb7644ddf/?anonymousKey=8571744d83dc711f83b8ee8fe833957ac3392499) **ST-01**: [state_trans_pb_shares_tokens_directional_change_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11) - Pool shares and tokens change in same direction
-- [❌](https://prover.certora.com/output/52567/f1fddb246c9f4470b4a82638f1509a46/?anonymousKey=55874c6b76e9955d82c36225ee43b978bf79e65b) **INT-01**: [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
-- [❌](https://prover.certora.com/output/52567/f1fddb246c9f4470b4a82638f1509a46/?anonymousKey=55874c6b76e9955d82c36225ee43b978bf79e65b) **INT-05**: [integrity_balance_donate](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L202) - Donations correctly update balances
+- [❌](https://prover.certora.com/output/52567/f5707974beef4678a9f36d8eb7644ddf/?anonymousKey=8571744d83dc711f83b8ee8fe833957ac3392499) **ST-01**: [state_trans_pb_shares_tokens_directional_change_execute_deposit](src/certora_specs/state_trans.rs#L11) - Pool shares and tokens change in same direction
+- [❌](https://prover.certora.com/output/52567/f1fddb246c9f4470b4a82638f1509a46/?anonymousKey=55874c6b76e9955d82c36225ee43b978bf79e65b) **INT-01**: [integrity_balance_deposit](src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
+- [❌](https://prover.certora.com/output/52567/f1fddb246c9f4470b4a82638f1509a46/?anonymousKey=55874c6b76e9955d82c36225ee43b978bf79e65b) **INT-05**: [integrity_balance_donate](src/certora_specs/integrity_balance.rs#L202) - Donations correctly update balances
 
-#### [mutations/pool/pool_4.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/pool/pool_4.rs)
+#### [mutations/pool/pool_4.rs](mutations/pool/pool_4.rs)
 
 Changes the queue-for-withdrawal operation from addition to subtraction, causing negative balances.
 
@@ -536,15 +536,15 @@ Changes the queue-for-withdrawal operation from addition to subtraction, causing
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9) **VS-03**: [valid_state_nonnegative_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L50) - Pool balance Q4W amounts are non-negative
-- [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
-- [❌](https://prover.certora.com/output/52567/185e70c525aa4ca685804f04d0839e8e/?anonymousKey=c4892248f00f0d6893cac809e306dee236740e30) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
-- [❌](https://prover.certora.com/output/52567/185e70c525aa4ca685804f04d0839e8e/?anonymousKey=c4892248f00f0d6893cac809e306dee236740e30) **ST-04**: [state_trans_ub_shares_decrease_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L155) - User balance consistency when shares decrease
-- [❌](https://prover.certora.com/output/52567/5852580aa117425b9b8e07d9d013c8bc/?anonymousKey=1c52736617324468b21bf5bd30342e1ecc19b141) **INT-03**: [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112) - Queue withdrawal correctly updates balances
+- [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9) **VS-03**: [valid_state_nonnegative_pb_q4w_execute_queue_withdrawal](src/certora_specs/valid_state.rs#L50) - Pool balance Q4W amounts are non-negative
+- [❌](https://prover.certora.com/output/52567/5caab1c8904d4de088935330c101261d/?anonymousKey=7e5696286eac03039e4d0c726684ac7b77c4d7b9) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
+- [❌](https://prover.certora.com/output/52567/185e70c525aa4ca685804f04d0839e8e/?anonymousKey=c4892248f00f0d6893cac809e306dee236740e30) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
+- [❌](https://prover.certora.com/output/52567/185e70c525aa4ca685804f04d0839e8e/?anonymousKey=c4892248f00f0d6893cac809e306dee236740e30) **ST-04**: [state_trans_ub_shares_decrease_consistency_execute_queue_withdrawal](src/certora_specs/state_trans.rs#L155) - User balance consistency when shares decrease
+- [❌](https://prover.certora.com/output/52567/5852580aa117425b9b8e07d9d013c8bc/?anonymousKey=1c52736617324468b21bf5bd30342e1ecc19b141) **INT-03**: [integrity_balance_queue_withdrawal](src/certora_specs/integrity_balance.rs#L112) - Queue withdrawal correctly updates balances
 
 ### User
 
-#### [mutations/user/user_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_0.rs)
+#### [mutations/user/user_0.rs](mutations/user/user_0.rs)
 
 Replaces the share addition parameter with zero, preventing user balance updates.
 
@@ -555,12 +555,12 @@ Replaces the share addition parameter with zero, preventing user balance updates
 ```
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/f18a9b3fbcb5444ea3fb4b54dea116ab/?anonymousKey=1f6cef4f20df0f32cce4800ebcb1653ad2b8c52a) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
-- [❌](https://prover.certora.com/output/52567/f18a9b3fbcb5444ea3fb4b54dea116ab/?anonymousKey=1f6cef4f20df0f32cce4800ebcb1653ad2b8c52a) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
-- [❌](https://prover.certora.com/output/52567/ae75814b40054057bca08d60a7dec97a/?anonymousKey=1dabf3d6bb70e84b89adf4f98d9a43ef1f8ac3cd) **INT-01**: [integrity_balance_deposit](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
-- [❌](https://prover.certora.com/output/52567/ae75814b40054057bca08d60a7dec97a/?anonymousKey=1dabf3d6bb70e84b89adf4f98d9a43ef1f8ac3cd) **INT-04**: [integrity_balance_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L158) - Dequeue withdrawal correctly updates balances 
+- [❌](https://prover.certora.com/output/52567/f18a9b3fbcb5444ea3fb4b54dea116ab/?anonymousKey=1f6cef4f20df0f32cce4800ebcb1653ad2b8c52a) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_deposit](src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
+- [❌](https://prover.certora.com/output/52567/f18a9b3fbcb5444ea3fb4b54dea116ab/?anonymousKey=1f6cef4f20df0f32cce4800ebcb1653ad2b8c52a) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal](src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
+- [❌](https://prover.certora.com/output/52567/ae75814b40054057bca08d60a7dec97a/?anonymousKey=1dabf3d6bb70e84b89adf4f98d9a43ef1f8ac3cd) **INT-01**: [integrity_balance_deposit](src/certora_specs/integrity_balance.rs#L24) - Deposits correctly update balances
+- [❌](https://prover.certora.com/output/52567/ae75814b40054057bca08d60a7dec97a/?anonymousKey=1dabf3d6bb70e84b89adf4f98d9a43ef1f8ac3cd) **INT-04**: [integrity_balance_dequeue_withdrawal](src/certora_specs/integrity_balance.rs#L158) - Dequeue withdrawal correctly updates balances 
 
-#### [mutations/user/user_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_1.rs)
+#### [mutations/user/user_1.rs](mutations/user/user_1.rs)
 
 Changes user share reduction to addition during queue operation, causing incorrect balance calculations.
 
@@ -572,12 +572,12 @@ Changes user share reduction to addition during queue operation, causing incorre
 ``` 
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/0ab156788c824d0d9fd0c972493e8331/?anonymousKey=ae20d57296b969ff670adc2c3273b93bc6afcd1f) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
-- [❌](https://prover.certora.com/output/52567/72c6dbd8dd3b4237b7bffc8544417a97/?anonymousKey=a39f0596c331528221b7f4aa022bcc226770016f) **ST-02**: [state_trans_pb_q4w_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35) - Pool Q4W changes are consistent with operations
-- [❌](https://prover.certora.com/output/52567/72c6dbd8dd3b4237b7bffc8544417a97/?anonymousKey=a39f0596c331528221b7f4aa022bcc226770016f) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
-- [❌](https://prover.certora.com/output/52567/dc103e6eaa6e480394d6e4d9116b56bf/?anonymousKey=e191a94e910be86373e961a6c1fb1d99b620ff5b) **INT-03**: [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112) - Queue withdrawal correctly updates balances
+- [❌](https://prover.certora.com/output/52567/0ab156788c824d0d9fd0c972493e8331/?anonymousKey=ae20d57296b969ff670adc2c3273b93bc6afcd1f) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_queue_withdrawal](src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
+- [❌](https://prover.certora.com/output/52567/72c6dbd8dd3b4237b7bffc8544417a97/?anonymousKey=a39f0596c331528221b7f4aa022bcc226770016f) **ST-02**: [state_trans_pb_q4w_consistency_execute_queue_withdrawal](src/certora_specs/state_trans.rs#L35) - Pool Q4W changes are consistent with operations
+- [❌](https://prover.certora.com/output/52567/72c6dbd8dd3b4237b7bffc8544417a97/?anonymousKey=a39f0596c331528221b7f4aa022bcc226770016f) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_queue_withdrawal](src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
+- [❌](https://prover.certora.com/output/52567/dc103e6eaa6e480394d6e4d9116b56bf/?anonymousKey=e191a94e910be86373e961a6c1fb1d99b620ff5b) **INT-03**: [integrity_balance_queue_withdrawal](src/certora_specs/integrity_balance.rs#L112) - Queue withdrawal correctly updates balances
 
-#### [mutations/user/user_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/user/user_3.rs)
+#### [mutations/user/user_3.rs](mutations/user/user_3.rs)
 
 Changes withdrawal amount comparison from greater-than-or-equal to less-than, causing incorrect queue processing logic.
 
@@ -588,15 +588,15 @@ Changes withdrawal amount comparison from greater-than-or-equal to less-than, ca
 ```
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
-- [❌](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
-- [❌](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053) **ST-02**: [state_trans_pb_q4w_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35) - Pool Q4W changes are consistent with operations
-- [❌](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
-- [❌](https://prover.certora.com/output/52567/e573758a36fd4b979fa7d2a0ab44f2e7/?anonymousKey=4d38a32dc3020a3c037dcc19049c9050c90384d3) **INT-02**: [integrity_balance_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L68) - Withdrawals correctly update balances
+- [❌](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_withdraw](src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
+- [❌](https://prover.certora.com/output/52567/c89cbfa6a05e4b7b8e7241813d639e48/?anonymousKey=a1ab65c10d76b7534217550c58b99d3d9510ff3a) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_withdraw](src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
+- [❌](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053) **ST-02**: [state_trans_pb_q4w_consistency_execute_withdraw](src/certora_specs/state_trans.rs#L35) - Pool Q4W changes are consistent with operations
+- [❌](https://prover.certora.com/output/52567/c8301dbba8d0443d975ddf78abe61cac/?anonymousKey=5ffb5770460d17d74fe5633b915f2acdc4184053) **ST-05**: [state_trans_ub_q4w_amount_consistency_execute_withdraw](src/certora_specs/state_trans.rs#L205) - User Q4W amount changes are properly tracked
+- [❌](https://prover.certora.com/output/52567/e573758a36fd4b979fa7d2a0ab44f2e7/?anonymousKey=4d38a32dc3020a3c037dcc19049c9050c90384d3) **INT-02**: [integrity_balance_withdraw](src/certora_specs/integrity_balance.rs#L68) - Withdrawals correctly update balances
 
 ### Withdrawal
 
-#### [mutations/withdraw/withdraw_0.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_0.rs)
+#### [mutations/withdraw/withdraw_0.rs](mutations/withdraw/withdraw_0.rs)
 
 Comments out the user balance storage update during dequeue, preventing balance persistence.
 
@@ -610,10 +610,10 @@ Comments out the user balance storage update during dequeue, preventing balance 
 ```
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/da42ba4e5109434b917800f14f2366ec/?anonymousKey=25d43a69b474c0cb6196a582366633902da7fce4) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
-- [❌](https://prover.certora.com/output/52567/7bb336be49924c50b1c05b66e68eaefd/?anonymousKey=3215f615950fa8b42c39317cfca7547a669215b8) **INT-04**: [integrity_balance_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L158) - Dequeue withdrawal correctly updates balances
+- [❌](https://prover.certora.com/output/52567/da42ba4e5109434b917800f14f2366ec/?anonymousKey=25d43a69b474c0cb6196a582366633902da7fce4) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_dequeue_withdrawal](src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
+- [❌](https://prover.certora.com/output/52567/7bb336be49924c50b1c05b66e68eaefd/?anonymousKey=3215f615950fa8b42c39317cfca7547a669215b8) **INT-04**: [integrity_balance_dequeue_withdrawal](src/certora_specs/integrity_balance.rs#L158) - Dequeue withdrawal correctly updates balances
 
-#### [mutations/withdraw/withdraw_1.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_1.rs)
+#### [mutations/withdraw/withdraw_1.rs](mutations/withdraw/withdraw_1.rs)
 
 Comments out the user queue operation during withdrawal queuing, breaking user-pool queue consistency.
 
@@ -625,12 +625,12 @@ Comments out the user queue operation during withdrawal queuing, breaking user-p
 ```
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb) **VS-06**: [valid_state_pb_q4w_leq_shares_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L108) - Pool Q4W total must not exceed pool shares
-- [❌](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
-- [❌](https://prover.certora.com/output/52567/2a86fbe7d28f4dfbbee1d0f1eba119e7/?anonymousKey=4cae8150862c7c1dc7d3ffe667669a62d8f06483) **ST-02**: [state_trans_pb_q4w_consistency_execute_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L35) - Pool Q4W changes are consistent with operations
-- [❌](https://prover.certora.com/output/52567/29a8128d9dfe49c5bd23d556a713278c/?anonymousKey=d35e7a76f12daa71eb81f9dd2cfe1872565a5791) **INT-03**: [integrity_balance_queue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L112) - Queue withdrawal correctly updates balances
+- [❌](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb) **VS-06**: [valid_state_pb_q4w_leq_shares_execute_queue_withdrawal](src/certora_specs/valid_state.rs#L108) - Pool Q4W total must not exceed pool shares
+- [❌](https://prover.certora.com/output/52567/26fda48dc372470293d98cd06c515864/?anonymousKey=e3eddb647c234c5abe7e6cf3e6c20e79cb37febb) **VS-08**: [valid_state_ub_q4w_sum_eq_pb_q4w_execute_queue_withdrawal](src/certora_specs/valid_state.rs#L189) - Sum of user Q4W amounts must equal pool Q4W total
+- [❌](https://prover.certora.com/output/52567/2a86fbe7d28f4dfbbee1d0f1eba119e7/?anonymousKey=4cae8150862c7c1dc7d3ffe667669a62d8f06483) **ST-02**: [state_trans_pb_q4w_consistency_execute_queue_withdrawal](src/certora_specs/state_trans.rs#L35) - Pool Q4W changes are consistent with operations
+- [❌](https://prover.certora.com/output/52567/29a8128d9dfe49c5bd23d556a713278c/?anonymousKey=d35e7a76f12daa71eb81f9dd2cfe1872565a5791) **INT-03**: [integrity_balance_queue_withdrawal](src/certora_specs/integrity_balance.rs#L112) - Queue withdrawal correctly updates balances
 
-#### [mutations/withdraw/withdraw_2.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_2.rs)
+#### [mutations/withdraw/withdraw_2.rs](mutations/withdraw/withdraw_2.rs)
 
 Comments out the user share addition during dequeue, preventing share reallocation to user.
 
@@ -643,10 +643,10 @@ Comments out the user share addition during dequeue, preventing share reallocati
 ```
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/a2ee19b9f9104bd49e3b7a725b744bb8/?anonymousKey=57e7b8e61238f2eae65ab2d2c15fc25eb975871c) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
-- [❌](https://prover.certora.com/output/52567/6fc3d0fd57a24e42be5c8c363f9f7598/?anonymousKey=ca2d5dc446572e98184ee16def629b975d6c8d2c) **INT-04**: [integrity_balance_dequeue_withdrawal](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/integrity_balance.rs#L158) - Dequeue withdrawal correctly updates balances
+- [❌](https://prover.certora.com/output/52567/a2ee19b9f9104bd49e3b7a725b744bb8/?anonymousKey=57e7b8e61238f2eae65ab2d2c15fc25eb975871c) **VS-07**: [valid_state_ub_shares_plus_q4w_sum_eq_pb_shares_execute_dequeue_withdrawal](src/certora_specs/valid_state.rs#L165) - User shares + Q4W amounts must equal pool shares
+- [❌](https://prover.certora.com/output/52567/6fc3d0fd57a24e42be5c8c363f9f7598/?anonymousKey=ca2d5dc446572e98184ee16def629b975d6c8d2c) **INT-04**: [integrity_balance_dequeue_withdrawal](src/certora_specs/integrity_balance.rs#L158) - Dequeue withdrawal correctly updates balances
 
-#### [mutations/withdraw/withdraw_3.rs](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/mutations/withdraw/withdraw_3.rs)
+#### [mutations/withdraw/withdraw_3.rs](mutations/withdraw/withdraw_3.rs)
 
 Comments out the zero-amount withdrawal validation, allowing invalid withdrawals to proceed.
 
@@ -659,7 +659,7 @@ Comments out the zero-amount withdrawal validation, allowing invalid withdrawals
 ```
 
 Caught by:
-- [❌](https://prover.certora.com/output/52567/9d209d2e1be6448dae850da3d05759db/?anonymousKey=877f5965b79c4a3edf347f6d243be3211bdb34b2) **ST-01**: [state_trans_pb_shares_tokens_directional_change_execute_withdraw](https://github.com/alexzoid-eth/2025-02-blend-fv/blob/main/blend-contracts-v2/backstop/src/certora_specs/state_trans.rs#L11) - Pool shares and tokens change in same direction
+- [❌](https://prover.certora.com/output/52567/9d209d2e1be6448dae850da3d05759db/?anonymousKey=877f5965b79c4a3edf347f6d243be3211bdb34b2) **ST-01**: [state_trans_pb_shares_tokens_directional_change_execute_withdraw](src/certora_specs/state_trans.rs#L11) - Pool shares and tokens change in same direction
 
 ---
 
