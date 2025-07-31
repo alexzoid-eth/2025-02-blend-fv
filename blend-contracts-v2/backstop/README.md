@@ -673,7 +673,7 @@ The [execute_queue_withdrawal](https://github.com/code-423n4/2025-02-blend/blob/
 
 **Proof of Concept:**
 
-This behavior [violates](https://prover.certora.com/output/52567/86ba83df36b94d6fb1d4f5cba794e4db?anonymousKey=444a3ccf615f593ef927bf50aaf7b13ed5531a66) the formal verification invariant `valid_state_ub_q4w_exp_implies_amount`, which specifies that `Q4W` entries with non-zero expiration times always should have non-zero amounts.
+This behavior [violates](https://prover.certora.com/output/52567/86ba83df36b94d6fb1d4f5cba794e4db/?anonymousKey=444a3ccf615f593ef927bf50aaf7b13ed5531a66) the formal verification invariant `valid_state_ub_q4w_exp_implies_amount`, which specifies that `Q4W` entries with non-zero expiration times always should have non-zero amounts.
 
 ```rust
 // If a Q4W entry has a non-zero expiration time, it must have a non-zero amount
@@ -715,7 +715,7 @@ index e3664f0..47e6e1b 100644
      let mut user_balance = storage::get_user_balance(e, pool_address, from);
 ```
 
-FV rule [passed](https://prover.certora.com/output/52567/77b0a59850034d4f93e1bb9b94d0abf3?anonymousKey=16910daf257de88db0005728000f2fd23f502e01) after the fix.
+FV rule [passed](https://prover.certora.com/output/52567/77b0a59850034d4f93e1bb9b94d0abf3/?anonymousKey=16910daf257de88db0005728000f2fd23f502e01) after the fix.
 
 ---
 
