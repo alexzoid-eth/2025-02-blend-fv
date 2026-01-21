@@ -5,8 +5,8 @@
 - Latest Commit Hash: [6b803fa](https://github.com/code-423n4/2025-02-blend-fv/commit/6b803fa4605f731cacdadbc80d89161b0c27b781)
 - Scope: [blend-contracts-v2/backstop](https://github.com/code-423n4/2025-02-blend-fv/tree/main/blend-contracts-v2/backstop)
 - Date: February 2025
-- Author: [@alexzoid_eth](https://x.com/alexzoid_eth) 
-- Certora Prover version: 7.26.0 
+- Author: [@alexzoid](https://x.com/alexzoid) 
+- Certora Sunbeam (Soroban) Prover version: 7.26.0 
 
 ---
 
